@@ -134,7 +134,7 @@ function getLodop(oOBJECT, oEMBED) {
                 document.body.innerHTML = (is64IE ? strHtm64_Update : strHtmUpdate) + document.body.innerHTML;
         }
         //===如下空白位置适合调用统一功能(如注册语句、语言选择等):==
-    LODOP.SET_LICENSES("","13528A153BAEE3A0254B9507DCDE2839","EDE92F75B6A3D917F65910","");
+   
         //=======================================================
         return LODOP;
     } catch (err) {
