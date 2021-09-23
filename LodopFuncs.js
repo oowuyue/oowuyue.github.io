@@ -51,8 +51,8 @@ function loadCLodop() {
     var head = document.head || document.getElementsByTagName("head")[0] || document.documentElement;
     var JS1 = document.createElement("script");
     var JS2 = document.createElement("script");
-    JS1.src = "https://localhost.lodop.net:8443/CLodopfuncs.js?priority=1";
-    JS2.src = "https://localhost.lodop.net:8444/CLodopfuncs.js";
+    JS1.src = "http://localhost:8000/CLodopfuncs.js?priority=1";   //https://localhost.lodop.net:8443/CLodopfuncs.js?priority=1
+    JS2.src = "http://localhost:18000/CLodopfuncs.js";
     JS1.onload  = JS2.onload  = function()    {CLodopJsState = "complete";}
     JS1.onerror = JS2.onerror = function(evt) {CLodopJsState = "complete";}
     head.insertBefore(JS1, head.firstChild);
