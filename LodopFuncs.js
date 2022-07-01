@@ -1,4 +1,4 @@
-//==本JS是加载Lodop插件或Web打印服务CLodop/Lodop7的综合示例，可直接使用，建议理解后融入自己程序==
+﻿//==本JS是加载Lodop插件或Web打印服务CLodop/Lodop7的综合示例，可直接使用，建议理解后融入自己程序==
 
 var CreatedOKLodopObject, CLodopIsLocal, CLodopJsState;
 
@@ -36,41 +36,60 @@ function needCLodop() {
     }
 }
 
-//加载CLodop时用双端口(http是8000/18000,而https是8443/8444)以防其中某端口被占,
-//主JS文件名“CLodopfuncs.js”是固定名称，其内容是动态的，与其链接的打印环境有关:
-function loadCLodop() {
+//==用WebSocket加载CLodop/Lodop7对象的子过程==
+//==通常由于CORS原因Script方式失败而用本方法==
+function loadCLodopByWebSocket(){
+  if (!window.WebSocket && !window.MozWebSocket) return false;
+  if (!window.WebSocket && window.MozWebSocket) window.WebSocket=window.MozWebSocket;
+  var WSK1=new WebSocket("ws://localhost:8000/CLodopfuncs.js");
+  WSK1.onopen = function(e) {CLodopJsState = "complete";}
+  WSK1.onmessage = function(e) {eval(e.data);}
+  WSK1.onerror = function(e) {
+       var WSK2=new WebSocket("ws://localhost:18000/CLodopfuncs.js");
+       WSK2.onopen = function(e) {CLodopJsState = "complete";}
+       WSK2.onmessage = function(e) {eval(e.data);}
+       WSK2.onerror = function(e) {CLodopJsState = "complete";}
+  }
+  return true;
+}
+
+//==加载CLodop/Lodop7对象的主过程:==
+(function loadCLodop() {
+    if (!needCLodop()) return;
     if (CLodopJsState == "loading" || CLodopJsState == "complete") return;
     CLodopJsState = "loading";
     var head = document.head || document.getElementsByTagName("head")[0] || document.documentElement;
-    var JS1 = document.createElement("script");
-    var JS2 = document.createElement("script");
-
-    if (window.location.protocol=='https:') {
-      JS1.src = "https://localhost.lodop.net:8443/CLodopfuncs.js";
-      JS2.src = "https://localhost.lodop.net:8444/CLodopfuncs.js";
-    } else {
-      JS1.src = "http://localhost:8000/CLodopfuncs.js";
-      JS2.src = "http://localhost:18000/CLodopfuncs.js";
+    //用双端口(http用8000/18000,而https用8000/8443)加载主JS文件CLodopfuncs.js以防其中某端口被占:
+    var JS1 = document.createElement("script")
+       ,JS2 = document.createElement("script")
+       ,JS3 = document.createElement("script");
+    JS1.src = "http://localhost:8000/CLodopfuncs.js";
+    JS2.src = "http://localhost:18000/CLodopfuncs.js";
+    JS3.src = "https://localhost.lodop.net:8443//CLodopfuncs.js";
+    JS1.onload = JS2.onload =JS3.onload = function(){CLodopJsState = "complete";}
+    JS1.onerror = function(e) {
+        if (window.location.protocol!=='https:'){
+            JS2.onerror = function(e){loadCLodopByWebSocket();}
+            head.insertBefore(JS2,head.firstChild);
+        } else {
+            JS3.onerror = function(e){loadCLodopByWebSocket();}
+            head.insertBefore(JS3,head.firstChild);
+        }
     }
-    JS1.onload  = JS2.onload  = function()    {CLodopJsState = "complete";}
-    JS1.onerror = JS2.onerror = function(evt) {CLodopJsState = "complete";}
-    head.insertBefore(JS1, head.firstChild);
-    head.insertBefore(JS2, head.firstChild);
+    head.insertBefore(JS1,head.firstChild);
     CLodopIsLocal = !!((JS1.src + JS2.src).match(/\/\/localho|\/\/127.0.0./i));
-}
-
-if (needCLodop()){loadCLodop();}//开始加载
+})();
 
 //==获取LODOP对象主过程,判断是否安装、需否升级:==
 function getLodop(oOBJECT, oEMBED) {
     var strFontTag= "<br><font color='#FF00FF'>打印控件";
-    var strLodopInstall   = strFontTag+"未安装!点击这里<a href='install_lodop32.zip' target='_self'>执行安装</a>";
-    var strLodopUpdate    = strFontTag+"需要升级!点击这里<a href='install_lodop32.zip' target='_self'>执行升级</a>";
-    var strLodop64Install = strFontTag+"未安装!点击这里<a href='install_lodop64.zip' target='_self'>执行安装</a>";
-    var strLodop64Update  = strFontTag+"需要升级!点击这里<a href='install_lodop64.zip' target='_self'>执行升级</a>";
-    var strCLodopInstallA = "<br><font color='#FF00FF'>Web打印服务CLodop未安装启动，点击这里<a href='CLodop_Setup_for_Win32NT.zip' target='_self'>下载执行安装</a>";
+    var strLodopInstall   = strFontTag+"未安装!点击这里<a href='install_lodop32.exe' target='_self'>执行安装</a>";
+    var strLodopUpdate    = strFontTag+"需要升级!点击这里<a href='install_lodop32.exe' target='_self'>执行升级</a>";
+    var strLodop64Install = strFontTag+"未安装!点击这里<a href='install_lodop64.exe' target='_self'>执行安装</a>";
+    var strLodop64Update  = strFontTag+"需要升级!点击这里<a href='install_lodop64.exe' target='_self'>执行升级</a>";
+    var strCLodopInstallA = "<br><font color='#FF00FF'>Web打印服务CLodop未安装启动，点击这里<a href='CLodop_Setup_for_Win32NT.exe' target='_self'>下载执行安装</a>";
     var strCLodopInstallB = "<br>（若此前已安装过，可<a href='CLodop.protocol:setup' target='_self'>点这里直接再次启动</a>）";
-    var strCLodopUpdate   = "<br><font color='#FF00FF'>Web打印服务CLodop需升级!点击这里<a href='CLodop_Setup_for_Win32NT.zip' target='_self'>执行升级</a>";
+    var strCLodopUpdate   = "<br><font color='#FF00FF'>Web打印服务CLodop需升级!点击这里<a href='CLodop_Setup_for_Win32NT.exe' target='_self'>执行升级</a>";
     var strLodop7FontTag    = "<br><font color='#FF00FF'>Web打印服务Lodop7";
     var strLodop7HrefX86    = "点击这里<a href='Lodop7_Linux_X86_64.tar.gz' target='_self'>下载安装</a>(下载后解压，点击lodop文件开始执行)";
     var strLodop7HrefARM    = "点击这里<a href='Lodop7_Linux_ARM64.tar.gz'  target='_self'>下载安装</a>(下载后解压，点击lodop文件开始执行)";
@@ -88,7 +107,7 @@ function getLodop(oOBJECT, oEMBED) {
 
         if (needCLodop() || isLinuxX86 || isLinuxARM) {
             try {
-                LODOP = getCLodop();
+                LODOP = window.CLODOP2015_7028;
             } catch (err) {}
             if (!LODOP && CLodopJsState !== "complete") {
                 if (CLodopJsState == "loading") alert("网页还没下载完毕，请稍等一下再操作."); else alert("未曾加载Lodop主JS文件，请先调用loadCLodop过程.");
@@ -102,9 +121,9 @@ function getLodop(oOBJECT, oEMBED) {
                 document.body.innerHTML = strAlertMessage + strInstallOK + document.body.innerHTML;
                 return;
             } else {
-                if (isLinuxX86 && LODOP.CVERSION < "7.0.3.9") strAlertMessage = strLodop7Update_X86; else
-                if (isLinuxARM && LODOP.CVERSION < "7.0.3.9") strAlertMessage = strLodop7Update_ARM; else
-                if (CLODOP.CVERSION < "4.1.5.5")              strAlertMessage = strCLodopUpdate;
+                if (isLinuxX86 && LODOP.CVERSION < "7.0.4.3") strAlertMessage = strLodop7Update_X86; else
+                if (isLinuxARM && LODOP.CVERSION < "7.0.4.3") strAlertMessage = strLodop7Update_ARM; else
+                if (CLODOP.CVERSION < "6.5.6.3")              strAlertMessage = strCLodopUpdate;
 
                 if (strAlertMessage) document.body.innerHTML = strAlertMessage+ strInstallOK + document.body.innerHTML;
             }
@@ -138,7 +157,6 @@ function getLodop(oOBJECT, oEMBED) {
         }
         //===如下空白位置适合调用统一功能(如注册语句、语言选择等):=======================
 
-        LODOP.SET_LICENSES("","13528A153BAEE3A0254B9507DCDE2839","EDE92F75B6A3D917F65910","D60BC84D7CF2DE18156A6F88987304CB6D8");
 
         //===============================================================================
         return LODOP;
