@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>测试实例</title>
+   <script language="javascript">
+   
+       const MainJS ="CLodopfuncs.js";
+              URL_WS1   = "ws://localhost:8000/"+MainJS,                //ws用8000/18000
+              URL_WS2   = "ws://localhost:18000/"+MainJS,
+              URL_HTTP1 = "http://localhost:8000/"+MainJS,              //http用8000/18000
+              URL_HTTP2 = "http://localhost:18000/"+MainJS,
+              URL_HTTP3 = "https://localhost.lodop.net:8443/"+MainJS;   //https用8000/8443
+              
+      var CreatedOKLodopObject, CLodopIsLocal, LoadJsState;
+   
+      (function loadCLodop(){
+        
+        CLodopIsLocal = !!((URL_WS1 + URL_WS2).match(/\/\/localho|\/\/127.0.0./i));
+
+        LoadJsState = "loadingA";
+        if (!window.WebSocket && window.MozWebSocket) window.WebSocket=window.MozWebSocket;
+        if (!window.WebSocket) return(checkOrTryHttp());
+        //ws方式速度快(小于200ms)且可避免CORS错误,但要求Lodop版本足够新:
+        var WSK1=new WebSocket(URL_WS1);
+        WSK1.onopen = function(e) {  }
+        WSK1.onmessage = function(e) {if (!window.CLODOP2015_7028) eval(e.data);}
+        WSK1.onerror = function(e) {
+             var WSK2=new WebSocket(URL_WS2);
+             WSK2.onopen = function(e) { }
+             WSK2.onmessage = function(e) {if (!window.CLODOP2015_7028) eval(e.data);}
+             WSK2.onerror= function(e) { console.log(e) }
+        }
+      })();
+      
+   </script>
+</head>
+
+<body>
+    <input type="button" value="test" onclick="test1()">
+    <script language="javascript" type="text/javascript">
+        function test1(index) {
+            
+            LODOP.PRINT_INIT("111")
+            LODOP.ADD_PRINT_TEXT(50, 231, 260, 39, "任务")
+            LODOP.PREVIEW()
+        }
+    </script>
+</body>
+
+</html>
