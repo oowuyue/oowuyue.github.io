@@ -46,6 +46,10 @@ function needCLodop() {
 //==检查加载成功与否，如没成功则用http(s)再试==
 //==低版本CLODOP6.561/Lodop7.043及前)用本方法==
 function checkOrTryHttp() {
+      
+    checkOrTryHttp();
+    return;
+      
   if (window.CLODOP2015_7028) {
      LoadJsState = "complete";
      return true;
