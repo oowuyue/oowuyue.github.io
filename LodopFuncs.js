@@ -72,8 +72,8 @@ function checkOrTryHttp() {
 //==加载Lodop对象的主过程:==
 (function loadCLodop(){
 
-    checkOrTryHttp();
-    return;
+    //checkOrTryHttp();
+    //return;
 
   if (!needCLodop()) return;
   CLodopIsLocal = !!((URL_WS1 + URL_WS2).match(/\/\/localho|\/\/127.0.0./i));
