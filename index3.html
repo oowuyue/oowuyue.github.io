@@ -9,6 +9,7 @@
        const MainJS ="CLodopfuncs.js";
               URL_WS1   = "ws://localhost:8000/"+MainJS,                //ws用8000/18000
               URL_WS2   = "ws://localhost:18000/"+MainJS,
+              URL_WS3   = "wss://localhost.lodop.net:8443/"+MainJS,
               URL_HTTP1 = "http://localhost:8000/"+MainJS,              //http用8000/18000
               URL_HTTP2 = "http://localhost:18000/"+MainJS,
               URL_HTTP3 = "https://localhost.lodop.net:8443/"+MainJS;   //https用8000/8443
@@ -23,7 +24,7 @@
         if (!window.WebSocket && window.MozWebSocket) window.WebSocket=window.MozWebSocket;
         if (!window.WebSocket) return(checkOrTryHttp());
         //ws方式速度快(小于200ms)且可避免CORS错误,但要求Lodop版本足够新:
-        var WSK1=new WebSocket(URL_WS1);
+        var WSK1=new WebSocket(URL_WS3);
         WSK1.onopen = function(e) {  }
         WSK1.onmessage = function(e) {if (!window.CLODOP2015_7028) eval(e.data);}
         WSK1.onerror = function(e) {
