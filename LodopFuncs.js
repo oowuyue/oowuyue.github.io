@@ -1,4 +1,4 @@
-﻿//==本JS是加载Lodop插件或Web打印服务CLodop/Lodop7的综合示例，可直接使用，建议理解后融入自己程序==
+//==本JS是加载Lodop插件或Web打印服务CLodop/Lodop7的综合示例，可直接使用，建议理解后融入自己程序==
 
 //用双端口加载主JS文件Lodop.js(或CLodopfuncs.js兼容老版本)以防其中某端口被占:
 const MainJS ="CLodopfuncs.js";
@@ -62,8 +62,7 @@ function checkOrTryHttp() {
   JS1.onload = JS2.onload = JS3.onload = JS2.onerror = JS3.onerror=function(){LoadJsState = "complete";}
   JS1.onerror = function(e) {
       if (window.location.protocol !== 'https:')
-          head.insertBefore(JS2, head.firstChild); 
-      else
+          head.insertBefore(JS2, head.firstChild); else
           head.insertBefore(JS3, head.firstChild);
   }
   head.insertBefore(JS1,head.firstChild);
@@ -71,10 +70,6 @@ function checkOrTryHttp() {
 
 //==加载Lodop对象的主过程:==
 (function loadCLodop(){
-
-    //checkOrTryHttp();
-    //return;
-
   if (!needCLodop()) return;
   CLodopIsLocal = !!((URL_WS1 + URL_WS2).match(/\/\/localho|\/\/127.0.0./i));
 
@@ -187,6 +182,7 @@ function getLodop(oOBJECT, oEMBED) {
         alert("getLodop出错:" + err);
     }
 }
+
 
 /*
 
