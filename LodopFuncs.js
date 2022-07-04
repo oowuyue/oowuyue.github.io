@@ -77,7 +77,9 @@ function checkOrTryHttp() {
   if (!window.WebSocket && window.MozWebSocket) window.WebSocket=window.MozWebSocket;
   if (!window.WebSocket) return(checkOrTryHttp());
   //ws方式速度快(小于200ms)且可避免CORS错误,但要求Lodop版本足够新:
-  var WSK1=new WebSocket(URL_WS1);
+  try { var WSK1=new WebSocket(URL_WS1);}
+  catch (err) {console.log(err) ;setTimeout("checkOrTryHttp();",200); }
+ 
   WSK1.onopen = function(e) { setTimeout("checkOrTryHttp();",200); }
   WSK1.onmessage = function(e) {if (!window.CLODOP2015_7028) eval(e.data);}
   WSK1.onerror = function(e) {
