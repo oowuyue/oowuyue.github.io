@@ -155,7 +155,7 @@
     let gdpzhanbicha = private_invest.map((item,index)=>{
         let newArr = []
         newArr[0] = item[0].substring(0,8) + "28"
-        newArr[1] = item[1] - gov_pay[index][1].toFixed(2)
+        newArr[1] = (item[1] - gov_pay[index][1]).toFixed(2)
         return newArr
     })
 
@@ -184,7 +184,7 @@
         tooltip: {
             trigger: 'axis',
             show: true,
-            position: ['97%', '10%'],
+            position: ['100%', '10%'],
             order:'seriesAsc'
         },
         legend: {
@@ -627,7 +627,7 @@
 
 
             {
-                name: 'gdpzhanbicha',
+                name: 'gdp政支私投占比差',
                 type: 'scatter',
                 xAxisIndex: 3,
                 yAxisIndex: 6,
