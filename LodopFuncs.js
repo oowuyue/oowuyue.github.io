@@ -1,12 +1,13 @@
 ﻿//==本JS是加载Lodop插件或Web打印服务CLodop/Lodop7的综合示例，可直接使用，建议理解后融入自己程序==
 
 //用双端口加载主JS文件Lodop.js(或CLodopfuncs.js兼容老版本)以防其中某端口被占:
-const MainJS ="CLodopfuncs.js";
-      URL_WS1   = "ws://localhost:8000/"+MainJS,                //ws用8000/18000
-      URL_WS2   = "ws://localhost:18000/"+MainJS,
-      URL_HTTP1 = "http://localhost:8000/"+MainJS,              //http用8000/18000
-      URL_HTTP2 = "http://localhost:18000/"+MainJS,
-      URL_HTTP3 = "https://localhost.lodop.net:8443/"+MainJS;   //https用8000/8443
+var MainJS ="CLodopfuncs.js",
+    URL_WS1   = "ws://localhost:8000/"+MainJS,                //ws用8000/18000
+    URL_WS2   = "ws://localhost:18000/"+MainJS,
+    URL_HTTP1 = "http://localhost:8000/"+MainJS,              //http用8000/18000
+    URL_HTTP2 = "http://localhost:18000/"+MainJS,
+    URL_HTTP3 = "https://localhost.lodop.net:8443/"+MainJS;   //https用8000/8443
+
 var CreatedOKLodopObject, CLodopIsLocal, LoadJsState;
 
 //==判断是否需要CLodop(那些不支持插件的浏览器):==
@@ -120,9 +121,9 @@ function getLodop(oOBJECT, oEMBED) {
                 LODOP = window.CLODOP2015_7028;
             } catch (err) {}
             if (!LODOP && LoadJsState !== "complete") {
-                if (LoadJsState == "loading")
-                    alert("网页还没下载完毕，请稍等一下再操作."); else
-                    alert("未曾加载Lodop主JS文件，请先调用loadCLodop过程.");
+                if (!LoadJsState)
+                    alert("未曾加载Lodop主JS文件，请先调用loadCLodop过程."); else
+                    alert("网页还没下载完毕，请稍等一下再操作.");
                 return;
             }
             var strAlertMessage;
@@ -140,7 +141,7 @@ function getLodop(oOBJECT, oEMBED) {
                     strAlertMessage = strLodop7Update_X86;
                 else if (isLinuxARM && LODOP.CVERSION < "7.0.4.3")
                     strAlertMessage = strLodop7Update_ARM;
-                else if (CLODOP.CVERSION < "6.5.6.4")
+                else if (CLODOP.CVERSION < "6.5.6.6")
                     strAlertMessage = strCLodopUpdate;
 
                 if (strAlertMessage)
