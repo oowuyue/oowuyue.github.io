@@ -1207,6 +1207,7 @@
                         if (this.SocketEnable && this.SocketOpened){
                                 return this.wsDoPostDatas(afterPostAction);
                         }
+                        this.blPreHttpPost = true; //
                         this.RemoveIframes();
                         var obody=document.body || document.getElementsByTagName("body")[0] || document.documentElement;
                         var oiframe=document.createElement("iframe");
@@ -1230,7 +1231,7 @@
         GetLastResult:
                 function(blFOneByone){
                 if (blFOneByone) this.blOneByone=true;
-                if (this.SocketEnable){
+                if (this.SocketEnable && !this.blPreHttpPost ){
                     return true;
                 }
                 var url = this.strHostURI+"/c_lastresult.js";
