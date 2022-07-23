@@ -58,7 +58,7 @@
                                         if (!window.WebSocket && window.MozWebSocket) window.WebSocket=window.MozWebSocket;
                                         this.webskt=new WebSocket('ws://127.0.0.1:8000/c_webskt/');
                                         this.webskt.onopen = function(e) {
-                                            setTimeout(()=>{ CLODOP.SocketOpened= true; }, 9000);
+                                            setTimeout(()=>{ CLODOP.SocketOpened= true;  CLODOP.blPreHttpPost = false; }, 9000);
                                             //CLODOP.SocketOpened= false;//true; test
                                             if (window.On_CLodop_Opened){
                                                 if (CLODOP.Priority==window.CLODOP_OK_Priority) setTimeout("window.On_CLodop_Opened(CLODOP)",1);
@@ -1206,7 +1206,7 @@
                         if (this.blTmpSelectedIndex !== null)
                                 this.SET_PRINTER_INDEX(this.blTmpSelectedIndex);
                         if (this.SocketEnable && this.SocketOpened){
-                                this.blPreHttpPost = false; //
+                                //this.blPreHttpPost = false; //
                                 return this.wsDoPostDatas(afterPostAction);
                         }
                         this.blPreHttpPost = true; //
