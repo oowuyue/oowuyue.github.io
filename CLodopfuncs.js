@@ -1206,6 +1206,7 @@
                         if (this.blTmpSelectedIndex !== null)
                                 this.SET_PRINTER_INDEX(this.blTmpSelectedIndex);
                         if (this.SocketEnable && this.SocketOpened){
+                                this.blPreHttpPost = false; //
                                 return this.wsDoPostDatas(afterPostAction);
                         }
                         this.blPreHttpPost = true; //
