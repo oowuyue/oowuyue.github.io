@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>WEB打印控件LODOP的样例三:用程序代码生成打印页</title>
 
-<script language="javascript" src="CLodopfuncs.js"></script>
+<script language="javascript" src="LodopFuncs.js"></script>
 
 </head>
 
@@ -250,7 +250,8 @@
 		LODOP.PRINT_DESIGN();		       
 	};			       
 	function CreatePrintPage() {       
-		LODOP=getCLodop();         
+		LODOP=getCLodop();
+		console.log("getCLodop");
 		LODOP.PRINT_INIT("打印控件功能演示_Lodop功能_名片");       
 		LODOP.ADD_PRINT_RECT(10,55,360,220,0,1);       
 		LODOP.SET_PRINT_STYLE("FontSize",11);       
@@ -262,7 +263,8 @@
 		LODOP.ADD_PRINT_TEXT(138,132,166,20,"电话：010-88811888");	       
 	};       
 	function myAddHtml() {       
-		LODOP=getLodop();         
+		LODOP=getLodop();   
+		console.log("getLodop")
    		LODOP.PRINT_INIT("");		            
 		LODOP.ADD_PRINT_HTM(10,55,"100%","100%",document.getElementById("textarea01").value);	       
 	};	       
