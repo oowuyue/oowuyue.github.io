@@ -24,7 +24,7 @@
             LODOP.SET_PRINT_STYLEA(0, "FontSize", 15) //SET_PRINT_XXX 语句设置属性 设置上面的纯文本字体大小
             LODOP.NEWPAGEA() // 一个任务内分页
             LODOP.ADD_PRINT_HTM(10,55,"50%","50%",'<p style="color:red;font-size:19px;>第二页html内容</p>') //ADD_PRINT_XXX 语句添加打印项
-            LODOP.PREVIEW();   //最后一个PRINT直接打印 (或PRINTA选择打印、PREVIEW预览、PRINT_DESIGN打印设计  GET_VALUE)语句 结束一个任务 
+            LODOP.PRINT_DESIGN();   //最后一个PRINT直接打印 (或PRINTA选择打印、PREVIEW预览、PRINT_DESIGN打印设计  GET_VALUE)语句 结束一个任务 
         }  
     </script>
   
