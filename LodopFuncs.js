@@ -47,7 +47,7 @@ function needCLodop() {
 //==检查加载成功与否，如没成功则用http(s)再试==
 //==低版本CLODOP6.561/Lodop7.043及前)用本方法==
 function checkOrTryHttp() {
-  if (window.getCLodop) {
+  if (window.CLODOP2015_7028) {
      LoadJsState = "complete";
      return true;
   }
@@ -79,11 +79,11 @@ function checkOrTryHttp() {
   try {
     var WSK1=new WebSocket(URL_WS1);
     WSK1.onopen = function(e) { setTimeout("checkOrTryHttp();",200); }
-    WSK1.onmessage = function(e) {if (!window.getCLodop) eval(e.data);}
+    WSK1.onmessage = function(e) {if (!window.CLODOP2015_7028) eval(e.data);}
     WSK1.onerror = function(e) {
          var WSK2=new WebSocket(URL_WS2);
          WSK2.onopen = function(e) {setTimeout("checkOrTryHttp();",200);}
-         WSK2.onmessage = function(e) {if (!window.getCLodop) eval(e.data);}
+         WSK2.onmessage = function(e) {if (!window.CLODOP2015_7028) eval(e.data);}
          WSK2.onerror= function(e) {checkOrTryHttp();}
     }
   } catch(e){
@@ -118,7 +118,7 @@ function getLodop(oOBJECT, oEMBED) {
 
         if (needCLodop() || isLinuxX86 || isLinuxARM) {
             try {
-                LODOP = window.getCLodop();
+                LODOP = window.CLODOP2015_7028;
             } catch (err) {}
             if (!LODOP && LoadJsState !== "complete") {
                 if (!LoadJsState)
@@ -141,7 +141,7 @@ function getLodop(oOBJECT, oEMBED) {
                     strAlertMessage = strLodop7Update_X86;
                 else if (isLinuxARM && LODOP.CVERSION < "7.0.4.3")
                     strAlertMessage = strLodop7Update_ARM;
-                else if (CLODOP.CVERSION < "6.5.6.7")
+                else if (CLODOP.CVERSION < "6.5.6.6")
                     strAlertMessage = strCLodopUpdate;
 
                 if (strAlertMessage)
