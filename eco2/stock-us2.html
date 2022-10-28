@@ -136,7 +136,7 @@ m2 = unitDate(m2)
 
 guzhaicha1 = guzhaicha1.map((item)=>{
         item[0] = item[0].substring(0,8)+"28"
-        item[1] = parseFloat( item[1])
+        item[1] = 0-parseFloat( item[1])
         return item
 })
 guzhaicha1 = unitDate(guzhaicha1)
@@ -144,7 +144,7 @@ guzhaicha1 = unitDate(guzhaicha1)
 guzhaicha2 = guzhaicha2.map((item)=>{
         let arr = []
         arr[0] = item[0].slice(0, 4) + "-" + item[0].slice(4, 6) + '-28';
-        arr[1] = parseFloat( item[3])
+        arr[1] = 0-parseFloat( item[3])
         return arr
 })
 guzhaicha2 = unitDate(guzhaicha2)
@@ -316,7 +316,7 @@ us_fed_assets = us_fed_assets.map((item)=>{
             { //美元指数     
                 left: 60,
                 right: 80,
-                top:"45%",
+                top:"43%",
                 height: '15%',
                 show: true,
                 backgroundColor : '#c1c4c3',
@@ -514,8 +514,8 @@ us_fed_assets = us_fed_assets.map((item)=>{
                     show: false
                 },
                 position: 'right',    
-                min:-1,
-                max:8 
+                min:-4.5,
+                max:3.5 
             },
 
             //利率 债 | 央行 
@@ -808,7 +808,7 @@ us_fed_assets = us_fed_assets.map((item)=>{
                 yAxisIndex: 5,
                 smooth: true,
                 showSymbol: false,
-                data: guzhaicha1,//guzhaicha1, //guzhaichaAver ,
+                data: guzhaichaAver,//guzhaicha1, //guzhaichaAver ,
                 lineStyle: {
                     width: 1.5,    
                 },
@@ -838,49 +838,39 @@ us_fed_assets = us_fed_assets.map((item)=>{
                 //             }
                 //     },
                 // },
-                // markLine: {
-                //     symbol: ["none", "none"],
-                //     data: [{
-                //             lineStyle: {
-                //                 width: 1,
-                //                 color: "green",
-                //                 type :"dotted"
-                //             },
-                //             label: {
-                //                 formatter: "低估",
-                //                 color: "green",
-                //                 fontSize: "10",
-                //             },
-                //             yAxis: 1.5, // 差3  比2.5
-                //         },
-                //         {
-                //             lineStyle: {
-                //                 width: 1,
-                //                 color: "#ff535c",
-                //                 type :"dotted"
-                //             },
-                //             label: {
-                //                 formatter: "高估",
-                //                 fontSize: "10",
-                //                 color: "#ff535c",
-                //             },
-                //             yAxis: 0, //差1  比1.5
-                //         },
-                //     ],
-                // },
-            },  
-            {
-                name: '股债差',
-                type: 'line',
-                xAxisIndex: 2,
-                yAxisIndex: 5,
-                smooth: true,
-                showSymbol: false,
-                data: guzhaicha2, //guzhaichaAver ,
-                lineStyle: {
-                    width: 1.5,    
+                markLine: {
+                    symbol: ["none", "none"],
+                    data: [{
+                            lineStyle: {
+                                width: 1,
+                                
+                                type :"dotted"
+                            },
+                            yAxis: -2, // 差3  比2.5
+                        },
+                        {
+                            lineStyle: {
+                                width: 1,
+                              
+                                type :"dotted"
+                            },
+                            yAxis: -2.5, //差1  比1.5
+                        },
+                    ],
                 },
             },  
+            // {
+            //     name: '股债差',
+            //     type: 'line',
+            //     xAxisIndex: 2,
+            //     yAxisIndex: 5,
+            //     smooth: true,
+            //     showSymbol: false,
+            //     data: guzhaicha2, //guzhaichaAver ,
+            //     lineStyle: {
+            //         width: 1.5,    
+            //     },
+            // },  
         
             //利率 央表
             {
