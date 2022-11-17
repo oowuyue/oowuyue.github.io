@@ -8,6 +8,7 @@
 <body style="height: 100%; margin: 0">
     <script type="text/javascript" src="data/ppi_profile.js"></script>
     <script type="text/javascript" src="data/M12_HS300.js"></script>
+    <script type="text/javascript" src="data/usd_cnh.js"></script>
     <script type="text/javascript" src="data/bond10_middlePe.js"></script>
     <script type="text/javascript" src="data/guZhaiCha.js"></script>
     <script type="text/javascript" src="data/m2Total.js"></script>
@@ -29,13 +30,19 @@
         }
         let currentDay = new Date()
         currentDay = currentDay.getFullYear() + "-" + (currentDay.getMonth() + 1) + "-" + currentDay.getDate()
-
         let justForAlignmentTime = []
         for (var i = 0; i < yield_300PeMiddle.length; i++) { justForAlignmentTime[i] = Array.from(yield_300PeMiddle[i]) }
         justForAlignmentTime = justForAlignmentTime.addStartEnd([["2000-01-28", ""]], [[currentDay, " "]]).map(item => {
             item[1] = ""
             return item
         })
+
+        usd_cnh = usd_cnh.map(item => {
+            item[1] = parseFloat(item[1]) - 5.5
+            return item
+        })
+        console.log(usd_cnh)
+
 
         var dom = document.getElementById('container');
         var myChart = echarts.init(dom, "red", {
@@ -49,7 +56,7 @@
             tooltip: {
                 trigger: 'axis',
                 show: true,
-                position: ['10%', '10%'],
+                position: ['10%', '41%'],
                 order: 'seriesDesc',
                 axisPointer: {
                     type: 'cross',
@@ -58,22 +65,27 @@
                 backgroundColor: "white",
                 formatter: function (params, ticket, callback) {
                     // seriesName : "股债差" ,  value : ['2017-02-28', 4.11]
-                    let nameList = ["ppi", "profile", "M1_M2", "沪深300", "300中位PE", "全A中位PE", "十年收益率倒数", "300平均股债差"]
+                    let nameList = ["ppi", "profile", "M1_M2", "离岸人民币", "沪深300", "300中位PE", "全A中位PE", "十年收益率倒数", "300平均股债差"]
                     nameList = nameList.map(name => {
                         let reslt = ''
                         params.forEach(ele => {
                             if (ele.seriesName == name) {
-                                reslt += (ele.seriesName + ele.value.toString() + "<br>")
+                                if (ele.seriesName == "离岸人民币") {
+                                    let usd_cnh = ele.value[1] + 5.5
+                                    reslt += `<div style="line-height: 25px"> ${ele.seriesName} <span style="text-align: right; float:right;font-weight:bold;"> ${usd_cnh}  </span> </div>`                 
+                                }else{
+                                    reslt += `<div style="line-height: 25px"> ${ele.seriesName} <span style="text-align: right; float:right;font-weight:bold;"> ${ele.value[1]}  </span> </div>`             
+                                }
+                              
                             }
                         });
                         return reslt
                     }).join('')
-
                     return nameList;
                 }
             },
             legend: {
-                left: "7%",
+                left: "5%",
                 top: "41%",
                 orient: 'vertical',
                 backgroundColor: "white"
@@ -328,6 +340,12 @@
                     splitLine: {
                         show: false
                     },
+                    axisLabel: {
+                        formatter: (value, index) => {
+                            return value + 5.5
+                        }
+                    },
+                    interval: 0.5
 
                 },
                 {
@@ -353,12 +371,7 @@
                     splitLine: {
                         show: false
                     },
-                    // axisLabel: {
-                    //     formatter: (value, index) => {
-                    //         if (value != 110) return ""
-                    //         else return value
-                    //     }
-                    // },
+
                     interval: 20,
                     max: 100,
                     min: -20
@@ -548,29 +561,18 @@
                     },
                 },
                 {
-                    name: 'dollarIndex',//主要看方向!!
+                    name: '离岸人民币',//主要看方向 离岸香港美元
                     type: 'line',
                     xAxisIndex: 2,
                     yAxisIndex: 4,
-                    data: [],
+                    data: usd_cnh,
                     showSymbol: false,
                     lineStyle: {
                         width: 1,
                         color: "black"
                     },
                 },
-                {
-                    name: 'hkInnerBankOne',
-                    type: 'line',
-                    xAxisIndex: 2,
-                    yAxisIndex: 4,
-                    data: [],
-                    showSymbol: false,
-                    lineStyle: {
-                        width: 1,
-                        color: "gray"
-                    },
-                },
+
 
                 {
                     name: '沪深300',
@@ -586,12 +588,12 @@
                     itemStyle: {
                         normal: {
                             areaStyle: {
-                                //color: "#57aacb"
+                                color: "#fdc375"
                             },
                         },
                         emphasis: {
                             areaStyle: {
-                                //color: "#57aacb"
+                                color: "#fdc375"
                             },
                         }
                     }

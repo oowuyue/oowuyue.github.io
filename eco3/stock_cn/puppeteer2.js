@@ -4,7 +4,6 @@ const fs = require('fs');
 
 (async () => {
 
-  //defaultViewport: null, args: ['--start-maximized']
   const browser = await puppeteer.launch({ headless: false, });
 
   function formatDate(site, date) {
@@ -37,6 +36,7 @@ const fs = require('fs');
       return date.slice(0, 4) + "-" + date.slice(5, 7) + '-28';
     }
   }
+
   let folder = "./data/"
   function formatAndSave(value) {
     if (value.name == "ppi_profile") {
@@ -120,6 +120,55 @@ const fs = require('fs');
         console.error(err);
       }
     }
+    if (value.name == "vxeem") {
+      let resdata = value.resdata;
+      let vxeem = resdata.data["c:21532"].s[0]//.map(item => { item[0] = formatDate("macromicro", item[0]); return item })
+      vxeem = "let vxeem = " + JSON.stringify(vxeem, null, 4);
+      try {
+        fs.writeFileSync(folder + 'vxeem.js', vxeem);
+        console.log("vxeem JSON data is saved.");
+      } catch (error) {
+        console.error(err);
+      }
+    }
+    if (value.name == "usd_cnh") {
+      let resdata = value.resdata;
+      let usd_cnh = resdata.data["c:153"].s[0]//.map(item => { item[0] = formatDate("macromicro", item[0]); return item })
+      usd_cnh = "let usd_cnh = " + JSON.stringify(usd_cnh, null, 4);
+      try {
+        fs.writeFileSync(folder + 'usd_cnh.js', usd_cnh);
+        console.log("usd_cnh JSON data is saved.");
+      } catch (error) {
+        console.error(err);
+      }
+    }
+    if (value.name == "tongBi300") {
+      let option
+      let colors
+      const regex = /option = ([\s\S]*?)};/g;
+      const found = value.resdata.match(regex);
+      eval(found[0])
+      let date = option.xAxis[0].data
+      let data = option.series[3].data
+      let tongBi300 = date.map((item, index) => {
+        const firstSplit = item.split('年');
+        let year = firstSplit[0]
+        let month = firstSplit[1].split('月')[0];
+        if (year > 2008)
+          return [`${year}-${month}-28`, data[index] ? data[index] : ""]
+        return null
+      }).filter((item) => {
+        return item
+      })
+      //console.log(tongBi300);return;
+      tongBi300 = "let tongBi300 = " + JSON.stringify(tongBi300, null, 4);
+      try {
+        fs.writeFileSync(folder + 'stockTongBi.js', tongBi300);
+        console.log("stockTongBi JSON data is saved.");
+      } catch (error) {
+        console.error(err);
+      }
+    }
     if (value.name == "bond10_middlePe") {
       let yield = value.resdata;
       let yield_300PeMiddle = yield.map(item => {
@@ -177,22 +226,7 @@ const fs = require('fs');
     return true
   }
 
-  let taskPage = async (name, pageUrl, apiSub) => {
-    const page = await browser.newPage();
-    await page.setRequestInterception(true)
-    page.on('request', (request) => { request.continue() })
-    const promise1 = new Promise((resolve, reject) => {
-      page.on('response', async (response) => {
-        if (response.url().includes(apiSub)) {
-          resdata = await response.json()
-          resolve({ name: name, pageUrl: pageUrl, apiSub: apiSub, resdata: resdata })
-        }
-      })
-    })
-    await page.goto(pageUrl, { waitUntil: 'networkidle2' });
-    return promise1
-  }
-  let taskApi = (name, apiUrl, dataFormat) => {
+  let taskApi = async (name, apiUrl, dataFormat) => {
     const promise1 = new Promise((resolve, reject) => {
       const req2 = http.request(apiUrl, function (res) {
         res.setEncoding('utf-8')
@@ -213,82 +247,71 @@ const fs = require('fs');
     return promise1
   }
 
-
-  // taskPage("ppi_profile", "https://sc.macromicro.me/collections/25/cn-industry-relative/14703/cn-industry-finished-goods-inventory-accumulated-ppi", "/charts/data/14703")
-  //   .then(value => formatAndSave(value))
-  //   .then(e => {
-  //     taskPage("M12_HS300", "https://sc.macromicro.me/collections/55/cn-shanghai-shengzhen-csi-300-index/260/cn-china-m1-m2", "/charts/data/260")
-  //       .then(value => formatAndSave(value))
-  //   })//防止同时请求被拒
-
-  // Promise.all(
-  //   [
-  //     taskApi("M2Total", "http://www.woniu500.com/data/mm2.json", "json"),
-  //     taskPage("bond10_middlePe", "https://legulegu.com/stockdata/china-10-year-bond-yield", "china-10-year-bond-yield-data?token"),
-  //     taskApi("guZhaiCha", "http://value500.com/CSI300.asp", "html"),
-  //   ]).then((values) => {
-  //     values.forEach(value => {
-  //       formatAndSave(value)
-  //     })
-  //   }).catch((e) => console.log(e))
-
-
-  // Promise.all(
-  //   [
-  //     taskPage("pos_stock", "https://legulegu.com/stockdata/fund-position/pos-stock", "type=pos_stock"),
-  //     taskPage("pos_pingheng", "https://legulegu.com/stockdata/fund-position/pos-pingheng", "type=pos_pingheng"),
-
-  //   ]).then((values) => {
-  //     let pos_stock
-  //     let pos_pingheng
-  //     values.forEach(value => {
-  //       if (value.name == "pos_stock")
-  //         pos_stock = value.resdata
-  //       if (value.name == "pos_pingheng")
-  //         pos_pingheng = value.resdata
-  //     });
-
-  //     let pos_fund = pos_pingheng.map((item, index) => {
-  //       return [item.date, (parseFloat(item.position) + parseFloat(pos_stock[index].position))/200*100 ]
-  //     })
-
-  //     pos_fund = "let pos_fund = " + JSON.stringify(pos_fund, null, 4);
-  //     try {
-  //       fs.writeFileSync(folder + 'pos_fund.js', pos_fund);
-  //       console.log("pos_fund JSON data is saved.");
-  //     } catch (error) {
-  //       console.error(err);
-  //     }
-
-  //   }).catch((e) => console.log(e))
-
-
-  taskApi("tongBi300", "http://value500.com/SH000001.asp", "html").then(html => {
-    let option
-    let colors
-    const regex = /option = ([\s\S]*?)};/g;
-    const found = html.resdata.match(regex);
-    eval(found[0])
-    let date = option.xAxis[0].data
-    let data = option.series[3].data
-    let tongBi300 = date.map((item, index) => {
-      const firstSplit = item.split('年');
-      let year = firstSplit[0]
-      let month = firstSplit[1].split('月')[0];
-      if (year > 2008)
-        return [`${year}-${month}-28`, data[index] ? data[index] : ""]
-      return null
-    }).filter((item) => {
-       return item
+  let taskPage = async (name, pageUrl, apiSub) => {
+    const page = await browser.newPage();
+    await page.setRequestInterception(true)
+    page.on('request', (request) => { request.continue() })
+    const promise1 = new Promise((resolve, reject) => {
+      page.on('response', async (response) => {
+        if (response.url().includes(apiSub)) {
+          resdata = await response.json()
+          resolve({ name: name, pageUrl: pageUrl, apiSub: apiSub, resdata: resdata })
+        }
+      })
     })
-    //console.log(tongBi300);return;
-    tongBi300 = "let tongBi300 = " + JSON.stringify(tongBi300, null, 4);
-    try {
-      fs.writeFileSync(folder + 'stockTongBi.js', tongBi300);
-      console.log("stockTongBi JSON data is saved.");
-    } catch (error) {
-      console.error(err);
-    }
-  })
+    await page.goto(pageUrl, { waitUntil: 'networkidle2' });
+    return promise1
+  }
+
+  let taskMacromicroPage = async (name, pageUrl, apiSub) => {
+    let value = await taskPage(name, pageUrl, apiSub)
+    return formatAndSave(value)
+  }
+  
+  await taskMacromicroPage("ppi_profile", "https://sc.macromicro.me/collections/25/cn-industry-relative/14703/cn-industry-finished-goods-inventory-accumulated-ppi", "/charts/data/14703")
+  await taskMacromicroPage("M12_HS300", "https://sc.macromicro.me/collections/55/cn-shanghai-shengzhen-csi-300-index/260/cn-china-m1-m2", "/charts/data/260")
+  await taskMacromicroPage("vxeem", "https://sc.macromicro.me/collections/4536/volatility/21532/vxeem", "/charts/data/21532")
+  await taskMacromicroPage("usd_cnh", "https://sc.macromicro.me/charts/153/usd-cnh", "/charts/data/153")
+
+  Promise.all(
+    [
+      taskApi("M2Total", "http://www.woniu500.com/data/mm2.json", "json"),
+      taskApi("tongBi300", "http://value500.com/SH000001.asp", "html"),
+      taskPage("bond10_middlePe", "https://legulegu.com/stockdata/china-10-year-bond-yield", "china-10-year-bond-yield-data?token"),
+      taskApi("guZhaiCha", "http://value500.com/CSI300.asp", "html"),
+    ]).then((values) => {
+      values.forEach(value => {
+        formatAndSave(value)
+      })
+    }).catch((e) => console.log(e))
+
+  Promise.all(
+    [
+      taskPage("pos_stock", "https://legulegu.com/stockdata/fund-position/pos-stock", "type=pos_stock"),
+      taskPage("pos_pingheng", "https://legulegu.com/stockdata/fund-position/pos-pingheng", "type=pos_pingheng"),
+    ]).then((values) => {
+      let pos_stock
+      let pos_pingheng
+      values.forEach(value => {
+        if (value.name == "pos_stock")
+          pos_stock = value.resdata
+        if (value.name == "pos_pingheng")
+          pos_pingheng = value.resdata
+      });
+
+      let pos_fund = pos_pingheng.map((item, index) => {
+        return [item.date, (parseFloat(item.position) + parseFloat(pos_stock[index].position)) / 200 * 100]
+      })
+
+      pos_fund = "let pos_fund = " + JSON.stringify(pos_fund, null, 4);
+      try {
+        fs.writeFileSync(folder + 'pos_fund.js', pos_fund);
+        console.log("pos_fund JSON data is saved.");
+      } catch (error) {
+        console.error(err);
+      }
+
+    }).catch((e) => console.log(e))
+
 
 })()
