@@ -223,6 +223,40 @@ const fs = require('fs');
         console.error(err);
       }
     }
+
+    if (value.name == "cn_cars") {
+      let resdata = value.resdata;
+      let cn_cars = resdata.data["c:315"].s[1].map(item => { item[0] = formatDate("macromicro", item[0]); return item })
+      cn_cars = "let cn_cars = " + JSON.stringify(cn_cars, null, 4);
+      try {
+        fs.writeFileSync(folder + 'cn_cars.js', cn_cars);
+        console.log("cn_cars JSON data is saved.");
+      } catch (error) {
+        console.error(err);
+      }
+    }
+    if (value.name == "mm_manucycle") {
+      let resdata = value.resdata;
+      let mm_manucycle = resdata.data["c:47492"].s[0].map(item => { item[0] = formatDate("macromicro", item[0]); return item })
+      mm_manucycle = "let mm_manucycle = " + JSON.stringify(mm_manucycle, null, 4);
+      try {
+        fs.writeFileSync(folder + 'mm_manucycle.js', mm_manucycle);
+        console.log("mm_manucycle JSON data is saved.");
+      } catch (error) {
+        console.error(err);
+      }
+    }
+    if (value.name == "mm_uscycle") {
+      let resdata = value.resdata;
+      let mm_uscycle = resdata.data["c:444"].s[0].map(item => { item[0] = formatDate("macromicro", item[0]); return item })
+      mm_uscycle = "let mm_uscycle = " + JSON.stringify(mm_uscycle, null, 4);
+      try {
+        fs.writeFileSync(folder + 'mm_uscycle.js', mm_uscycle);
+        console.log("mm_uscycle JSON data is saved.");
+      } catch (error) {
+        console.error(err);
+      }
+    }
     return true
   }
 
@@ -267,11 +301,16 @@ const fs = require('fs');
     let value = await taskPage(name, pageUrl, apiSub)
     return formatAndSave(value)
   }
-  
+
   await taskMacromicroPage("ppi_profile", "https://sc.macromicro.me/collections/25/cn-industry-relative/14703/cn-industry-finished-goods-inventory-accumulated-ppi", "/charts/data/14703")
   await taskMacromicroPage("M12_HS300", "https://sc.macromicro.me/collections/55/cn-shanghai-shengzhen-csi-300-index/260/cn-china-m1-m2", "/charts/data/260")
   await taskMacromicroPage("vxeem", "https://sc.macromicro.me/collections/4536/volatility/21532/vxeem", "/charts/data/21532")
   await taskMacromicroPage("usd_cnh", "https://sc.macromicro.me/charts/153/usd-cnh", "/charts/data/153")
+
+  await taskMacromicroPage("cn_cars", "https://sc.macromicro.me/collections/25/cn-industry-relative/315/cn-china-output-of-cars", "/charts/data/315")
+  await taskMacromicroPage("mm_manucycle", "https://sc.macromicro.me/collections/3261/sector-industrial/47492/mm-manufacturing-cycle-index", "/charts/data/47492")
+  await taskMacromicroPage("mm_uscycle", "https://sc.macromicro.me/collections/34/us-stock-relative/444/us-mm-gspc", "/charts/data/444")
+
 
   Promise.all(
     [
