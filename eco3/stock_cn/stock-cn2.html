@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="zh-CN" style="height: 100%">
+
+<head>
+    <meta charset="utf-8">
+</head>
+
+<body style="height: 100%;width: 100%; margin: 0">
+    <div id="container" style="height: 100%; width: 100%;"></div>
+    <script type="text/javascript" src="data/cn_cpi.js"></script>
+    <script type="text/javascript" src="data/cn_ppi.js"></script>
+    <script type="text/javascript" src="data/cn_cpi_minus_ppi.js"></script>
+    <script type="text/javascript" src="https://fastly.jsdelivr.net/npm/echarts@5.3.2/dist/echarts.min.js"></script>
+    <script type="text/javascript">
+    var dom = document.getElementById('container');
+    var myChart = echarts.init(dom, "red", {
+        renderer: 'canvas',
+        useDirtyRect: false
+    });
+    var app = {};
+    var option;
+
+    ////仅为了对齐时间
+    Array.prototype.addStartEnd = function(start, end) {
+        let arr = this
+        arr = start.concat(arr)
+        end.forEach((item) => {
+            arr.push(item)
+        })
+        return arr
+    }
+    let currentDay = new Date()
+    currentDay = currentDay.getFullYear() + "-" + (currentDay.getMonth() + 1) + "-" + currentDay.getDate()
+    let justForAlignmentTime = []
+    for (var i = 0; i < cn_cpi.cpi.length; i++) { justForAlignmentTime[i] = Array.from(cn_cpi.cpi[i]) }
+    justForAlignmentTime = justForAlignmentTime.addStartEnd([], [
+        [currentDay, " "]
+    ]).map(item => {
+        item[1] = ""
+        return item
+    })
+    ////仅为了对齐时间
+
+
+
+    option = {
+        title: {},
+        tooltip: {
+            trigger: 'axis',
+            show: true,
+            position: ['100%', '10%'],
+            order: 'seriesDesc',
+            axisPointer: {
+                type: 'cross',
+                show: false
+            }
+        },
+        legend: {},
+        axisPointer: {
+            link: [{
+                xAxisIndex: 'all'
+            }],
+            lineStyle: {
+                color: "black"
+            }
+        },
+        dataZoom: [{
+                show: true,
+                realtime: true,
+                start: 0,
+                end: 100,
+                xAxisIndex: [0, 1, 2, 3],
+                bottom: -10
+            },
+            {
+                type: 'inside',
+                realtime: true,
+                start: 0,
+                end: 100,
+                xAxisIndex: [0, 1, 2, 3],
+            }
+        ],
+
+        grid: [{
+                left: 60,
+                right: 80,
+                top: "0.5%",
+                height: '95%',
+                show: true,
+                backgroundColor: '#c1c4c3',
+            },
+            {
+                left: 60,
+                right: 80,
+                top: "5%",
+                height: '20%',
+                show: true,
+                backgroundColor: '#c1c4c3',
+            },
+            {
+                left: 60,
+                right: 80,
+                top: "36%",
+                height: '25%',
+                show: true,
+                backgroundColor: '#c1c4c3',
+            },
+            {
+                left: 60,
+                right: 80,
+                top: "70%",
+                height: '25.5%',
+                show: true,
+                backgroundColor: '#c1c4c3',
+            },
+        ],
+
+        xAxis: [{
+                gridIndex: 0,
+                type: "time",
+                splitNumber: 30,
+                axisLabel: {
+                    fontSize: 10,
+                    formatter: "{yyyy}",
+                    padding: [0, -50, 0, 0],
+                },
+                splitLine: {
+                    show: true,
+                    lineStyle: {
+                        color: ['#aaa']
+                    }
+                },
+                axisLabel: {
+                    fontSize: 10,
+                    formatter: "{yyyy}",
+                    padding: [0, -50, 0, 0],
+                },
+            },
+
+            {
+                gridIndex: 1,
+                type: "time",
+                axisLine: {
+                    show: true,
+                },
+                axisLabel: {
+                    show: false
+                },
+                axisPointer: {
+                    show: true,
+                    label: {
+                        show: false
+                    }
+                }
+            },
+            {
+                gridIndex: 2,
+                type: "time",
+                axisLine: {
+                    show: true,
+                },
+                axisLabel: {
+                    show: false
+                },
+                axisPointer: {
+                    show: true,
+                    label: {
+                        show: false
+                    }
+                }
+            },
+            {
+                gridIndex: 3,
+                type: "time",
+                axisLine: {
+                    show: true,
+                },
+                axisLabel: {
+                    show: false
+                },
+                axisPointer: {
+                    show: true,
+                    label: {
+                        show: false
+                    }
+                }
+            },
+        ],
+
+        yAxis: [{
+                gridIndex: 0,
+                type: 'value',
+                splitLine: {
+                    show: false
+                },
+            },
+            {
+                gridIndex: 1,
+                type: 'value',
+                splitLine: {
+                    show: true
+                },
+                position: "right"
+            },
+            {
+                gridIndex: 2,
+                type: 'value',
+                splitLine: {
+                    show: true
+                },
+                position: "right",
+
+            },
+            {
+                gridIndex: 3,
+                type: 'value',
+                splitLine: {
+                    show: true
+                },
+                position: "right",
+
+
+            },
+
+        ],
+
+        series: [{
+                name: 'shangzheng',
+                type: 'line',
+                xAxisIndex: 0,
+                yAxisIndex: 0,
+                showSymbol: false,
+                lineStyle: {
+                    width: 0,
+                    //color: "black" #825ea5 #fdc375
+                },
+                itemStyle: {
+                    normal: {
+                        areaStyle: {
+                            //color: "#fdc375"
+                        },
+                    },
+                    emphasis: {
+                        areaStyle: {
+                            //color: "#fdc375"
+                        },
+                    }
+                },
+                data: cn_cpi_minus_ppi["000001.SH"]
+            },
+
+            {
+                name: 'cpi',
+                type: 'line',
+                xAxisIndex: 1,
+                yAxisIndex: 1,
+                showSymbol: false,
+                smooth: true,
+                lineStyle: {
+                    width: 2,
+                },
+                data: cn_cpi.cpi,
+            },
+            {
+                name: 'cpi',
+                type: 'line',
+                xAxisIndex: 1,
+                yAxisIndex: 1,
+                showSymbol: false,
+                smooth: true,
+                lineStyle: {
+                    width: 2,
+                },
+                data: cn_cpi.cpi,
+            },
+            {
+                name: 'cpi_food',
+                type: 'line',
+                xAxisIndex: 1,
+                yAxisIndex: 1,
+                showSymbol: false,
+                smooth: true,
+                lineStyle: {
+                    width: 2,
+                },
+                data: cn_cpi.cpi_food,
+            },
+            {
+                name: 'cpi_clothes',
+                type: 'line',
+                xAxisIndex: 1,
+                yAxisIndex: 1,
+                showSymbol: false,
+                smooth: true,
+                lineStyle: {
+                    width: 2,
+                },
+                data: cn_cpi.cpi_clothes,
+            },
+            {
+                name: 'cpi_live',
+                type: 'line',
+                xAxisIndex: 1,
+                yAxisIndex: 1,
+                showSymbol: false,
+                smooth: true,
+                lineStyle: {
+                    width: 2,
+                },
+                data: cn_cpi.cpi_live,
+            },
+            {
+                name: 'cpi_dailyUse',
+                type: 'line',
+                xAxisIndex: 1,
+                yAxisIndex: 1,
+                showSymbol: false,
+                smooth: true,
+                lineStyle: {
+                    width: 2,
+                },
+                data: cn_cpi.cpi_dailyUse,
+            },
+            {
+                name: 'cpi_transport',
+                type: 'line',
+                xAxisIndex: 1,
+                yAxisIndex: 1,
+                showSymbol: false,
+                smooth: true,
+                lineStyle: {
+                    width: 2,
+                },
+                data: cn_cpi.cpi_transport,
+            },
+            {
+                name: 'cpi_edu',
+                type: 'line',
+                xAxisIndex: 1,
+                yAxisIndex: 1,
+                showSymbol: false,
+                smooth: true,
+                lineStyle: {
+                    width: 2,
+                },
+                data: cn_cpi.cpi_edu,
+            },
+            {
+                name: 'cpi_care',
+                type: 'line',
+                xAxisIndex: 1,
+                yAxisIndex: 1,
+                showSymbol: false,
+                smooth: true,
+                lineStyle: {
+                    width: 2,
+                },
+                data: cn_cpi.cpi_care,
+            },
+
+            {
+                name: 'tmpppi',
+                type: 'line',
+                xAxisIndex: 1,
+                yAxisIndex: 1,
+                showSymbol: false,
+                smooth: true,
+                lineStyle: {
+                    width: 2,
+                    color: "#037a6f"
+                },
+                data: cn_ppi.ppi,
+            },
+
+            {
+                name: 'tmpcpi',
+                type: 'line',
+                xAxisIndex: 3,
+                yAxisIndex: 3,
+                showSymbol: false,
+                smooth: true,
+                lineStyle: {
+                    width: 2,
+                    color: "#037a6f"
+                },
+                data: cn_cpi.cpi,
+            },
+
+
+
+            {
+                name: 'ppi',
+                type: 'line',
+                xAxisIndex: 3,
+                yAxisIndex: 3,
+                showSymbol: false,
+                smooth: true,
+                lineStyle: {
+                    width: 2,
+                    color: "#037a6f"
+                },
+                data: cn_ppi.ppi,
+            },
+
+            {
+                name: 'ppi_product',
+                type: 'line',
+                xAxisIndex: 3,
+                yAxisIndex: 3,
+                showSymbol: false,
+                smooth: true,
+                lineStyle: {
+                    width: 2,
+                    color: "#663399"
+
+                },
+                data: cn_ppi.ppi_product,
+            },
+            {
+                name: 'ppi_live',
+                type: 'line',
+                xAxisIndex: 3,
+                yAxisIndex: 3,
+                showSymbol: false,
+                smooth: true,
+                lineStyle: {
+                    width: 2,
+                    color: "black"
+                },
+                data: cn_ppi.ppi_live,
+            },
+
+
+
+            ///以下仅为了对齐时间
+            {
+                name: '',
+                type: 'line',
+                xAxisIndex: 0,
+                yAxisIndex: 0,
+                tooltip: false,
+                data: justForAlignmentTime,
+                showSymbol: false,
+                lineStyle: {
+                    width: 0,
+                    color: "black"
+                },
+            },
+            {
+                name: '',
+                type: 'line',
+                xAxisIndex: 1,
+                yAxisIndex: 1,
+                tooltip: false,
+                data: justForAlignmentTime,
+                showSymbol: false,
+                lineStyle: {
+                    width: 2,
+                    color: "black"
+                },
+            },
+            {
+                name: '',
+                type: 'line',
+                xAxisIndex: 2,
+                yAxisIndex: 2,
+                tooltip: false,
+                data: justForAlignmentTime,
+                showSymbol: false,
+                lineStyle: {
+                    width: 0,
+                    color: "black"
+                },
+            },
+            {
+                name: '',
+                type: 'line',
+                xAxisIndex: 3,
+                yAxisIndex: 3,
+                tooltip: false,
+                data: justForAlignmentTime,
+                showSymbol: false,
+                lineStyle: {
+                    width: 0,
+                    color: "black"
+                },
+            },
+
+
+
+
+        ]
+    };
+
+    if (option && typeof option === 'object') {
+        myChart.setOption(option);
+    }
+    window.addEventListener('resize', myChart.resize);
+    </script>
+</body>
+
+</html>

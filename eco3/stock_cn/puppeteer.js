@@ -39,8 +39,6 @@ const fs = require('fs');
     }
 
     function formatAndSave(value) {
-        if (value.page) value.page.close()
-
         if (value.name == "ppi_profile") {
             let resdata14703 = value.resdata;
             if (resdata14703.success == 0) console.log("ppi_profile respones error " + resdata14703.error);
@@ -98,13 +96,13 @@ const fs = require('fs');
                 item[0] = formatDate("woniu500", item[0]);
                 return item
             })
-            let M2zheSuan = m2Total.map(function (item) {
+            let M2zheSuan = m2Total.map(function(item) {
                 let newArr = []
                 newArr[0] = item[0]
                 newArr[1] = (item[1] * 2935.83 / 1865935).toFixed(2)
                 return newArr
             })
-            let M2zheSuan250 = m2Total.map(function (item) {
+            let M2zheSuan250 = m2Total.map(function(item) {
                 let newArr = []
                 newArr[0] = item[0]
                 newArr[1] = (250 + item[1] * 2935.83 / 1865935).toFixed(2)
@@ -339,97 +337,97 @@ const fs = require('fs');
         return true
     }
 
-    let taskApi = async (name, apiUrl, dataFormat) => {
+    let taskApi = async (name, apiUrl, dataFormat,save = true) => {
         const promise1 = new Promise((resolve, reject) => {
-            const req2 = http.request(apiUrl, function (res) {
+            const req2 = http.request(apiUrl, function(res) {
                 res.setEncoding('utf-8')
                 let allchunk = ""
-                res.on('data', function (chunk) {
+                res.on('data', function(chunk) {
                     allchunk += chunk
                 });
                 res.on("end", () => {
                     resdata = dataFormat == "json" ? JSON.parse(allchunk) : allchunk
-                    resolve({ name: name, apiUrl: apiUrl, resdata: resdata })
+                    save == true ?
+                        resolve(formatAndSave({ name: name, apiUrl: apiUrl, resdata: resdata })) :
+                        resolve({ name: name, apiUrl: apiUrl, resdata: resdata })
                 })
             });
-            req2.on('error', function (e) {
+            req2.on('error', function(e) {
                 console.log('problem with request: ' + e.message);
             });
             req2.end();
         })
         return promise1
     }
-    let taskPage = async (name, pageUrl, apiSub) => {
+    let taskPage = async (name, pageUrl, apiSub, save = true) => {
         const page = await browser.newPage();
         await page.setRequestInterception(true)
+
         page.on('request', (request) => { request.continue() })
         const promise1 = new Promise((resolve, reject) => {
             page.on('response', async (response) => {
                 if (response.url().includes(apiSub)) {
                     resdata = await response.json()
-                    resolve({ name: name, pageUrl: pageUrl, apiSub: apiSub, resdata: resdata, page: page })
+                    save == true ?
+                        resolve(formatAndSave({ name: name, pageUrl: pageUrl, apiSub: apiSub, resdata: resdata })) :
+                        resolve({ name: name, pageUrl: pageUrl, apiSub: apiSub, resdata: resdata })
                 }
             })
         })
-        await page.goto(pageUrl, { waitUntil: 'networkidle2' });
+        await page.goto(pageUrl, { waitUntil: 'networkidle2' })
+        page.close()
+
         return promise1
     }
 
-    let ppi_profile = await taskPage("ppi_profile", "https://sc.macromicro.me/collections/25/cn-industry-relative/14703/cn-industry-finished-goods-inventory-accumulated-ppi", "/charts/data/14703")
-    formatAndSave(ppi_profile)
 
-    let M12_HS300 = await taskPage("M12_HS300", "https://sc.macromicro.me/collections/55/cn-shanghai-shengzhen-csi-300-index/260/cn-china-m1-m2", "/charts/data/260")
-    formatAndSave(M12_HS300)
+    await taskPage("ppi_profile", "https://sc.macromicro.me/collections/25/cn-industry-relative/14703/cn-industry-finished-goods-inventory-accumulated-ppi", "/charts/data/14703")
+   
+    await taskPage("M12_HS300", "https://sc.macromicro.me/collections/55/cn-shanghai-shengzhen-csi-300-index/260/cn-china-m1-m2", "/charts/data/260")
 
-    let usd_cnh = await taskPage("usd_cnh", "https://sc.macromicro.me/charts/153/usd-cnh", "/charts/data/153")
-    formatAndSave(usd_cnh)
+    await taskPage("usd_cnh", "https://sc.macromicro.me/charts/153/usd-cnh", "/charts/data/153")
+ 
+    await taskPage("cn_cpi", "https://www.macroview.club/charts?name=cn_cpi", "/get-chart")
+   
+    await taskPage("cn_ppi", "https://www.macroview.club/charts?name=cn_ppi", "/get-chart") 
 
-    let cn_cpi = await taskPage("cn_cpi", "https://www.macroview.club/charts?name=cn_cpi", "/get-chart")
-    formatAndSave(cn_cpi)
+    await taskPage("cn_cpi_minus_ppi", "https://www.macroview.club/charts?name=cn_cpi_minus_ppi", "/get-chart") 
 
-    let cn_ppi = await taskPage("cn_ppi", "https://www.macroview.club/charts?name=cn_ppi", "/get-chart")
-    formatAndSave(cn_ppi)
-
-    let M2Total = await taskApi("M2Total", "http://www.woniu500.com/data/mm2.json", "json")
-    formatAndSave(M2Total)
-
-    let ashares_congestion = await taskPage("ashares_congestion", "https://legulegu.com/stockdata/ashares-congestion", "ashares-congestion?token")
-    formatAndSave(ashares_congestion)
-
-    let bond10_middlePe = await taskPage("bond10_middlePe", "https://legulegu.com/stockdata/china-10-year-bond-yield", "china-10-year-bond-yield-data?token")
-    formatAndSave(bond10_middlePe)
-
-    let guZhaiCha = await taskApi("guZhaiCha", "http://value500.com/CSI300.asp", "html")
-    formatAndSave(guZhaiCha)
-
+    await taskApi("M2Total", "http://www.woniu500.com/data/mm2.json", "json")
+   
+    await taskPage("ashares_congestion", "https://legulegu.com/stockdata/ashares-congestion", "ashares-congestion?token")
+   
+    await taskPage("bond10_middlePe", "https://legulegu.com/stockdata/china-10-year-bond-yield", "china-10-year-bond-yield-data?token")
+   
+    await taskApi("guZhaiCha", "http://value500.com/CSI300.asp", "html")
+    
 
     Promise.all(
         [
-            taskPage("pos_stock", "https://legulegu.com/stockdata/fund-position/pos-stock", "type=pos_stock"),
-            taskPage("pos_pingheng", "https://legulegu.com/stockdata/fund-position/pos-pingheng", "type=pos_pingheng"),
+            taskPage("pos_stock", "https://legulegu.com/stockdata/fund-position/pos-stock", "type=pos_stock",false),
+            taskPage("pos_pingheng", "https://legulegu.com/stockdata/fund-position/pos-pingheng", "type=pos_pingheng",false),
         ]).then((values) => {
-            let pos_stock
-            let pos_pingheng
-            values.forEach(value => {
-                if (value.name == "pos_stock")
-                    pos_stock = value.resdata
-                if (value.name == "pos_pingheng")
-                    pos_pingheng = value.resdata
-            });
+        let pos_stock
+        let pos_pingheng
+        values.forEach(value => {
+            if (value.name == "pos_stock")
+                pos_stock = value.resdata
+            if (value.name == "pos_pingheng")
+                pos_pingheng = value.resdata
+        });
 
-            let pos_fund = pos_pingheng.map((item, index) => {
-                return [item.date, (parseFloat(item.position) + parseFloat(pos_stock[index].position)) / 200 * 100]
-            })
+        let pos_fund = pos_pingheng.map((item, index) => {
+            return [item.date, (parseFloat(item.position) + parseFloat(pos_stock[index].position)) / 200 * 100]
+        })
 
-            pos_fund = "let pos_fund = " + JSON.stringify(pos_fund, null, 4);
-            try {
-                fs.writeFileSync(folder + 'pos_fund.js', pos_fund);
-                console.log("pos_fund JSON data is saved.");
-            } catch (error) {
-                console.error(err);
-            }
-
-        }).catch((e) => console.log(e))
+        pos_fund = "let pos_fund = " + JSON.stringify(pos_fund, null, 4);
+        try {
+            fs.writeFileSync(folder + 'pos_fund.js', pos_fund);
+            console.log("pos_fund JSON data is saved.");
+        } catch (error) {
+            console.error(err);
+        }
+    }).catch((e) => console.log(e))
 
 
 })()
