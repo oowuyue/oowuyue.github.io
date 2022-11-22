@@ -110,4 +110,5 @@ const fs = require('fs');
     await taskMacromicroPage("mm_manucycle", "https://sc.macromicro.me/collections/3261/sector-industrial/47492/mm-manufacturing-cycle-index", "/charts/data/47492")
     await taskMacromicroPage("mm_uscycle", "https://sc.macromicro.me/collections/34/us-stock-relative/444/us-mm-gspc", "/charts/data/444")
 
+
 })()

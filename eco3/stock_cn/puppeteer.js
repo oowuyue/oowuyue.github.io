@@ -51,7 +51,7 @@ const fs = require('fs');
                 fs.writeFileSync(folder + 'ppi_profile.js', ppi_profile);
                 console.log("ppi_profile JSON data is saved.");
             } catch (error) {
-                console.error(err);
+                console.error(error);
             }
         }
         if (value.name == "M12_HS300") {
@@ -87,7 +87,7 @@ const fs = require('fs');
                 fs.writeFileSync(folder + 'M12_HS300.js', M_HS);
                 console.log("M12_HS300 JSON data is saved.");
             } catch (error) {
-                console.error(err);
+                console.error(error);
             }
         }
         if (value.name == "M2Total") {
@@ -96,13 +96,13 @@ const fs = require('fs');
                 item[0] = formatDate("woniu500", item[0]);
                 return item
             })
-            let M2zheSuan = m2Total.map(function(item) {
+            let M2zheSuan = m2Total.map(function (item) {
                 let newArr = []
                 newArr[0] = item[0]
                 newArr[1] = (item[1] * 2935.83 / 1865935).toFixed(2)
                 return newArr
             })
-            let M2zheSuan250 = m2Total.map(function(item) {
+            let M2zheSuan250 = m2Total.map(function (item) {
                 let newArr = []
                 newArr[0] = item[0]
                 newArr[1] = (250 + item[1] * 2935.83 / 1865935).toFixed(2)
@@ -117,7 +117,7 @@ const fs = require('fs');
                 fs.writeFileSync(folder + 'm2Total.js', m2Total + "\r\n" + M2zheSuan + "\r\n" + M2zheSuan250);
                 console.log("m2Total JSON data is saved.");
             } catch (error) {
-                console.error(err);
+                console.error(error);
             }
         }
         if (value.name == "vxeem") {
@@ -128,7 +128,7 @@ const fs = require('fs');
                 fs.writeFileSync(folder + 'vxeem.js', vxeem);
                 console.log("vxeem JSON data is saved.");
             } catch (error) {
-                console.error(err);
+                console.error(error);
             }
         }
         if (value.name == "usd_cnh") {
@@ -166,7 +166,7 @@ const fs = require('fs');
                 fs.writeFileSync(folder + 'stockTongBi.js', tongBi300);
                 console.log("stockTongBi JSON data is saved.");
             } catch (error) {
-                console.error(err);
+                console.error(error);
             }
         }
         if (value.name == "bond10_middlePe") {
@@ -199,7 +199,7 @@ const fs = require('fs');
                 fs.writeFileSync(folder + 'bond10_middlePe.js', yields);
                 console.log("bond10_middlePe JSON data is saved.");
             } catch (error) {
-                console.error(err);
+                console.error(error);
             }
         }
         if (value.name == "guZhaiCha") {
@@ -220,7 +220,7 @@ const fs = require('fs');
                 fs.writeFileSync(folder + 'guZhaiCha.js', guZhaiCha);
                 console.log("guZhaiCha JSON data is saved.");
             } catch (error) {
-                console.error(err);
+                console.error(error);
             }
         }
         if (value.name == "cn_cars") {
@@ -231,7 +231,7 @@ const fs = require('fs');
                 fs.writeFileSync(folder + 'cn_cars.js', cn_cars);
                 console.log("cn_cars JSON data is saved.");
             } catch (error) {
-                console.error(err);
+                console.error(error);
             }
         }
         if (value.name == "mm_manucycle") {
@@ -242,7 +242,7 @@ const fs = require('fs');
                 fs.writeFileSync(folder + 'mm_manucycle.js', mm_manucycle);
                 console.log("mm_manucycle JSON data is saved.");
             } catch (error) {
-                console.error(err);
+                console.error(error);
             }
         }
         if (value.name == "mm_uscycle") {
@@ -253,7 +253,7 @@ const fs = require('fs');
                 fs.writeFileSync(folder + 'mm_uscycle.js', mm_uscycle);
                 console.log("mm_uscycle JSON data is saved.");
             } catch (error) {
-                console.error(err);
+                console.error(error);
             }
         }
         if (value.name == "cn_trade") {
@@ -268,7 +268,7 @@ const fs = require('fs');
                 fs.writeFileSync(folder + 'cn_trade.js', cn_trade);
                 console.log("cn_trade JSON data is saved.");
             } catch (error) {
-                console.error(err);
+                console.error(error);
             }
         }
         if (value.name == "ashares_congestion") {
@@ -283,7 +283,7 @@ const fs = require('fs');
                 fs.writeFileSync(folder + 'ashares_congestion.js', ashares_congestion);
                 console.log("ashares_congestion JSON data is saved.");
             } catch (error) {
-                console.error(err);
+                console.error(error);
             }
         }
         if (value.name == "middle_indicators") {
@@ -301,7 +301,7 @@ const fs = require('fs');
                 fs.writeFileSync(folder + 'middle_indicators.js', middle_indicators);
                 console.log("middle_indicators JSON data is saved.");
             } catch (error) {
-                console.error(err);
+                console.error(error);
             }
         }
         if (value.name == "cn_cpi") {
@@ -311,7 +311,7 @@ const fs = require('fs');
                 fs.writeFileSync(folder + 'cn_cpi.js', cn_cpi);
                 console.log("cn_cpi JSON data is saved.");
             } catch (error) {
-                console.error(err);
+                console.error(error);
             }
         }
         if (value.name == "cn_ppi") {
@@ -321,7 +321,7 @@ const fs = require('fs');
                 fs.writeFileSync(folder + 'cn_ppi.js', cn_ppi);
                 console.log("cn_ppi JSON data is saved.");
             } catch (error) {
-                console.error(err);
+                console.error(error);
             }
         }
         if (value.name == "cn_cpi_minus_ppi") {
@@ -331,18 +331,95 @@ const fs = require('fs');
                 fs.writeFileSync(folder + 'cn_cpi_minus_ppi.js', cn_cpi_minus_ppi);
                 console.log("cn_cpi_minus_ppi JSON data is saved.");
             } catch (error) {
-                console.error(err);
+                console.error(error);
+            }
+        }
+        if (value.name == "getm1m2") {
+            //broadMoneyOneYearIncrease    broadMoneyTwoYearIncrease     close      date 943977600000
+            let getm1m2_legulegu = value.resdata;
+            let m1_legulegu = getm1m2_legulegu.map(item => {
+                let newArr = [];
+                newArr[0] = formatDate("legulegu", item.date).substring(0, 8) + "28"
+                newArr[1] = item.broadMoneyOneYearIncrease == 0 ? "" : item.broadMoneyOneYearIncrease;
+                return newArr;
+            });
+            let m2_legulegu = getm1m2_legulegu.map(item => {
+                let newArr = [];
+                newArr[0] = formatDate("legulegu", item.date).substring(0, 8) + "28"
+                newArr[1] = item.broadMoneyTwoYearIncrease == 0 ? "" : item.broadMoneyTwoYearIncrease;
+                return newArr;
+            });
+            let m1_m2_legulegu = getm1m2_legulegu.map(item => {
+                let newArr = [];
+                newArr[0] = formatDate("legulegu", item.date).substring(0, 8) + "28"
+                newArr[1] = item.broadMoneyOneYearIncrease - item.broadMoneyTwoYearIncrease
+                return newArr;
+            });
+
+            m1_legulegu = "let m1_legulegu = " + JSON.stringify(m1_legulegu, null, 4);
+            m2_legulegu = "let m2_legulegu = " + JSON.stringify(m2_legulegu, null, 4);
+            m1_m2_legulegu = "let m1_m2_legulegu = " + JSON.stringify(m1_m2_legulegu, null, 4);
+            getm1m2_legulegu = m1_legulegu + "\r\n" + m2_legulegu + "\r\n" + m1_m2_legulegu + "\r\n";
+
+            try {
+                fs.writeFileSync(folder + 'getm1m2_legulegu.js', getm1m2_legulegu);
+                console.log("getm1m2_legulegu JSON data is saved.");
+            } catch (error) {
+                console.error(error);
+            }
+        }
+        if (value.name == "cn_output_cars") {
+            let resdata = value.resdata;
+            let cn_output_cars = resdata.data["c:315"].s[1].map(item => { item[0] = formatDate("macromicro", item[0]); return item })
+            cn_output_cars = "let cn_output_cars = " + JSON.stringify(cn_output_cars, null, 4);
+            try {
+                fs.writeFileSync(folder + 'cn_output_cars.js', cn_output_cars);
+                console.log("cn_output_cars JSON data is saved.");
+            } catch (error) {
+                console.error(error);
+            }
+        }
+        if (value.name == "cn_output_circuit") {
+            let resdata = value.resdata;
+            let cn_output_circuit = resdata.data["c:316"].s[1].map(item => { item[0] = formatDate("macromicro", item[0]); return item })
+            cn_output_circuit = "let cn_output_circuit = " + JSON.stringify(cn_output_circuit, null, 4);
+            try {
+                fs.writeFileSync(folder + 'cn_output_circuit.js', cn_output_circuit);
+                console.log("cn_output_circuit JSON data is saved.");
+            } catch (error) {
+                console.error(error);
+            }
+        }
+        if (value.name == "cn_output_steel") {
+            let resdata = value.resdata;
+            let cn_output_steel = resdata.data["c:318"].s[1].map(item => { item[0] = formatDate("macromicro", item[0]); return item })
+            cn_output_steel = "let cn_output_steel = " + JSON.stringify(cn_output_steel, null, 4);
+            try {
+                fs.writeFileSync(folder + 'cn_output_steel.js', cn_output_steel);
+                console.log("cn_output_steel JSON data is saved.");
+            } catch (error) {
+                console.error(error);
+            }
+        }
+        if (value.name == "cn_industry_indicator"){
+            let cn_industry_indicator = value.resdata.cn_industry_indicator.data
+            cn_industry_indicator = "let cn_industry_indicator = " + JSON.stringify(cn_industry_indicator, null, 4);
+            try {
+                fs.writeFileSync(folder + 'cn_industry_indicator.js', cn_industry_indicator);
+                console.log("cn_industry_indicator JSON data is saved.");
+            } catch (error) {
+                console.error(error);
             }
         }
         return true
     }
 
-    let taskApi = async (name, apiUrl, dataFormat,save = true) => {
+    let taskApi = async (name, apiUrl, dataFormat, save = true) => {
         const promise1 = new Promise((resolve, reject) => {
-            const req2 = http.request(apiUrl, function(res) {
+            const req2 = http.request(apiUrl, function (res) {
                 res.setEncoding('utf-8')
                 let allchunk = ""
-                res.on('data', function(chunk) {
+                res.on('data', function (chunk) {
                     allchunk += chunk
                 });
                 res.on("end", () => {
@@ -352,7 +429,7 @@ const fs = require('fs');
                         resolve({ name: name, apiUrl: apiUrl, resdata: resdata })
                 })
             });
-            req2.on('error', function(e) {
+            req2.on('error', function (e) {
                 console.log('problem with request: ' + e.message);
             });
             req2.end();
@@ -380,54 +457,63 @@ const fs = require('fs');
         return promise1
     }
 
+    // await taskPage("ppi_profile", "https://sc.macromicro.me/collections/25/cn-industry-relative/14703/cn-industry-finished-goods-inventory-accumulated-ppi", "/charts/data/14703")
 
-    await taskPage("ppi_profile", "https://sc.macromicro.me/collections/25/cn-industry-relative/14703/cn-industry-finished-goods-inventory-accumulated-ppi", "/charts/data/14703")
-   
-    await taskPage("M12_HS300", "https://sc.macromicro.me/collections/55/cn-shanghai-shengzhen-csi-300-index/260/cn-china-m1-m2", "/charts/data/260")
+    // await taskPage("M12_HS300", "https://sc.macromicro.me/collections/55/cn-shanghai-shengzhen-csi-300-index/260/cn-china-m1-m2", "/charts/data/260")
 
-    await taskPage("usd_cnh", "https://sc.macromicro.me/charts/153/usd-cnh", "/charts/data/153")
- 
-    await taskPage("cn_cpi", "https://www.macroview.club/charts?name=cn_cpi", "/get-chart")
-   
-    await taskPage("cn_ppi", "https://www.macroview.club/charts?name=cn_ppi", "/get-chart") 
+    // await taskPage("usd_cnh", "https://sc.macromicro.me/charts/153/usd-cnh", "/charts/data/153")
 
-    await taskPage("cn_cpi_minus_ppi", "https://www.macroview.club/charts?name=cn_cpi_minus_ppi", "/get-chart") 
+    // await taskPage("cn_cpi", "https://www.macroview.club/charts?name=cn_cpi", "/get-chart")
 
-    await taskApi("M2Total", "http://www.woniu500.com/data/mm2.json", "json")
-   
-    await taskPage("ashares_congestion", "https://legulegu.com/stockdata/ashares-congestion", "ashares-congestion?token")
-   
-    await taskPage("bond10_middlePe", "https://legulegu.com/stockdata/china-10-year-bond-yield", "china-10-year-bond-yield-data?token")
-   
-    await taskApi("guZhaiCha", "http://value500.com/CSI300.asp", "html")
-    
+    // await taskPage("cn_ppi", "https://www.macroview.club/charts?name=cn_ppi", "/get-chart")
 
-    Promise.all(
-        [
-            taskPage("pos_stock", "https://legulegu.com/stockdata/fund-position/pos-stock", "type=pos_stock",false),
-            taskPage("pos_pingheng", "https://legulegu.com/stockdata/fund-position/pos-pingheng", "type=pos_pingheng",false),
-        ]).then((values) => {
-        let pos_stock
-        let pos_pingheng
-        values.forEach(value => {
-            if (value.name == "pos_stock")
-                pos_stock = value.resdata
-            if (value.name == "pos_pingheng")
-                pos_pingheng = value.resdata
-        });
+    // await taskPage("cn_cpi_minus_ppi", "https://www.macroview.club/charts?name=cn_cpi_minus_ppi", "/get-chart")
 
-        let pos_fund = pos_pingheng.map((item, index) => {
-            return [item.date, (parseFloat(item.position) + parseFloat(pos_stock[index].position)) / 200 * 100]
-        })
+    // await taskApi("M2Total", "http://www.woniu500.com/data/mm2.json", "json")
 
-        pos_fund = "let pos_fund = " + JSON.stringify(pos_fund, null, 4);
-        try {
-            fs.writeFileSync(folder + 'pos_fund.js', pos_fund);
-            console.log("pos_fund JSON data is saved.");
-        } catch (error) {
-            console.error(err);
-        }
-    }).catch((e) => console.log(e))
+    // await taskPage("ashares_congestion", "https://legulegu.com/stockdata/ashares-congestion", "ashares-congestion?token")
 
+    // await taskPage("bond10_middlePe", "https://legulegu.com/stockdata/china-10-year-bond-yield", "china-10-year-bond-yield-data?token")
+
+    // await taskPage("getm1m2", "https://legulegu.com/stockdata/m1m2", "getm1m2?token")
+
+    // await taskApi("guZhaiCha", "http://value500.com/CSI300.asp", "html")
+
+    // await taskPage("cn_industry_indicator", "https://www.macroview.club/charts?name=cn_industry_indicator", "/get-chart")
+
+
+
+
+    // Promise.all(
+    //     [
+    //         taskPage("pos_stock", "https://legulegu.com/stockdata/fund-position/pos-stock", "type=pos_stock",false),
+    //         taskPage("pos_pingheng", "https://legulegu.com/stockdata/fund-position/pos-pingheng", "type=pos_pingheng",false),
+    //     ]).then((values) => {
+    //     let pos_stock
+    //     let pos_pingheng
+    //     values.forEach(value => {
+    //         if (value.name == "pos_stock")
+    //             pos_stock = value.resdata
+    //         if (value.name == "pos_pingheng")
+    //             pos_pingheng = value.resdata
+    //     });
+
+    //     let pos_fund = pos_pingheng.map((item, index) => {
+    //         return [item.date, (parseFloat(item.position) + parseFloat(pos_stock[index].position)) / 200 * 100]
+    //     })
+
+    //     pos_fund = "let pos_fund = " + JSON.stringify(pos_fund, null, 4);
+    //     try {
+    //         fs.writeFileSync(folder + 'pos_fund.js', pos_fund);
+    //         console.log("pos_fund JSON data is saved.");
+    //     } catch (error) {
+    //         console.error(err);
+    //     }
+    // }).catch((e) => console.log(e))
+
+    // https://www.macroview.club/charts?name=cn_industry_indicator 
+    // https://www.macroview.club/data?code=cn_industry_profit
+    // https://sc.macromicro.me/collections/55/cn-shanghai-shengzhen-csi-300-index/824/mm-sse-composite-fundamental-index
+    // https://sc.macromicro.me/collections/25/cn-industry-relative/232/cn-pmi-caixin
 
 })()

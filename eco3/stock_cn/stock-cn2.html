@@ -10,61 +10,119 @@
     <script type="text/javascript" src="data/cn_cpi.js"></script>
     <script type="text/javascript" src="data/cn_ppi.js"></script>
     <script type="text/javascript" src="data/cn_cpi_minus_ppi.js"></script>
+    <script type="text/javascript" src="data/getm1m2_legulegu.js"></script>
+
+    <script type="text/javascript" src="data/cn_output_cars.js"></script>
+    <script type="text/javascript" src="data/cn_output_circuit.js"></script>
+    <script type="text/javascript" src="data/cn_output_steel.js"></script>
+
     <script type="text/javascript" src="https://fastly.jsdelivr.net/npm/echarts@5.3.2/dist/echarts.min.js"></script>
     <script type="text/javascript">
-    var dom = document.getElementById('container');
-    var myChart = echarts.init(dom, "red", {
-        renderer: 'canvas',
-        useDirtyRect: false
-    });
-    var app = {};
-    var option;
-
-    ////仅为了对齐时间
-    Array.prototype.addStartEnd = function(start, end) {
-        let arr = this
-        arr = start.concat(arr)
-        end.forEach((item) => {
-            arr.push(item)
+        var dom = document.getElementById('container');
+        var myChart = echarts.init(dom, "red", {
+            renderer: 'canvas',
+            useDirtyRect: false
+        });
+        var app = {};
+        var option;
+        ////仅为了对齐时间
+        Array.prototype.addStartEnd = function (start, end) {
+            let arr = this
+            arr = start.concat(arr)
+            end.forEach((item) => {
+                arr.push(item)
+            })
+            return arr
+        }
+        let currentDay = new Date()
+        currentDay = currentDay.getFullYear() + "-" + (currentDay.getMonth() + 1) + "-" + currentDay.getDate()
+        let justForAlignmentTime = []
+        for (var i = 0; i < cn_cpi.cpi.length; i++) { justForAlignmentTime[i] = Array.from(cn_cpi.cpi[i]) }
+        justForAlignmentTime = justForAlignmentTime.addStartEnd([], [
+            [currentDay, " "]
+        ]).map(item => {
+            item[1] = ""
+            return item
         })
-        return arr
-    }
-    let currentDay = new Date()
-    currentDay = currentDay.getFullYear() + "-" + (currentDay.getMonth() + 1) + "-" + currentDay.getDate()
-    let justForAlignmentTime = []
-    for (var i = 0; i < cn_cpi.cpi.length; i++) { justForAlignmentTime[i] = Array.from(cn_cpi.cpi[i]) }
-    justForAlignmentTime = justForAlignmentTime.addStartEnd([], [
-        [currentDay, " "]
-    ]).map(item => {
-        item[1] = ""
-        return item
-    })
-    ////仅为了对齐时间
+        ////仅为了对齐时间
+        
+        //m1过年突变
+        m1_legulegu = m1_legulegu.map(((item, index, arr) => {
+            if (item[0].includes("01-28")) {
+                let pre = m1_legulegu[index - 1]
+                let next = m1_legulegu[index + 1]
+                pre = pre ? parseFloat(pre[1]) : 0
+                next = next ? parseFloat(next[1]) : 0
+                if ((pre * next) != 0)
+                    item[1] = (pre + next) / 2
+                else
+                    item[1] = (pre + next)
+            }
+            return item
+        }))
+        m1_m2_legulegu = m1_m2_legulegu.map(((item, index, arr) => {
+            if (item[0].includes("01-28")) {
+                let pre = m1_m2_legulegu[index - 1]
+                let next = m1_m2_legulegu[index + 1]
+                pre = pre ? parseFloat(pre[1]) : 0
+                next = next ? parseFloat(next[1]) : 0
+                if ((pre * next) != 0)
+                    item[1] = (pre + next) / 2
+                else
+                    item[1] = (pre + next)
+            }
+            return item
+        }))
 
+        //产量平均
+        function findSameTime(array, time) {
+            for (let index = 0; index < array.length; index++) {
+                const element = array[index];
+                if (element[0] == time) return parseFloat(element[1])
+            }
+            return null
+        }
+        let cn_output_avg = cn_output_circuit.map((item, index) => {
+            let newArr = []
+            newArr[0] = item[0]
+            let avg
+            let circuit = parseFloat(item[1])
+            let steel = findSameTime(cn_output_steel, item[0])
+            let cars = findSameTime(cn_output_cars, item[0])
+            if (steel == null && cars == null) avg = circuit
+            else if (steel != null && cars != null) avg = (circuit + steel + cars) / 3
+            else avg = (circuit + steel + cars) / 2
+            newArr[1] = avg
+            return newArr
+        })
 
-
-    option = {
-        title: {},
-        tooltip: {
-            trigger: 'axis',
-            show: true,
-            position: ['100%', '10%'],
-            order: 'seriesDesc',
+        option = {
+            title: {},
+            tooltip: {
+                trigger: 'axis',
+                show: true,
+                position: ['100%', '10%'],
+                order: 'seriesDesc',
+                axisPointer: {
+                    type: 'cross',
+                    show: false
+                }
+            },
+            legend: {
+                left: "4%",
+                top: "26%",
+                orient: 'vertical',
+                backgroundColor: "white"
+            },
             axisPointer: {
-                type: 'cross',
-                show: false
-            }
-        },
-        legend: {},
-        axisPointer: {
-            link: [{
-                xAxisIndex: 'all'
-            }],
-            lineStyle: {
-                color: "black"
-            }
-        },
-        dataZoom: [{
+                link: [{
+                    xAxisIndex: 'all'
+                }],
+                lineStyle: {
+                    color: "black"
+                }
+            },
+            dataZoom: [{
                 show: true,
                 realtime: true,
                 start: 0,
@@ -79,43 +137,43 @@
                 end: 100,
                 xAxisIndex: [0, 1, 2, 3],
             }
-        ],
+            ],
 
-        grid: [{
+            grid: [{
                 left: 60,
                 right: 80,
                 top: "0.5%",
-                height: '95%',
+                height: '97%',
                 show: true,
                 backgroundColor: '#c1c4c3',
             },
             {
                 left: 60,
                 right: 80,
-                top: "5%",
-                height: '20%',
+                top: "0.5%",
+                height: '32%',
                 show: true,
                 backgroundColor: '#c1c4c3',
             },
             {
                 left: 60,
                 right: 80,
-                top: "36%",
-                height: '25%',
+                top: "35%",
+                height: '30%',
                 show: true,
                 backgroundColor: '#c1c4c3',
             },
             {
                 left: 60,
                 right: 80,
-                top: "70%",
-                height: '25.5%',
+                top: "67%",
+                height: '30%',
                 show: true,
                 backgroundColor: '#c1c4c3',
             },
-        ],
+            ],
 
-        xAxis: [{
+            xAxis: [{
                 gridIndex: 0,
                 type: "time",
                 splitNumber: 30,
@@ -185,14 +243,15 @@
                     }
                 }
             },
-        ],
+            ],
 
-        yAxis: [{
+            yAxis: [{
                 gridIndex: 0,
                 type: 'value',
                 splitLine: {
                     show: false
                 },
+                min:800
             },
             {
                 gridIndex: 1,
@@ -217,285 +276,329 @@
                 splitLine: {
                     show: true
                 },
+                max: 100,
                 position: "right",
-
-
             },
 
-        ],
+            ],
 
-        series: [{
-                name: 'shangzheng',
-                type: 'line',
-                xAxisIndex: 0,
-                yAxisIndex: 0,
-                showSymbol: false,
-                lineStyle: {
-                    width: 0,
-                    //color: "black" #825ea5 #fdc375
-                },
-                itemStyle: {
-                    normal: {
-                        areaStyle: {
-                            //color: "#fdc375"
-                        },
+            series: [
+                {
+                    name: 'SH',
+                    type: 'line',
+                    xAxisIndex: 0,
+                    yAxisIndex: 0,
+                    showSymbol: false,
+                    lineStyle: {
+                        width: 0,
+                        //color: "black" #825ea5 #fdc375
                     },
-                    emphasis: {
-                        areaStyle: {
-                            //color: "#fdc375"
+                    itemStyle: {
+                        normal: {
+                            areaStyle: {
+                                //color: "#fdc375"
+                            },
                         },
-                    }
+                        emphasis: {
+                            areaStyle: {
+                                //color: "#fdc375"
+                            },
+                        }
+                    },
+                    data: cn_cpi_minus_ppi["000001.SH"]
                 },
-                data: cn_cpi_minus_ppi["000001.SH"]
-            },
 
-            {
-                name: 'cpi',
-                type: 'line',
-                xAxisIndex: 1,
-                yAxisIndex: 1,
-                showSymbol: false,
-                smooth: true,
-                lineStyle: {
-                    width: 2,
+                {
+                    name: 'cpi',
+                    type: 'line',
+                    xAxisIndex: 1,
+                    yAxisIndex: 1,
+                    showSymbol: false,
+                    smooth: true,
+                    lineStyle: {
+                        width: 2,
+                    },
+                    data: cn_cpi.cpi,
                 },
-                data: cn_cpi.cpi,
-            },
-            {
-                name: 'cpi',
-                type: 'line',
-                xAxisIndex: 1,
-                yAxisIndex: 1,
-                showSymbol: false,
-                smooth: true,
-                lineStyle: {
-                    width: 2,
+                {
+                    name: 'cpi_food',
+                    type: 'line',
+                    xAxisIndex: 1,
+                    yAxisIndex: 1,
+                    showSymbol: false,
+                    smooth: true,
+                    lineStyle: {
+                        width: 2,
+                    },
+                    data: cn_cpi.cpi_food,
                 },
-                data: cn_cpi.cpi,
-            },
-            {
-                name: 'cpi_food',
-                type: 'line',
-                xAxisIndex: 1,
-                yAxisIndex: 1,
-                showSymbol: false,
-                smooth: true,
-                lineStyle: {
-                    width: 2,
+                {
+                    name: 'cpi_clothes',
+                    type: 'line',
+                    xAxisIndex: 1,
+                    yAxisIndex: 1,
+                    showSymbol: false,
+                    smooth: true,
+                    lineStyle: {
+                        width: 2,
+                    },
+                    data: cn_cpi.cpi_clothes,
                 },
-                data: cn_cpi.cpi_food,
-            },
-            {
-                name: 'cpi_clothes',
-                type: 'line',
-                xAxisIndex: 1,
-                yAxisIndex: 1,
-                showSymbol: false,
-                smooth: true,
-                lineStyle: {
-                    width: 2,
+                {
+                    name: 'cpi_live',
+                    type: 'line',
+                    xAxisIndex: 1,
+                    yAxisIndex: 1,
+                    showSymbol: false,
+                    smooth: true,
+                    lineStyle: {
+                        width: 2,
+                    },
+                    data: cn_cpi.cpi_live,
                 },
-                data: cn_cpi.cpi_clothes,
-            },
-            {
-                name: 'cpi_live',
-                type: 'line',
-                xAxisIndex: 1,
-                yAxisIndex: 1,
-                showSymbol: false,
-                smooth: true,
-                lineStyle: {
-                    width: 2,
+                {
+                    name: 'cpi_dailyUse',
+                    type: 'line',
+                    xAxisIndex: 1,
+                    yAxisIndex: 1,
+                    showSymbol: false,
+                    smooth: true,
+                    lineStyle: {
+                        width: 2,
+                    },
+                    data: cn_cpi.cpi_dailyUse,
                 },
-                data: cn_cpi.cpi_live,
-            },
-            {
-                name: 'cpi_dailyUse',
-                type: 'line',
-                xAxisIndex: 1,
-                yAxisIndex: 1,
-                showSymbol: false,
-                smooth: true,
-                lineStyle: {
-                    width: 2,
+                {
+                    name: 'cpi_transport',
+                    type: 'line',
+                    xAxisIndex: 1,
+                    yAxisIndex: 1,
+                    showSymbol: false,
+                    smooth: true,
+                    lineStyle: {
+                        width: 2,
+                    },
+                    data: cn_cpi.cpi_transport,
                 },
-                data: cn_cpi.cpi_dailyUse,
-            },
-            {
-                name: 'cpi_transport',
-                type: 'line',
-                xAxisIndex: 1,
-                yAxisIndex: 1,
-                showSymbol: false,
-                smooth: true,
-                lineStyle: {
-                    width: 2,
+                {
+                    name: 'cpi_edu',
+                    type: 'line',
+                    xAxisIndex: 1,
+                    yAxisIndex: 1,
+                    showSymbol: false,
+                    smooth: true,
+                    lineStyle: {
+                        width: 2,
+                    },
+                    data: cn_cpi.cpi_edu,
                 },
-                data: cn_cpi.cpi_transport,
-            },
-            {
-                name: 'cpi_edu',
-                type: 'line',
-                xAxisIndex: 1,
-                yAxisIndex: 1,
-                showSymbol: false,
-                smooth: true,
-                lineStyle: {
-                    width: 2,
+                {
+                    name: 'cpi_care',
+                    type: 'line',
+                    xAxisIndex: 1,
+                    yAxisIndex: 1,
+                    showSymbol: false,
+                    smooth: true,
+                    lineStyle: {
+                        width: 2,
+                    },
+                    data: cn_cpi.cpi_care,
                 },
-                data: cn_cpi.cpi_edu,
-            },
-            {
-                name: 'cpi_care',
-                type: 'line',
-                xAxisIndex: 1,
-                yAxisIndex: 1,
-                showSymbol: false,
-                smooth: true,
-                lineStyle: {
-                    width: 2,
+                {
+                    name: 'ppi',
+                    type: 'line',
+                    xAxisIndex: 1,
+                    yAxisIndex: 1,
+                    showSymbol: false,
+                    smooth: true,
+                    lineStyle: {
+                        width: 2,
+                        color: "#037a6f"
+                    },
+                    data: cn_ppi.ppi,
                 },
-                data: cn_cpi.cpi_care,
-            },
 
-            {
-                name: 'tmpppi',
-                type: 'line',
-                xAxisIndex: 1,
-                yAxisIndex: 1,
-                showSymbol: false,
-                smooth: true,
-                lineStyle: {
-                    width: 2,
-                    color: "#037a6f"
+                {
+                    name: 'ppi_product',
+                    type: 'line',
+                    xAxisIndex: 1,
+                    yAxisIndex: 1,
+                    showSymbol: false,
+                    smooth: true,
+                    lineStyle: {
+                        width: 2,
+                        color: "#663399"
+
+                    },
+                    data: cn_ppi.ppi_product,
                 },
-                data: cn_ppi.ppi,
-            },
-
-            {
-                name: 'tmpcpi',
-                type: 'line',
-                xAxisIndex: 3,
-                yAxisIndex: 3,
-                showSymbol: false,
-                smooth: true,
-                lineStyle: {
-                    width: 2,
-                    color: "#037a6f"
+                {
+                    name: 'ppi_live',
+                    type: 'line',
+                    xAxisIndex: 1,
+                    yAxisIndex: 1,
+                    showSymbol: false,
+                    smooth: true,
+                    lineStyle: {
+                        width: 2,
+                        color: "black"
+                    },
+                    data: cn_ppi.ppi_live,
                 },
-                data: cn_cpi.cpi,
-            },
 
+                {
+                    name: 'M1',
+                    type: 'line',
+                    xAxisIndex: 2,
+                    yAxisIndex: 2,
+                    showSymbol: false,
+                    smooth: true,
+                    lineStyle: {
+                        width: 2,
 
-
-            {
-                name: 'ppi',
-                type: 'line',
-                xAxisIndex: 3,
-                yAxisIndex: 3,
-                showSymbol: false,
-                smooth: true,
-                lineStyle: {
-                    width: 2,
-                    color: "#037a6f"
+                    },
+                    data: m1_legulegu,
                 },
-                data: cn_ppi.ppi,
-            },
+                {
+                    name: 'M2',
+                    type: 'line',
+                    xAxisIndex: 2,
+                    yAxisIndex: 2,
+                    showSymbol: false,
+                    smooth: true,
+                    lineStyle: {
+                        width: 2,
 
-            {
-                name: 'ppi_product',
-                type: 'line',
-                xAxisIndex: 3,
-                yAxisIndex: 3,
-                showSymbol: false,
-                smooth: true,
-                lineStyle: {
-                    width: 2,
-                    color: "#663399"
-
+                    },
+                    data: m2_legulegu,
                 },
-                data: cn_ppi.ppi_product,
-            },
-            {
-                name: 'ppi_live',
-                type: 'line',
-                xAxisIndex: 3,
-                yAxisIndex: 3,
-                showSymbol: false,
-                smooth: true,
-                lineStyle: {
-                    width: 2,
-                    color: "black"
+                {
+                    name: 'M1_M2',
+                    type: 'line',
+                    xAxisIndex: 2,
+                    yAxisIndex: 2,
+                    showSymbol: false,
+                    smooth: true,
+                    lineStyle: {
+                        width: 2,
+                        color: "black"
+                    },
+                    data: m1_m2_legulegu,
                 },
-                data: cn_ppi.ppi_live,
-            },
 
+                {
+                    name: 'cars',
+                    type: 'line',
+                    xAxisIndex: 3,
+                    yAxisIndex: 3,
+                    showSymbol: false,
+                    smooth: true,
+                    lineStyle: {
+                        width: 2,
 
-
-            ///以下仅为了对齐时间
-            {
-                name: '',
-                type: 'line',
-                xAxisIndex: 0,
-                yAxisIndex: 0,
-                tooltip: false,
-                data: justForAlignmentTime,
-                showSymbol: false,
-                lineStyle: {
-                    width: 0,
-                    color: "black"
+                    },
+                    data: cn_output_cars,
                 },
-            },
-            {
-                name: '',
-                type: 'line',
-                xAxisIndex: 1,
-                yAxisIndex: 1,
-                tooltip: false,
-                data: justForAlignmentTime,
-                showSymbol: false,
-                lineStyle: {
-                    width: 2,
-                    color: "black"
+                {
+                    name: 'circuit',
+                    type: 'line',
+                    xAxisIndex: 3,
+                    yAxisIndex: 3,
+                    showSymbol: false,
+                    smooth: true,
+                    lineStyle: {
+                        width: 2,
+
+                    },
+                    data: cn_output_circuit,
                 },
-            },
-            {
-                name: '',
-                type: 'line',
-                xAxisIndex: 2,
-                yAxisIndex: 2,
-                tooltip: false,
-                data: justForAlignmentTime,
-                showSymbol: false,
-                lineStyle: {
-                    width: 0,
-                    color: "black"
+                {
+                    name: 'steel',
+                    type: 'line',
+                    xAxisIndex: 3,
+                    yAxisIndex: 3,
+                    showSymbol: false,
+                    smooth: true,
+                    lineStyle: {
+                        width: 2,
+
+                    },
+                    data: cn_output_steel,
                 },
-            },
-            {
-                name: '',
-                type: 'line',
-                xAxisIndex: 3,
-                yAxisIndex: 3,
-                tooltip: false,
-                data: justForAlignmentTime,
-                showSymbol: false,
-                lineStyle: {
-                    width: 0,
-                    color: "black"
+                {
+                    name: 'avg',
+                    type: 'line',
+                    xAxisIndex: 3,
+                    yAxisIndex: 3,
+                    showSymbol: false,
+                    smooth: true,
+                    lineStyle: {
+                        width: 2,
+                        color: "black"
+                    },
+                    data: cn_output_avg,
                 },
-            },
 
+                ///以下仅为了对齐时间
+                {
+                    name: '',
+                    type: 'line',
+                    xAxisIndex: 0,
+                    yAxisIndex: 0,
+                    tooltip: false,
+                    data: justForAlignmentTime,
+                    showSymbol: false,
+                    lineStyle: {
+                        width: 0,
+                        color: "black"
+                    },
+                },
+                {
+                    name: '',
+                    type: 'line',
+                    xAxisIndex: 1,
+                    yAxisIndex: 1,
+                    tooltip: false,
+                    data: justForAlignmentTime,
+                    showSymbol: false,
+                    lineStyle: {
+                        width: 2,
+                        color: "black"
+                    },
+                },
+                {
+                    name: '',
+                    type: 'line',
+                    xAxisIndex: 2,
+                    yAxisIndex: 2,
+                    tooltip: false,
+                    data: justForAlignmentTime,
+                    showSymbol: false,
+                    lineStyle: {
+                        width: 0,
+                        color: "black"
+                    },
+                },
+                {
+                    name: '',
+                    type: 'line',
+                    xAxisIndex: 3,
+                    yAxisIndex: 3,
+                    tooltip: false,
+                    data: justForAlignmentTime,
+                    showSymbol: false,
+                    lineStyle: {
+                        width: 0,
+                        color: "black"
+                    },
+                },
+            ]
+        };
 
-
-
-        ]
-    };
-
-    if (option && typeof option === 'object') {
-        myChart.setOption(option);
-    }
-    window.addEventListener('resize', myChart.resize);
+        if (option && typeof option === 'object') {
+            myChart.setOption(option);
+        }
+        window.addEventListener('resize', myChart.resize);
     </script>
 </body>
 
