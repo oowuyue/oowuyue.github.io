@@ -201,7 +201,7 @@
                     xAxisIndex: 'all'
                 }],
                 lineStyle: {
-                    color: "black"
+                    color: "red"
                 }
             },
             dataZoom: [{
@@ -226,14 +226,6 @@
                     left: 60,
                     right: 80,
                     top: "0.5%",
-                    height: '97%',
-                    show: true,
-                    backgroundColor: '#c1c4c3',
-                },
-                {
-                    left: 60,
-                    right: 80,
-                    top: "0.5%",
                     height: '32%',
                     show: true,
                     backgroundColor: '#c1c4c3',
@@ -241,8 +233,9 @@
                 {
                     left: 60,
                     right: 80,
+
                     top: "35%",
-                    height: '32.5%',
+                    height: '30%',
                     show: true,
                     backgroundColor: '#c1c4c3',
                 },
@@ -254,51 +247,42 @@
                     show: true,
                     backgroundColor: '#c1c4c3',
                 },
+                {
+                    left: 60,
+                    right: 80,
+                    top: "0.5%",
+                    height: '96.5%',
+                    show: true,
+                    backgroundColor: '#c1c4c3',
+                },
             ],
 
             xAxis: [
                 {
                     gridIndex: 0,
                     type: "time",
-                    splitNumber: 30,
-                    splitLine: {
-                        show: true,
-                        lineStyle: {
-                            color: ['#aaa']
-                        }
-                    },
-
-                    axisPointer: {
-                        show: false,
-                        label: {
-                            show: false
-                        }
-                    },
-                    axisLabel: {
-                        fontSize: 10,
-                        formatter: "{yyyy}",
-                        padding: [0, -50, 0, 0],
-                    },
-                },
-
-                {
-                    gridIndex: 1,
-                    type: "time",
-
                     axisPointer: {
                         show: true, //抓数据十字线焦点圆圈
                         label: {
                             show: false // 显示十字线竖线的时间
                         }
                     },
-
                     axisLabel: {
                         show: false // 显示图形底部时间
                     },
+                },
 
-                    show: true, //显示x 0轴黑线 优先级高
-                    axisLine: {
-                        show: true //显示x 0轴黑线
+                {
+                    gridIndex: 1,
+                    type: "time",
+                    axisPointer: {
+                        show: true,
+                        label: {
+                            show: false
+                        }
+                    },
+                    axisLabel: {
+                        show: false
                     },
                 },
                 {
@@ -313,18 +297,31 @@
                     axisLabel: {
                         show: false
                     },
+
                 },
                 {
                     gridIndex: 3,
                     type: "time",
                     axisPointer: {
-                        show: true,
+                        show: true, //抓数据十字线焦点圆圈
                         label: {
-                            show: false
+                            show: true // 显示十字线竖线的时间
                         }
                     },
                     axisLabel: {
-                        show: false
+                        show: true // 显示图形底部时间
+                    },
+
+                    splitNumber: 30,
+                    splitLine: {
+                        show: true,
+                        lineStyle: {
+                            color: ['#aaa']
+                        }
+                    },
+                    show: true, //显示0轴黑线
+                    axisLine: {
+                        show: false //显示0轴黑线
                     },
                 },
             ],
@@ -336,7 +333,6 @@
                     splitLine: {
                         show: false
                     },
-                    min: 800
                 },
                 {
                     gridIndex: 1,
@@ -353,8 +349,7 @@
                         show: true
                     },
                     position: "right",
-                    max: 100,
-                    min: -100,
+
                 },
                 {
                     gridIndex: 3,
@@ -362,46 +357,63 @@
                     splitLine: {
                         show: true
                     },
-
                     position: "right",
                 },
 
             ],
 
             series: [
+
                 {
-                    name: 'SH',
+                    name: 'ppi',
                     type: 'line',
                     xAxisIndex: 0,
                     yAxisIndex: 0,
                     showSymbol: false,
+                    smooth: true,
                     lineStyle: {
-                        width: 0,
-                        //color: "black" #825ea5 #fdc375
+                        width: 2,
+                        color: "#037a6f"
                     },
-                    itemStyle: {
-                        normal: {
-                            areaStyle: {
-                                //color: "#fdc375"
-                            },
-                        },
-                        emphasis: {
-                            areaStyle: {
-                                //color: "#fdc375"
-                            },
-                        }
-                    },
-                    data: cn_cpi_minus_ppi["000001.SH"]
+                    data: cn_ppi.ppi,
                 },
+
+                {
+                    name: 'pmi_avg',
+                    type: 'line',
+                    xAxisIndex: 1,
+                    yAxisIndex: 1,
+                    showSymbol: false,
+                    smooth: true,
+                    lineStyle: {
+                        width: 2,
+                        color: "black"
+                    },
+                    data: cn_pmi_avg,
+                },
+
+                {
+                    name: 'M1',
+                    type: 'line',
+                    xAxisIndex: 2,
+                    yAxisIndex: 2,
+                    showSymbol: false,
+                    smooth: true,
+                    lineStyle: {
+                        width: 2,
+
+                    },
+                    data: m1_legulegu,
+                },
+
                 {
                     name: 'HS300',
                     type: 'line',
-                    xAxisIndex: 0,
-                    yAxisIndex: 0,
+                    xAxisIndex: 3,
+                    yAxisIndex: 3,
                     showSymbol: false,
                     lineStyle: {
                         width: 0,
-                        //color: "black" #825ea5 #fdc375  流动白马牛 流动白马杀业绩大宗制造牛 业绩消费文旅牛  业绩杀 流动杀  
                     },
                     itemStyle: {
                         normal: {
@@ -418,409 +430,6 @@
                     data: HS300
                 },
 
-                {
-                    name: 'cpi',
-                    type: 'line',
-                    xAxisIndex: 1,
-                    yAxisIndex: 1,
-                    showSymbol: false,
-                    smooth: true,
-                    lineStyle: {
-                        width: 2,
-                    },
-                    data: cn_cpi.cpi,
-                },
-                {
-                    name: 'cpi_food',
-                    type: 'line',
-                    xAxisIndex: 1,
-                    yAxisIndex: 1,
-                    showSymbol: false,
-                    smooth: true,
-                    lineStyle: {
-                        width: 2,
-                    },
-                    data: cn_cpi.cpi_food,
-                },
-                {
-                    name: 'cpi_clothes',
-                    type: 'line',
-                    xAxisIndex: 1,
-                    yAxisIndex: 1,
-                    showSymbol: false,
-                    smooth: true,
-                    lineStyle: {
-                        width: 2,
-                    },
-                    data: cn_cpi.cpi_clothes,
-                },
-                {
-                    name: 'cpi_live',
-                    type: 'line',
-                    xAxisIndex: 1,
-                    yAxisIndex: 1,
-                    showSymbol: false,
-                    smooth: true,
-                    lineStyle: {
-                        width: 2,
-                    },
-                    data: cn_cpi.cpi_live,
-                },
-                {
-                    name: 'cpi_dailyUse',
-                    type: 'line',
-                    xAxisIndex: 1,
-                    yAxisIndex: 1,
-                    showSymbol: false,
-                    smooth: true,
-                    lineStyle: {
-                        width: 2,
-                    },
-                    data: cn_cpi.cpi_dailyUse,
-                },
-                {
-                    name: 'cpi_transport',
-                    type: 'line',
-                    xAxisIndex: 1,
-                    yAxisIndex: 1,
-                    showSymbol: false,
-                    smooth: true,
-                    lineStyle: {
-                        width: 2,
-                    },
-                    data: cn_cpi.cpi_transport,
-                },
-                {
-                    name: 'cpi_edu',
-                    type: 'line',
-                    xAxisIndex: 1,
-                    yAxisIndex: 1,
-                    showSymbol: false,
-                    smooth: true,
-                    lineStyle: {
-                        width: 2,
-                    },
-                    data: cn_cpi.cpi_edu,
-                },
-                {
-                    name: 'cpi_care',
-                    type: 'line',
-                    xAxisIndex: 1,
-                    yAxisIndex: 1,
-                    showSymbol: false,
-                    smooth: true,
-                    lineStyle: {
-                        width: 2,
-                    },
-                    data: cn_cpi.cpi_care,
-                },
-                {
-                    name: 'ppi',
-                    type: 'line',
-                    xAxisIndex: 1,
-                    yAxisIndex: 1,
-                    showSymbol: false,
-                    smooth: true,
-                    lineStyle: {
-                        width: 2,
-                        color: "#037a6f"
-                    },
-                    data: cn_ppi.ppi,
-                },
-                {
-                    name: 'ppi_product',
-                    type: 'line',
-                    xAxisIndex: 1,
-                    yAxisIndex: 1,
-                    showSymbol: false,
-                    smooth: true,
-                    lineStyle: {
-                        width: 2,
-                        color: "#663399"
-
-                    },
-                    data: cn_ppi.ppi_product,
-                },
-                {
-                    name: 'ppi_live',
-                    type: 'line',
-                    xAxisIndex: 1,
-                    yAxisIndex: 1,
-                    showSymbol: false,
-                    smooth: true,
-                    lineStyle: {
-                        width: 2,
-                        color: "black"
-                    },
-                    data: cn_ppi.ppi_live,
-                },
-
-
-                {
-                    name: 'ouput_cars',
-                    type: 'line',
-                    xAxisIndex: 2,
-                    yAxisIndex: 2,
-                    showSymbol: false,
-                    smooth: true,
-                    lineStyle: {
-                        width: 2,
-
-                    },
-                    data: cn_output_cars,
-                },
-                {
-                    name: 'circuit',
-                    type: 'line',
-                    xAxisIndex: 2,
-                    yAxisIndex: 2,
-                    showSymbol: false,
-                    smooth: true,
-                    lineStyle: {
-                        width: 2,
-
-                    },
-                    data: cn_output_circuit,
-                },
-                {
-                    name: 'steel',
-                    type: 'line',
-                    xAxisIndex: 2,
-                    yAxisIndex: 2,
-                    showSymbol: false,
-                    smooth: true,
-                    lineStyle: {
-                        width: 2,
-
-                    },
-                    data: cn_output_steel,
-                },
-                {
-                    name: 'ouput_avg',
-                    type: 'line',
-                    xAxisIndex: 2,
-                    yAxisIndex: 2,
-                    showSymbol: false,
-                    smooth: true,
-                    lineStyle: {
-                        width: 2,
-
-                    },
-                    data: cn_output_avg,
-                },
-
-                {
-                    name: 'sale_cars',
-                    type: 'line',
-                    xAxisIndex: 2,
-                    yAxisIndex: 2,
-                    showSymbol: false,
-                    smooth: true,
-                    lineStyle: {
-                        width: 2,
-
-                    },
-                    data: cn_cars_sales,
-                },
-                {
-                    name: 'houseArea',
-                    type: 'line',
-                    xAxisIndex: 2,
-                    yAxisIndex: 2,
-                    showSymbol: false,
-                    smooth: true,
-                    lineStyle: {
-                        width: 2,
-
-                    },
-                    data: cn_house_sale_area.housesalearea,
-                },
-                {
-                    name: 'trade',
-                    type: 'line',
-                    xAxisIndex: 2,
-                    yAxisIndex: 2,
-                    showSymbol: false,
-                    smooth: true,
-                    lineStyle: {
-                        width: 2,
-
-                    },
-                    data: cn_trade.imExport_rate,
-                },
-                {
-                    name: 'sale_avg',
-                    type: 'line',
-                    xAxisIndex: 2,
-                    yAxisIndex: 2,
-                    showSymbol: false,
-                    smooth: true,
-                    lineStyle: {
-                        width: 2,
-
-                    },
-                    data: cn_sale_avg,
-                },
-
-                {
-                    name: 'output_sale_avg',
-                    type: 'line',
-                    xAxisIndex: 2,
-                    yAxisIndex: 2,
-                    showSymbol: false,
-                    smooth: true,
-                    lineStyle: {
-                        width: 2,
-
-                    },
-                    data: cn_output_sale_avg,
-                },
-
-
-                {
-                    name: '产品库存',
-                    type: 'line',
-                    xAxisIndex: 2,
-                    yAxisIndex: 2,
-                    showSymbol: false,
-                    smooth: true,
-                    lineStyle: {
-                        width: 2,
-
-                    },
-                    data: cn_industry_indicator.industryindicator_inventory,
-                },
-                {
-                    name: '利润',
-                    type: 'line',
-                    xAxisIndex: 2,
-                    yAxisIndex: 2,
-                    showSymbol: false,
-                    smooth: true,
-                    lineStyle: {
-                        width: 2,
-
-                    },
-                    data: cn_industry_indicator.industryindicator_profit,
-                },
-                {
-                    name: '亏损企业',
-                    type: 'line',
-                    xAxisIndex: 2,
-                    yAxisIndex: 2,
-                    showSymbol: false,
-                    smooth: true,
-                    lineStyle: {
-                        width: 2,
-
-                    },
-                    data: cn_industry_indicator.industryindicator,
-                },
-                {
-                    name: '利润处理',
-                    type: 'line',
-                    xAxisIndex: 2,
-                    yAxisIndex: 2,
-                    showSymbol: false,
-                    smooth: true,
-                    lineStyle: {
-                        width: 2,
-
-                    },
-                    data: lirunChuLi,
-                },
-                {
-                    name: '利润处理2',
-                    type: 'line',
-                    xAxisIndex: 2,
-                    yAxisIndex: 2,
-                    showSymbol: false,
-                    smooth: true,
-                    lineStyle: {
-                        width: 2,
-
-                    },
-                    data: lirunChuLi2,
-                },
-                {
-                    name: 'pmi',
-                    type: 'line',
-                    xAxisIndex: 2,
-                    yAxisIndex: 2,
-                    showSymbol: false,
-                    smooth: true,
-                    lineStyle: {
-                        width: 2,
-
-                    },
-                    data: cn_pmi,
-                },
-                {
-                    name: 'pmicx',
-                    type: 'line',
-                    xAxisIndex: 2,
-                    yAxisIndex: 2,
-                    showSymbol: false,
-                    smooth: true,
-                    lineStyle: {
-                        width: 2,
-
-                    },
-                    data: cn_pmi_cx,
-                },
-                {
-                    name: 'pmi_avg',
-                    type: 'line',
-                    xAxisIndex: 2,
-                    yAxisIndex: 2,
-                    showSymbol: false,
-                    smooth: true,
-                    lineStyle: {
-                        width: 2,
-                        color: "black"
-                    },
-                    data: cn_pmi_avg,
-                },
-
-
-                {
-                    name: 'M1',
-                    type: 'line',
-                    xAxisIndex: 3,
-                    yAxisIndex: 3,
-                    showSymbol: false,
-                    smooth: true,
-                    lineStyle: {
-                        width: 2,
-                    },
-                    data: m1_legulegu,
-                },
-                {
-                    name: 'M2',
-                    type: 'line',
-                    xAxisIndex: 3,
-                    yAxisIndex: 3,
-                    showSymbol: false,
-                    smooth: true,
-                    lineStyle: {
-                        width: 2,
-
-                    },
-                    data: m2_legulegu,
-                },
-                {
-                    name: 'M1_M2',
-                    type: 'line',
-                    xAxisIndex: 3,
-                    yAxisIndex: 3,
-                    showSymbol: false,
-                    smooth: true,
-                    lineStyle: {
-                        width: 2,
-                        //color: "black"
-                    },
-                    data: m1_m2_legulegu,
-                },
                 ///以下仅为了对齐时间
                 {
                     name: '',

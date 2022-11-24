@@ -256,7 +256,7 @@ const fs = require('fs');
                 console.error(error);
             }
         }
-        if (value.name == "cn_trade") {
+        if (value.name == "cn_trade2") {
             let resdata = value.resdata;
             let cn_trade = resdata.data["c:276"].s[0].map((item, index) => {
                 item[0] = formatDate("macromicro", item[0]);
@@ -401,12 +401,56 @@ const fs = require('fs');
                 console.error(error);
             }
         }
-        if (value.name == "cn_industry_indicator"){
+        if (value.name == "cn_industry_indicator") {
             let cn_industry_indicator = value.resdata.cn_industry_indicator.data
             cn_industry_indicator = "let cn_industry_indicator = " + JSON.stringify(cn_industry_indicator, null, 4);
             try {
                 fs.writeFileSync(folder + 'cn_industry_indicator.js', cn_industry_indicator);
                 console.log("cn_industry_indicator JSON data is saved.");
+            } catch (error) {
+                console.error(error);
+            }
+        }
+        if (value.name == "cn_cars_sales") {
+            let resdata = value.resdata;
+            let cn_cars_sales = resdata.data["c:326"].s[1].map(item => { item[0] = formatDate("macromicro", item[0]); return item })
+            cn_cars_sales = "let cn_cars_sales = " + JSON.stringify(cn_cars_sales, null, 4);
+            try {
+                fs.writeFileSync(folder + 'cn_cars_sales.js', cn_cars_sales);
+                console.log("cn_cars_sales JSON data is saved.");
+            } catch (error) {
+                console.error(error);
+            }
+        }
+        if (value.name == "cn_house_sale_area") {
+            let cn_house_sale_area = value.resdata.cn_house_sale_area.data
+            cn_house_sale_area = "let cn_house_sale_area = " + JSON.stringify(cn_house_sale_area, null, 4);
+            try {
+                fs.writeFileSync(folder + 'cn_house_sale_area.js', cn_house_sale_area);
+                console.log("cn_house_sale_area JSON data is saved.");
+            } catch (error) {
+                console.error(error);
+            }
+        }
+        if (value.name == "cn_trade") {
+            let cn_trade = value.resdata.cn_trade.data
+            cn_trade = "let cn_trade = " + JSON.stringify(cn_trade, null, 4);
+            try {
+                fs.writeFileSync(folder + 'cn_trade.js', cn_trade);
+                console.log("cn_trade JSON data is saved.");
+            } catch (error) {
+                console.error(error);
+            }
+        }
+        if (value.name == "cn_pmi") {
+            let cn_pmis = value.resdata;
+            let cn_pmi = cn_pmis.data["c:232"].s[1].map(item => { item[0] = formatDate("macromicro", item[0]); return item })
+            let cn_pmi_cx = cn_pmis.data["c:232"].s[0].map(item => { item[0] = formatDate("macromicro", item[0]); return item })
+            cn_pmi = "let cn_pmi = " + JSON.stringify(cn_pmi, null, 4)
+            cn_pmi_cx = "let cn_pmi_cx = " + JSON.stringify(cn_pmi_cx, null, 4);
+            try {
+                fs.writeFileSync(folder + 'cn_pmis.js', cn_pmi + "\r\n" + cn_pmi_cx);
+                console.log("cn_pmis JSON data is saved.");
             } catch (error) {
                 console.error(error);
             }
@@ -479,9 +523,14 @@ const fs = require('fs');
 
     // await taskApi("guZhaiCha", "http://value500.com/CSI300.asp", "html")
 
+    // await taskPage("cn_cars_sales", "https://sc.macromicro.me/collections/29/mm-car/326/cn-china-auto-sales", "/charts/data/326")
+
+    await taskPage("cn_pmi", "https://sc.macromicro.me/collections/25/cn-industry-relative/232/cn-pmi-caixin", "/charts/data/232")
+
+
     // await taskPage("cn_industry_indicator", "https://www.macroview.club/charts?name=cn_industry_indicator", "/get-chart")
-
-
+    // await taskPage("cn_house_sale_area", "https://www.macroview.club/charts?name=cn_house_sale_area", "/get-chart")
+    // await taskPage("cn_trade", "https://www.macroview.club/charts?name=cn_trade", "/get-chart")
 
 
     // Promise.all(
