@@ -96,13 +96,13 @@ const fs = require('fs');
                 item[0] = formatDate("woniu500", item[0]);
                 return item
             })
-            let M2zheSuan = m2Total.map(function (item) {
+            let M2zheSuan = m2Total.map(function(item) {
                 let newArr = []
                 newArr[0] = item[0]
                 newArr[1] = (item[1] * 2935.83 / 1865935).toFixed(2)
                 return newArr
             })
-            let M2zheSuan250 = m2Total.map(function (item) {
+            let M2zheSuan250 = m2Total.map(function(item) {
                 let newArr = []
                 newArr[0] = item[0]
                 newArr[1] = (250 + item[1] * 2935.83 / 1865935).toFixed(2)
@@ -120,6 +120,21 @@ const fs = require('fs');
                 console.error(error);
             }
         }
+        if (value.name == "gzb_erp") {
+            let gzb_erp = value.resdata
+            gzb_erp.map((item, index) => {
+                item[0] = formatDate("woniu500", item[0]);
+                return item
+            })
+            gzb_erp = "let gzb_erp = " + JSON.stringify(gzb_erp, null, 4);
+            try {
+                fs.writeFileSync(folder + 'gzb_erp.js', gzb_erp);
+                console.log("gzb_erp JSON data is saved.");
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
         if (value.name == "vxeem") {
             let resdata = value.resdata;
             let vxeem = resdata.data["c:21532"].s[0] //.map(item => { item[0] = formatDate("macromicro", item[0]); return item })
@@ -142,28 +157,39 @@ const fs = require('fs');
                 console.error(err);
             }
         }
-        if (value.name == "tongBi300") {
+        if (value.name == "tongBi") {
             let option
             let colors
             const regex = /option = ([\s\S]*?)};/g;
             const found = value.resdata.match(regex);
             eval(found[0])
+            console.log(option.series)
             let date = option.xAxis[0].data
-            let data = option.series[3].data
-            let tongBi300 = date.map((item, index) => {
+            let tongBiSH = option.series[2].data
+            let tongBi300 = option.series[3].data
+
+            tongBiSH = date.map((item, index) => {
                 const firstSplit = item.split('年');
                 let year = firstSplit[0]
                 let month = firstSplit[1].split('月')[0];
-                if (year > 2008)
-                    return [`${year}-${month}-28`, data[index] ? data[index] : ""]
-                return null
-            }).filter((item) => {
-                return item
+                return [`${year}-${month}-28`, tongBiSH[index] ? tongBiSH[index] : ""]
+            }).filter(item => {
+                return parseFloat(item[0].substring(0, 4)) >= 2008
             })
-            //console.log(tongBi300);return;
+
+            tongBi300 = date.map((item, index) => {
+                const firstSplit = item.split('年');
+                let year = firstSplit[0]
+                let month = firstSplit[1].split('月')[0];
+                return [`${year}-${month}-28`, tongBi300[index] ? tongBi300[index] : ""]
+            }).filter((item) => {
+                return parseFloat(item[0].substring(0, 4)) >= 2008
+            })
+
+            tongBiSH = "let tongBiSH = " + JSON.stringify(tongBiSH, null, 4);
             tongBi300 = "let tongBi300 = " + JSON.stringify(tongBi300, null, 4);
             try {
-                fs.writeFileSync(folder + 'stockTongBi.js', tongBi300);
+                fs.writeFileSync(folder + 'stockTongBi.js', tongBiSH + "\r\n" + tongBi300);
                 console.log("stockTongBi JSON data is saved.");
             } catch (error) {
                 console.error(error);
@@ -460,10 +486,10 @@ const fs = require('fs');
 
     let taskApi = async (name, apiUrl, dataFormat, save = true) => {
         const promise1 = new Promise((resolve, reject) => {
-            const req2 = http.request(apiUrl, function (res) {
+            const req2 = http.request(apiUrl, function(res) {
                 res.setEncoding('utf-8')
                 let allchunk = ""
-                res.on('data', function (chunk) {
+                res.on('data', function(chunk) {
                     allchunk += chunk
                 });
                 res.on("end", () => {
@@ -473,7 +499,7 @@ const fs = require('fs');
                         resolve({ name: name, apiUrl: apiUrl, resdata: resdata })
                 })
             });
-            req2.on('error', function (e) {
+            req2.on('error', function(e) {
                 console.log('problem with request: ' + e.message);
             });
             req2.end();
@@ -515,6 +541,8 @@ const fs = require('fs');
 
     // await taskApi("M2Total", "http://www.woniu500.com/data/mm2.json", "json")
 
+    await taskApi("gzb_erp", " http://www.woniu500.com/data/gzb_erp.json", "json")
+
     // await taskPage("ashares_congestion", "https://legulegu.com/stockdata/ashares-congestion", "ashares-congestion?token")
 
     // await taskPage("bond10_middlePe", "https://legulegu.com/stockdata/china-10-year-bond-yield", "china-10-year-bond-yield-data?token")
@@ -523,9 +551,11 @@ const fs = require('fs');
 
     // await taskApi("guZhaiCha", "http://value500.com/CSI300.asp", "html")
 
+    //await taskApi("tongBi", "http://value500.com/SH000001.asp", "html")
+
     // await taskPage("cn_cars_sales", "https://sc.macromicro.me/collections/29/mm-car/326/cn-china-auto-sales", "/charts/data/326")
 
-    await taskPage("cn_pmi", "https://sc.macromicro.me/collections/25/cn-industry-relative/232/cn-pmi-caixin", "/charts/data/232")
+    // await taskPage("cn_pmi", "https://sc.macromicro.me/collections/25/cn-industry-relative/232/cn-pmi-caixin", "/charts/data/232")
 
 
     // await taskPage("cn_industry_indicator", "https://www.macroview.club/charts?name=cn_industry_indicator", "/get-chart")

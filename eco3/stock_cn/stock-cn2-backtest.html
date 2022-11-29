@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="zh-CN" style="height: 100%">
+
+<head>
+    <meta charset="utf-8">
+</head>
+
+<body style="height: 100%;width: 100%; margin: 0">
+    <div id="container" style="height: 100%; width: 100%;"></div>
+    <script type="text/javascript" src="data/cn_cpi.js"></script>
+    <script type="text/javascript" src="data/cn_ppi.js"></script>
+    <script type="text/javascript" src="data/cn_cpi_minus_ppi.js"></script>
+    <script type="text/javascript" src="data/getm1m2_legulegu.js"></script>
+    <script type="text/javascript" src="data/cn_output_cars.js"></script>
+    <script type="text/javascript" src="data/cn_output_circuit.js"></script>
+    <script type="text/javascript" src="data/cn_output_steel.js"></script>
+    <script type="text/javascript" src="data/cn_cars_sales.js"></script>
+    <script type="text/javascript" src="data/cn_house_sale_area.js"></script>
+    <script type="text/javascript" src="data/cn_trade.js"></script>
+    <script type="text/javascript" src="data/cn_pmis.js"></script>
+    <script type="text/javascript" src="data/M12_HS300.js"></script>
+    <script type="text/javascript" src="data/cn_industry_indicator.js"></script>
+    <script type="text/javascript" src="data/mm_manucycle.js"></script>
+    <script type="text/javascript" src="data/bond10_middlePe.js"></script>
+    <script type="text/javascript" src="https://fastly.jsdelivr.net/npm/echarts@5.3.2/dist/echarts.min.js"></script>
+    <script type="text/javascript">
+    var dom = document.getElementById('container');
+    var myChart = echarts.init(dom, "red", {
+        renderer: 'canvas',
+        useDirtyRect: false
+    });
+    var app = {};
+    var option;
+    ////仅为了对齐时间
+    Array.prototype.addStartEnd = function(start, end) {
+        let arr = this
+        arr = start.concat(arr)
+        end.forEach((item) => {
+            arr.push(item)
+        })
+        return arr
+    }
+    let currentDay = new Date()
+    currentDay = currentDay.getFullYear() + "-" + (currentDay.getMonth() + 1) + "-" + currentDay.getDate()
+    let justForAlignmentTime = []
+    for (var i = 0; i < cn_cpi.cpi.length; i++) { justForAlignmentTime[i] = Array.from(cn_cpi.cpi[i]) }
+    justForAlignmentTime = justForAlignmentTime.addStartEnd([], [
+        [currentDay, " "]
+    ]).map(item => {
+        item[1] = ""
+        return item
+    })
+    ////仅为了对齐时间
+
+    function findSameTime(array, time) {
+        for (let index = 0; index < array.length; index++) {
+            const element = array[index];
+            if (element[0] == time) return parseFloat(element[1])
+        }
+        return null
+    }
+    cn_pmi = cn_pmi.map(item => {
+        item[1] = parseFloat(((item[1] - 50) * 10).toFixed(2))
+        return item
+    })
+    cn_pmi_cx = cn_pmi_cx.map(item => {
+        item[1] = parseFloat(((item[1] - 50) * 10).toFixed(2))
+        return item
+    })
+    let cn_pmi_avg = cn_pmi.map((item, index) => {
+        let newArr = []
+        newArr[0] = item[0]
+        let avg
+        let cx = findSameTime(cn_pmi_cx, item[0])
+        if (cx) avg = (item[1] * 0.5 + cx * 0.5).toFixed(2)
+        else avg = item[1].toFixed(2)
+        newArr[1] = parseFloat(avg)
+        return newArr
+    }).filter(item => {
+        return true //parseFloat(item[0].substring(0, 4)) >= 2008
+    })
+
+
+
+
+    //pmi buy sell
+    function findtimeNextMonthFirst(array, pmiArr) {
+        let time = pmiArr[0]
+        let year = time.substring(0, 4)
+        let timeNextMonth = parseFloat(time.substring(5, 7)) + 1
+        if (timeNextMonth > 12) {
+            year = parseFloat(year) + 1
+            timeNextMonth = 1
+        }
+
+        if (timeNextMonth < 10) timeNextMonth = "0" + timeNextMonth
+        let nextTime = "" + year + "-" + timeNextMonth
+
+        for (let index = 0; index < array.length; index++) {
+            let hs300Arr = array[index];
+            if (nextTime == hs300Arr[0].substring(0, 7)) {
+                return [hs300Arr[0], parseFloat(hs300Arr[1])]
+            }
+        }
+        return null
+    }
+
+    function asset() {
+        this.money = 100000
+        this.stocks = {}
+        this.buySellLog = []
+        console.log((JSON.stringify(this)))
+        return this
+    }
+    asset.prototype.buy = function(pmiArr, stockName, stockPe, stockArr, bili) {
+
+        let buyPrice = stockArr[1]
+        let buyAmount = Math.floor((this.money * bili) / buyPrice)
+        let cost = buyAmount * buyPrice
+        this.money = this.money - cost
+
+        if (!this.stocks[stockName])
+            this.stocks[stockName] = { allCost: cost, allIncome: 0, currentPrice: buyPrice, currentAmount: buyAmount }
+        else {
+            this.stocks[stockName].allCost += cost
+            this.stocks[stockName].currentPrice = buyPrice
+            this.stocks[stockName].currentAmount += buyAmount
+        }
+        this.stocks[stockName].allCost = parseFloat(this.stocks[stockName].allCost.toFixed(2))
+
+        let buyLog = `[${pmiArr}] [${stockArr},${stockPe}], Buy ${bili} ${stockName}:  ${cost}=>${buyPrice}*${buyAmount}`
+        this.buySellLog.push(buyLog)
+        console.log(`    ${buyLog}`)
+        console.log(this.allAsset(), (JSON.stringify({ money: this.money.toFixed(2), stocks: this.stocks })))
+    }
+    asset.prototype.sell = function(pmiArr, stockName, stockPe, stockArr, bili) {
+
+        let currentAmount = this.stocks[stockName].currentAmount
+        let sellAmount = Math.floor(currentAmount * bili)
+        let sellPrice = stockArr[1]
+        let income = sellAmount * sellPrice
+        this.money = this.money + income
+
+        this.stocks[stockName].allIncome += income
+        this.stocks[stockName].currentPrice = sellPrice
+        this.stocks[stockName].currentAmount -= sellAmount
+
+        this.stocks[stockName].allIncome = parseFloat(this.stocks[stockName].allIncome.toFixed(2))
+
+        let sellLog = `[${pmiArr}] [${stockArr},${stockPe}], Sell ${bili} ${stockName}: ${income}<=${sellPrice}*${sellAmount}`
+        this.buySellLog.push(sellLog)
+        console.log(`    ${sellLog}`)
+        console.log(this.allAsset(), (JSON.stringify({ money: this.money.toFixed(2), stocks: this.stocks })))
+    }
+    asset.prototype.allAsset = function() {
+        let res = 0
+        Object.keys(this.stocks).forEach(key => {
+            res += this.stocks[key].currentAmount * this.stocks[key].currentPrice
+        })
+        return parseFloat((this.money + res).toFixed(2))
+    }
+
+    function atMonth(pmiArr) {
+        return true
+        let hs300 = findtimeNextMonthFirst(HS300, pmiArr)
+        if (hs300 == null) return true
+        let month = hs300[0].substring(5, 7)
+        let months = ["12", "01", "02", "05", "06", "07"]
+        if (months.indexOf(month) != -1)
+            return true
+        return false
+    }
+
+    function backTest0(pmiData = cn_pmi_avg) {
+        let myasset = new asset()
+
+        let bili = [0.3, 0.8, 1]
+        let tops = [9.5, 11.5, 12]
+        let downs = [-8, -10, -12]
+        for (let i = 0; i < pmiData.length; i++) {
+            let pmiIndex = parseFloat(pmiData[i][1])
+            let action = []
+
+            if (downs[0] >= pmiIndex && pmiIndex > downs[1]) action = ["buy", bili[0]]
+            if (downs[1] >= pmiIndex && pmiIndex > downs[2]) action = ["buy", bili[1]]
+            if (downs[2] >= pmiIndex) action = ["buy", bili[2]]
+
+            if (tops[0] <= pmiIndex && pmiIndex < tops[1]) action = ["sell", bili[0]]
+            if (tops[1] <= pmiIndex && pmiIndex < tops[2]) action = ["sell", bili[1]]
+            if (tops[2] <= pmiIndex) action = ["sell", bili[2]]
+
+            if (action[0] == "buy") {
+                let hs300 = findtimeNextMonthFirst(HS300, pmiData[i])
+                myasset.buy(pmiData[i], "HS300", hs300, action[1])
+            }
+            if (action[0] == "sell") {
+                if (Object.keys(myasset.stocks).length === 0) continue
+                let hs300 = findtimeNextMonthFirst(HS300, pmiData[i])
+                myasset.sell(pmiData[i], "HS300", hs300, action[1])
+            }
+        }
+
+        return myasset
+    }
+
+    function backTest(pmiData = cn_pmi_avg, top = 11, down = -6.5) {
+        let myasset = new asset()
+        let pre
+        let buyCount = 0
+        let sellCount = 0
+        let bili = [0.3, 0.8, 1]
+
+        for (var i = 0; i < pmiData.length; i++) {
+
+            let hs300PeMiddel = findSameTime(yield_300PeMiddle, pmiData[i][0])
+            let tenYearPe = findSameTime(yield_TenNaDeb, pmiData[i][0])
+
+
+            if ((parseFloat(pmiData[i][1]) <= down && hs300PeMiddel < 22) && true) {
+                sellCount = 0
+                if (pre == "buy3") continue
+                let hs300 = findtimeNextMonthFirst(HS300, pmiData[i])
+                myasset.buy(pmiData[i], "HS300", hs300PeMiddel, hs300, bili[buyCount])
+                pre = "buy" + (++buyCount)
+            }
+            if ((parseFloat(pmiData[i][1]) >= top || hs300PeMiddel > 28) && true) {
+                buyCount = 0
+                if (Object.keys(myasset.stocks).length === 0) continue
+                if (pre == "sell3") continue
+                let hs300 = findtimeNextMonthFirst(HS300, pmiData[i])
+                myasset.sell(pmiData[i], "HS300", hs300PeMiddel, hs300, bili[sellCount])
+                pre = "sell" + (++sellCount)
+            }
+        }
+        return myasset
+    }
+    
+    let lastAsset =  backTest()
+    console.log(lastAsset)
+    
+    let lastMoney = lastAsset.allAsset()
+    let nianShouyi = Math.pow((lastMoney / 100000), 1 / 14) - 1
+    console.log(lastMoney, nianShouyi, 100000 * (1 + 0.09) ** 14)
+    console.log(705 + 4771.31 * 43)
+    console.log(100000 * (1 + 0.05) ** 14)
+
+    //                  30               70                100
+    //  7  16   100   --30----   70   ---49---    14   ----21---   0
+    // -17 -7 
+    //top = 12 11.5 9.5, down =-8 -8.5 -10
+    //  9 18         -7 -12       
+    // let resArr = []
+    // for (let i = 5; i <= 20; i = i + 0.5) {
+    //     for (let j = -20; j <= -5; j = j + 0.5) {
+    //         let testRes = backTest(cn_pmi_avg, i, j)
+    //         resArr.push([i, j, testRes.allAsset(), testRes])
+    //     }
+    // }
+    // resArr.sort((a, b) => {
+    //     return b[2] - a[2]
+    // })
+    // console.log(resArr)
+
+
+
+
+
+
+
+
+    option = {
+        title: {},
+        tooltip: {
+            trigger: 'axis',
+            show: true,
+            position: ['5%', '30%'],
+            order: 'seriesDesc',
+            axisPointer: {
+                type: 'cross',
+                show: false
+            }
+        },
+        legend: {
+            type: "scroll",
+            left: 60,
+            width: "90%",
+            inactiveColor: 'white',
+            selector: ['all', 'inverse']
+        },
+        axisPointer: {
+            link: [{
+                xAxisIndex: 'all'
+            }],
+            lineStyle: {
+                color: "red"
+            }
+        },
+        dataZoom: [{
+                show: true,
+                realtime: true,
+                start: 0,
+                end: 100,
+                xAxisIndex: [0, 1, 2],
+                bottom: -10
+            },
+            {
+                type: 'inside',
+                realtime: true,
+                start: 0,
+                end: 100,
+                xAxisIndex: [0, 1, 2],
+            }
+        ],
+
+        grid: [{
+                left: 60,
+                right: 80,
+                top: "0.5%",
+                height: '50%',
+                show: true,
+                backgroundColor: '#c1c4c3',
+            },
+            {
+                left: 60,
+                right: 80,
+
+                top: "51%",
+                height: '45%',
+                show: true,
+                backgroundColor: '#c1c4c3',
+            },
+
+        ],
+
+        xAxis: [
+
+            {
+                gridIndex: 0,
+                type: "time",
+                axisPointer: {
+                    show: true, //抓数据十字线焦点圆圈
+                    label: {
+                        show: false // 显示十字线竖线的时间
+                    }
+                },
+                axisLabel: {
+                    show: false // 显示图形底部时间
+                },
+            },
+
+
+            {
+                gridIndex: 1,
+                type: "time",
+                axisPointer: {
+                    show: true, //抓数据十字线焦点圆圈
+                    label: {
+                        show: true // 显示十字线竖线的时间
+                    }
+                },
+                axisLabel: {
+                    show: true // 显示图形底部时间
+                },
+
+                splitNumber: 30,
+                splitLine: {
+                    show: true,
+                    lineStyle: {
+                        color: ['#aaa']
+                    }
+                },
+                show: true, //显示0轴黑线
+                axisLine: {
+                    show: false //显示0轴黑线
+                },
+            },
+        ],
+
+        yAxis: [{
+                gridIndex: 0,
+                type: 'value',
+                splitLine: {
+                    show: true
+                },
+            },
+
+            {
+                gridIndex: 1,
+                type: 'value',
+                splitLine: {
+                    show: false
+                },
+
+            },
+            {
+                gridIndex: 1,
+                type: 'value',
+                splitLine: {
+                    show: true
+                },
+                position: "right",
+                min: 10,
+                max: 50
+            },
+
+        ],
+
+        series: [{
+                name: 'pmi',
+                type: 'line',
+                xAxisIndex: 0,
+                yAxisIndex: 0,
+                showSymbol: false,
+                smooth: true,
+                lineStyle: {
+                    width: 1,
+                    color: "red"
+                },
+                data: cn_pmi,
+
+            },
+
+            {
+                name: 'pmi_cx',
+                type: 'line',
+                xAxisIndex: 0,
+                yAxisIndex: 0,
+                showSymbol: false,
+                smooth: true,
+                lineStyle: {
+                    width: 1,
+                    color: "blue"
+                },
+                data: cn_pmi_cx,
+            },
+
+            {
+                name: 'pmi_avg',
+                type: 'line',
+                xAxisIndex: 0,
+                yAxisIndex: 0,
+                showSymbol: false,
+                smooth: true,
+                lineStyle: {
+                    width: 1,
+                    color: "black"
+                },
+                data: cn_pmi_avg,
+            },
+
+
+            {
+                name: 'HS300',
+                type: 'line',
+                xAxisIndex: 1,
+                yAxisIndex: 1,
+                showSymbol: false,
+                lineStyle: {
+                    width: 0,
+                },
+                itemStyle: {
+                    normal: {
+                        areaStyle: {
+                            color: "#fdc375"
+                        },
+                    },
+                    emphasis: {
+                        areaStyle: {
+                            color: "#fdc375"
+                        },
+                    }
+                },
+                data: HS300
+            },
+
+            {
+                name: '300中位PE', //300剔除后中位
+                type: 'line',
+                xAxisIndex: 1,
+                yAxisIndex: 2,
+                data: yield_300PeMiddle,
+                showSymbol: false,
+                lineStyle: {
+                    width: 1.5,
+                    color: "#a45db2"
+                },
+            },
+            {
+                name: '十年收益率倒数',
+                type: 'line',
+                xAxisIndex: 1,
+                yAxisIndex: 2,
+                data: yield_TenNaDeb,
+                showSymbol: false,
+                lineStyle: {
+                    width: 1.5,
+                    color: "black"
+                },
+            },
+
+            ///以下仅为了对齐时间
+            {
+                name: '',
+                type: 'line',
+                xAxisIndex: 0,
+                yAxisIndex: 0,
+                tooltip: false,
+                data: justForAlignmentTime,
+                showSymbol: false,
+                lineStyle: {
+                    width: 0,
+                    color: "black"
+                }
+            },
+            {
+                name: '',
+                type: 'line',
+                xAxisIndex: 1,
+                yAxisIndex: 1,
+                tooltip: false,
+                data: justForAlignmentTime,
+                showSymbol: false,
+                lineStyle: {
+                    width: 0,
+                    color: "black"
+                },
+            },
+            {
+                name: '',
+                type: 'line',
+                xAxisIndex: 1,
+                yAxisIndex: 2,
+                tooltip: false,
+                data: justForAlignmentTime,
+                showSymbol: false,
+                lineStyle: {
+                    width: 0,
+                    color: "black"
+                },
+            },
+
+        ]
+    };
+
+    if (option && typeof option === 'object') {
+        myChart.setOption(option);
+    }
+    window.addEventListener('resize', myChart.resize);
+    </script>
+</body>
+
+</html>
