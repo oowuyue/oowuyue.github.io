@@ -4,8 +4,8 @@ const fs = require('fs');
 
 (async () => {
 
+    const folder = "./data/"
     const browser = await puppeteer.launch({ headless: false, });
-
     function formatDate(site, date) {
         if (site.includes("macromicro")) {
             return date.substring(0, 8) + "28"
@@ -37,35 +37,24 @@ const fs = require('fs');
         }
     }
 
-    let folder = "./data/"
-
     function formatAndSave(value) {
-        if (value.name == "mm_manucycle") {
-            let resdata = value.resdata;
-            let mm_manucycle = resdata.data["c:47492"].s[0].map(item => { item[0] = formatDate("macromicro", item[0]); return item })
-            mm_manucycle = "let mm_manucycle = " + JSON.stringify(mm_manucycle, null, 4);
-            try {
-                fs.writeFileSync(folder + 'mm_manucycle.js', mm_manucycle);
-                console.log("mm_manucycle JSON data is saved.");
-            } catch (error) {
-                console.error(err);
-            }
-        }
-        if (value.name == "mm_uscycle") {
-            let resdata = value.resdata;
-            let mm_uscycle = resdata.data["c:444"].s[0].map(item => { item[0] = formatDate("macromicro", item[0]); return item })
-            mm_uscycle = "let mm_uscycle = " + JSON.stringify(mm_uscycle, null, 4);
-            try {
-                fs.writeFileSync(folder + 'mm_uscycle.js', mm_uscycle);
-                console.log("mm_uscycle JSON data is saved.");
-            } catch (error) {
-                console.error(err);
-            }
+        let dataName = value.name
+        let chartId = "c:" + value.siteInfo[2].split("/")[3]
+        let chartLineId = value.siteInfo[3]
+        let dataValue = value.resdata.data[chartId].s[chartLineId].map(item => {
+            //item[0] = formatDate("macromicro", item[0]); 
+            return item
+        })
+        let fileStr = `let ${dataName} = ` + JSON.stringify(dataValue, null, 4);
+        try {
+            fs.writeFileSync(`${folder}${dataName}.js`, fileStr);
+            console.log(`${dataName} JSON data is saved`);
+        } catch (error) {
+            console.error(error);
         }
         return true
     }
-
-    let taskApi = async (name, apiUrl, dataFormat) => {
+    let taskApi = async (name, apiUrl, dataFormat, save = true) => {
         const promise1 = new Promise((resolve, reject) => {
             const req2 = http.request(apiUrl, function (res) {
                 res.setEncoding('utf-8')
@@ -75,7 +64,9 @@ const fs = require('fs');
                 });
                 res.on("end", () => {
                     resdata = dataFormat == "json" ? JSON.parse(allchunk) : allchunk
-                    resolve({ name: name, apiUrl: apiUrl, resdata: resdata })
+                    save == true ?
+                        resolve(formatAndSave({ name: name, apiUrl: apiUrl, resdata: resdata })) :
+                        resolve({ name: name, apiUrl: apiUrl, resdata: resdata })
                 })
             });
             req2.on('error', function (e) {
@@ -85,30 +76,33 @@ const fs = require('fs');
         })
         return promise1
     }
-
-    let taskPage = async (name, pageUrl, apiSub) => {
+    let taskPage = async (name, site, pageUrl, apiSub, chartLine = 0, save = true) => {
         const page = await browser.newPage();
         await page.setRequestInterception(true)
+
         page.on('request', (request) => { request.continue() })
         const promise1 = new Promise((resolve, reject) => {
             page.on('response', async (response) => {
                 if (response.url().includes(apiSub)) {
                     resdata = await response.json()
-                    resolve({ name: name, pageUrl: pageUrl, apiSub: apiSub, resdata: resdata })
+                    save == true ?
+                        resolve(formatAndSave({ name: name, siteInfo: [site, pageUrl, apiSub, chartLine], resdata: resdata })) :
+                        resolve({ name: name, siteInfo: [site, pageUrl, apiSub, chartLine], resdata: resdata })
                 }
             })
         })
-        await page.goto(pageUrl, { waitUntil: 'networkidle2' });
+        await page.goto(pageUrl, { waitUntil: 'networkidle2' })
+        page.close()
+
         return promise1
     }
-
-    let taskMacromicroPage = async (name, pageUrl, apiSub) => {
-        let value = await taskPage(name, pageUrl, apiSub)
-        return formatAndSave(value)
-    }
-
-    await taskMacromicroPage("mm_manucycle", "https://sc.macromicro.me/collections/3261/sector-industrial/47492/mm-manufacturing-cycle-index", "/charts/data/47492")
-    await taskMacromicroPage("mm_uscycle", "https://sc.macromicro.me/collections/34/us-stock-relative/444/us-mm-gspc", "/charts/data/444")
-
-
+    
+    await taskPage("标普500", "macromicro", "https://sc.macromicro.me/collections/34/us-stock-relative/402/us-optimus-prime-index-gspc", "/charts/data/402", 1)
+    await taskPage("美国CPI", "macromicro", "https://sc.macromicro.me/collections/5/us-price-relative/10/cpi", "/charts/data/10", 1)
+    await taskPage("美国失业率", "macromicro", "https://sc.macromicro.me/collections/4/us-employ-relative/6/employment-condition", "/charts/data/6", 1)
+    //await taskPage("美国产能利用率", "macromicro", "https://sc.macromicro.me/collections/3261/sector-industrial/45/production", "/charts/data/45", 1)
+    await taskPage("MM美股基本指数", "macromicro", "https://sc.macromicro.me/collections/34/us-stock-relative/444/us-mm-gspc", "/charts/data/444")
+    await taskPage("MM制造业周期指标", "macromicro", "https://sc.macromicro.me/collections/3261/sector-industrial/47492/mm-manufacturing-cycle-index", "/charts/data/47492")
+    await taskPage("标普股利国债差", "macromicro", "https://sc.macromicro.me/collections/34/us-stock-relative/3231/sp500-dividendyield-2yr-bondyield-spread", "/charts/data/3231", 2)
+    
 })()
