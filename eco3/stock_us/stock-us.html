@@ -12,6 +12,7 @@
     <script type="text/javascript" src="./data/美国失业率.js"></script>
     <script type="text/javascript" src="./data/失业率_fred.js"></script>
     <script type="text/javascript" src="./data/美国CPI.js"></script>
+     <script type="text/javascript" src="./data/美国PCE.js"></script>
     <script type="text/javascript" src="./data/MM美股基本指数.js"></script>
     <script type="text/javascript" src="./data/MM制造业周期指标.js"></script>
     <script type="text/javascript" src="./data/标普500.js"></script>
@@ -777,12 +778,29 @@
         })
 
 
+        let 实际GDP = 美国PCE.map((item,index) => {
+            //let 当季非周期性自然失业率 = findCQN(item[0])
+            let newArr = []
+            newArr[0] = item[0]
+            newArr[1] = parseFloat(( parseFloat(item[1]) - parseFloat(美国CPI[index][1])).toFixed(2)) 
+            return newArr
+        })
+        let CPI_实际GDP = 美国CPI.map((item,index) => {
+            //let 当季非周期性自然失业率 = findCQN(item[0])
+            let newArr = []
+            newArr[0] = item[0]
+            newArr[1] = parseFloat(( parseFloat(item[1]) - parseFloat(实际GDP[index][1])).toFixed(2)) 
+            return newArr
+        })
+        console.log(实际GDP , CPI_实际GDP)
+
+
         option = {
             title: {},
             tooltip: {
                 trigger: 'axis',
                 show: true,
-                position: ['4%', '10%'],
+                position: ['4.5%', '10%'],
                 order: 'seriesDesc',
                 axisPointer: {
                     type: 'cross',
@@ -977,7 +995,7 @@
                         show: false
                     },
                     position: "right",
-                    max: 6
+                    max:11
                 },
                 {
                     gridIndex: 3,
@@ -1096,13 +1114,24 @@
                         width: 2,
                         color: "green" //#825ea5 #fdc375
                     },
-
                     xAxisIndex: 2,
                     yAxisIndex: 2,
                     showSymbol: false,
                     smooth: true,
-
                     data: 摩擦失业率
+                },
+                {
+                    name: 'CPI_实际GDP',
+                    type: 'line',
+                    lineStyle: {
+                        width: 1,
+                        //color: "green" //#825ea5 #fdc375
+                    },
+                    xAxisIndex: 2,
+                    yAxisIndex: 2,
+                    showSymbol: false,
+                    smooth: true,
+                    data: CPI_实际GDP
                 },
 
                 {

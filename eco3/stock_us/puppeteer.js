@@ -97,12 +97,13 @@ const fs = require('fs');
         return promise1
     }
     
-    await taskPage("标普500", "macromicro", "https://sc.macromicro.me/collections/34/us-stock-relative/402/us-optimus-prime-index-gspc", "/charts/data/402", 1)
-    await taskPage("美国CPI", "macromicro", "https://sc.macromicro.me/collections/5/us-price-relative/10/cpi", "/charts/data/10", 1)
-    await taskPage("美国失业率", "macromicro", "https://sc.macromicro.me/collections/4/us-employ-relative/6/employment-condition", "/charts/data/6", 1)
-    //await taskPage("美国产能利用率", "macromicro", "https://sc.macromicro.me/collections/3261/sector-industrial/45/production", "/charts/data/45", 1)
-    await taskPage("MM美股基本指数", "macromicro", "https://sc.macromicro.me/collections/34/us-stock-relative/444/us-mm-gspc", "/charts/data/444")
-    await taskPage("MM制造业周期指标", "macromicro", "https://sc.macromicro.me/collections/3261/sector-industrial/47492/mm-manufacturing-cycle-index", "/charts/data/47492")
-    await taskPage("标普股利国债差", "macromicro", "https://sc.macromicro.me/collections/34/us-stock-relative/3231/sp500-dividendyield-2yr-bondyield-spread", "/charts/data/3231", 2)
+    // await taskPage("标普500", "macromicro", "https://sc.macromicro.me/collections/34/us-stock-relative/402/us-optimus-prime-index-gspc", "/charts/data/402", 1)
+    // await taskPage("美国CPI", "macromicro", "https://sc.macromicro.me/collections/5/us-price-relative/10/cpi", "/charts/data/10", 1)
+    await taskPage("美国PCE", "macromicro", "https://sc.macromicro.me/collections/5/us-price-relative/25/pce-price", "/charts/data/25", 0)
+    // await taskPage("美国失业率", "macromicro", "https://sc.macromicro.me/collections/4/us-employ-relative/6/employment-condition", "/charts/data/6", 1)
+    // await taskPage("美国产能利用率", "macromicro", "https://sc.macromicro.me/collections/3261/sector-industrial/45/production", "/charts/data/45", 1)
+    // await taskPage("MM美股基本指数", "macromicro", "https://sc.macromicro.me/collections/34/us-stock-relative/444/us-mm-gspc", "/charts/data/444")
+    // await taskPage("MM制造业周期指标", "macromicro", "https://sc.macromicro.me/collections/3261/sector-industrial/47492/mm-manufacturing-cycle-index", "/charts/data/47492")
+    // await taskPage("标普股利国债差", "macromicro", "https://sc.macromicro.me/collections/34/us-stock-relative/3231/sp500-dividendyield-2yr-bondyield-spread", "/charts/data/3231", 2)
     
 })()
