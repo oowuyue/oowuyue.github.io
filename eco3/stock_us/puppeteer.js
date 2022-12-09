@@ -1,6 +1,7 @@
 const puppeteer = require('puppeteer');
 const http = require('http');
 const fs = require('fs');
+const path = require('path');
 
 (async () => {
 
@@ -36,7 +37,6 @@ const fs = require('fs');
             return date.slice(0, 4) + "-" + date.slice(5, 7) + '-28';
         }
     }
-
     function formatAndSave(value) {
         let dataName = value.name
         let chartId = "c:" + value.siteInfo[2].split("/")[3]
@@ -96,14 +96,60 @@ const fs = require('fs');
 
         return promise1
     }
-    
+    let taskFileDownload = async (dataNames, site = "fred.stlouisfed", pageUrl) => {
+
+        // const page = await browser.newPage()
+        // const client = await page.target().createCDPSession()
+        // await client.send('Page.setDownloadBehavior', {
+        //     behavior: 'allow',
+        //     downloadPath: path.resolve(folder)
+        // });
+        // await page.goto(pageUrl, { waitUntil: 'networkidle2' })
+        // await page.click('#download-button')
+        // await page.waitForSelector('#download-data-csv')
+        // await page.click('#download-data-csv')
+
+        let csvFile = `${folder}fredgraph.csv`  //多个数据下载文件名是fredgraph.csv
+        fs.readFile(csvFile, "utf-8", (err, data) => {
+            if (err) console.log(err)
+            else {
+                const lines = data.split(/\r?\n/)
+                lines.shift()
+                let dataNameArr = dataNames.split("-")
+                let fileStr = ""
+
+                for (let index = 0; index < dataNameArr.length; index++) {
+                    const dataName = dataNameArr[index]
+                    let dataValue = lines.map(item => {
+                        let newArr = []
+                        newArr[0] = item.split(",")[0]
+                        newArr[1] = parseFloat(item.split(",")[index + 1])
+                        return newArr
+                    })
+                    fileStr += `let ${dataName} = ` + JSON.stringify(dataValue, null, 4) + "\r\n"
+                }
+
+                try {
+                    fs.writeFileSync(`${folder}${dataNames}.js`, fileStr);
+                    console.log(`${dataNames} JSON data is saved`);
+                } catch (error) {
+                    console.error(error);
+                }
+                //fs.unlink(csvFile, (err) => { })
+            }
+
+        })
+    }
+
     // await taskPage("标普500", "macromicro", "https://sc.macromicro.me/collections/34/us-stock-relative/402/us-optimus-prime-index-gspc", "/charts/data/402", 1)
-    // await taskPage("美国CPI", "macromicro", "https://sc.macromicro.me/collections/5/us-price-relative/10/cpi", "/charts/data/10", 1)
-    await taskPage("美国PCE", "macromicro", "https://sc.macromicro.me/collections/5/us-price-relative/25/pce-price", "/charts/data/25", 0)
-    // await taskPage("美国失业率", "macromicro", "https://sc.macromicro.me/collections/4/us-employ-relative/6/employment-condition", "/charts/data/6", 1)
-    // await taskPage("美国产能利用率", "macromicro", "https://sc.macromicro.me/collections/3261/sector-industrial/45/production", "/charts/data/45", 1)
+    // await taskPage("CPI", "macromicro", "https://sc.macromicro.me/collections/5/us-price-relative/10/cpi", "/charts/data/10", 1)
+    // await taskPage("PCE", "macromicro", "https://sc.macromicro.me/collections/5/us-price-relative/25/pce-price", "/charts/data/25", 0)
+    // await taskPage("失业率", "macromicro", "https://sc.macromicro.me/collections/4/us-employ-relative/6/employment-condition", "/charts/data/6", 1)
+    // await taskPage("产能利用率", "macromicro", "https://sc.macromicro.me/collections/3261/sector-industrial/45/production", "/charts/data/45", 1)
     // await taskPage("MM美股基本指数", "macromicro", "https://sc.macromicro.me/collections/34/us-stock-relative/444/us-mm-gspc", "/charts/data/444")
     // await taskPage("MM制造业周期指标", "macromicro", "https://sc.macromicro.me/collections/3261/sector-industrial/47492/mm-manufacturing-cycle-index", "/charts/data/47492")
     // await taskPage("标普股利国债差", "macromicro", "https://sc.macromicro.me/collections/34/us-stock-relative/3231/sp500-dividendyield-2yr-bondyield-spread", "/charts/data/3231", 2)
-    
+    await taskFileDownload("PCE-CPI-PCEPI", "fred.stlouisfed", "https://fred.stlouisfed.org/graph/?g=XmVr")
+
+
 })()

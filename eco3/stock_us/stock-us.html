@@ -8,11 +8,10 @@
 <body style="height: 100%;width: 100%; margin: 0">
     <div id="container" style="height: 100%; width: 100%;"></div>
     <script type="text/javascript" src="./data/标普股利国债差.js"></script>
-    <script type="text/javascript" src="./data/美国产能利用率.js"></script>
-    <script type="text/javascript" src="./data/美国失业率.js"></script>
-    <script type="text/javascript" src="./data/失业率_fred.js"></script>
-    <script type="text/javascript" src="./data/美国CPI.js"></script>
-     <script type="text/javascript" src="./data/美国PCE.js"></script>
+    <script type="text/javascript" src="./data/产能利用率.js"></script>
+    <script type="text/javascript" src="./data/失业率.js"></script>
+    <script type="text/javascript" src="./data/非周期性自然失业率.js"></script>
+    <script type="text/javascript" src="./data/PCE-CPI-PCEPI.js"></script>
     <script type="text/javascript" src="./data/MM美股基本指数.js"></script>
     <script type="text/javascript" src="./data/MM制造业周期指标.js"></script>
     <script type="text/javascript" src="./data/标普500.js"></script>
@@ -735,15 +734,7 @@
         })).addStartEnd([["1970-01-01", "", "", "", ""]], [])
 
 
-        //1980 -  实际失业率last   美国失业率macromicro抓取，   实际失业率 非周期性自然失业率fred.stlouisfed.org下载。
-        // 实际失业率 = 实际失业率.filter((item) => {
-        //     return parseFloat(item.DATE.substring(0, 4)) >= 1980
-        // }).map(item => {
-        //     let newArr = []
-        //     newArr[0] = item.DATE
-        //     newArr[1] = item.UNRATE
-        //     return newArr
-        // })
+        //失业率macromicro抓取，   非周期性自然失业率fred.stlouisfed.org下载。
         非周期性自然失业率 = 非周期性自然失业率.map(item => {
             let newArr = []
             newArr[0] = item.DATE
@@ -769,7 +760,7 @@
                     return element
             }
         }
-        let 摩擦失业率 = 美国失业率.map(item => {
+        let 摩擦失业率 = 失业率.map(item => {
             let 当季非周期性自然失业率 = findCQN(item[0])
             let newArr = []
             newArr[0] = item[0]
@@ -777,22 +768,20 @@
             return newArr
         })
 
+        //realGdp =  nominalGdp - 总体通胀  ≈  PCE - CPI或PCEPI
+        let realGdp = PCE.map((item, index) => {
+            let newArr = []
+            newArr[0] = item[0]
+            newArr[1] = parseFloat((item[1] - CPI[index][1]).toFixed(2))
+            return newArr
+        })
+        let CPI_realGdp = CPI.map((item, index) => {
+            let newArr = []
+            newArr[0] = item[0]
+            newArr[1] = (item[1] - realGdp[index][1]).toFixed(2)
+            return newArr
+        })
 
-        let 实际GDP = 美国PCE.map((item,index) => {
-            //let 当季非周期性自然失业率 = findCQN(item[0])
-            let newArr = []
-            newArr[0] = item[0]
-            newArr[1] = parseFloat(( parseFloat(item[1]) - parseFloat(美国CPI[index][1])).toFixed(2)) 
-            return newArr
-        })
-        let CPI_实际GDP = 美国CPI.map((item,index) => {
-            //let 当季非周期性自然失业率 = findCQN(item[0])
-            let newArr = []
-            newArr[0] = item[0]
-            newArr[1] = parseFloat(( parseFloat(item[1]) - parseFloat(实际GDP[index][1])).toFixed(2)) 
-            return newArr
-        })
-        console.log(实际GDP , CPI_实际GDP)
 
 
         option = {
@@ -848,33 +837,33 @@
                     left: 60,
                     right: 80,
                     top: "0.5%",
-                    height: '35%',
-                    show: true,
-                    backgroundColor: '#c1c4c3',
-                },
-                {
-                    left: 60,
-                    right: 80,
-                    top: "36%",
-                    height: '15%',
-                    show: true,
-                    backgroundColor: '#c1c4c3',
-                },
-                {
-                    left: 60,
-                    right: 80,
-                    top: "51.5%",
                     height: '30%',
                     show: true,
                     backgroundColor: '#c1c4c3',
                 },
+                {
+                    left: 60,
+                    right: 80,
+                    top: "31%",
+                    height: '30%',
+                    show: true,
+                    backgroundColor: '#c1c4c3',
+                },
+                {
+                    left: 60,
+                    right: 80,
+                    top: "61.5%",
+                    height: '25%',
+                    show: true,
+                    backgroundColor: '#c1c4c3',
+                },
 
 
                 {
                     left: 60,
                     right: 80,
-                    top: "82%",
-                    height: '15%',
+                    top: "87%",
+                    height: '10%',
                     show: true,
                     backgroundColor: '#c1c4c3',
                 },
@@ -984,9 +973,8 @@
                     splitLine: {
                         show: false
                     },
-
-                    position: "right"
-
+                    position: "right",
+                    max: 10
                 },
                 {
                     gridIndex: 2,
@@ -995,7 +983,8 @@
                         show: false
                     },
                     position: "right",
-                    max:11
+                    max: 10,
+                    min: -10
                 },
                 {
                     gridIndex: 3,
@@ -1032,12 +1021,12 @@
                     itemStyle: {
                         normal: {
                             areaStyle: {
-                                // color: "#5372d3"
+                                color: "#fdc375"
                             },
                         },
                         emphasis: {
                             areaStyle: {
-                                //  color: "#5372d3"
+                                color: "#fdc375"
                             },
                         }
                     },
@@ -1048,16 +1037,76 @@
                 },
 
                 {
-                    name: '美国CPI',
+                    name: 'PCEPI',
                     type: 'line',
                     xAxisIndex: 1,
                     yAxisIndex: 1,
                     showSymbol: false,
                     smooth: true,
-                    data: 美国CPI,
+                    data: PCEPI,
                     lineStyle: {
                         width: 1,
-                        color: "red"
+                        color: "#8C0044" 
+                    },
+                    markLine: {
+                        symbol: ["none", "none"],
+                        data: [{
+                            lineStyle: {
+                                width: 1,
+                                color: "#ff535c",
+                            },
+                            label: {
+                                formatter: "",
+                                color: "#ff535c",
+                                fontSize: 10,
+                                //position:'insideStartMiddle',
+                            },
+                            yAxis: 3, // 标线值
+                        },
+
+                        {
+                            lineStyle: {
+                                width: 1,
+                                color: "black",
+                            },
+                            label: {
+                                formatter: "",
+                                color: "#ff535c",
+                                fontSize: 10,
+                                //position:'insideStartMiddle',
+                            },
+                            yAxis: 2, // 标线值
+                        },
+
+                        {
+                            lineStyle: {
+                                width: 1,
+                                color: "white",
+                                type: "solid"
+                            },
+                            label: {
+                                formatter: "",
+                                color: "#ff535c",
+                                fontSize: 10,
+                                //position:'insideStartMiddle',
+                            },
+                            yAxis: 15, // 标线值
+                        },
+                        ],
+                    },
+                },
+
+                {
+                    name: 'CPI',
+                    type: 'line',
+                    xAxisIndex: 1,
+                    yAxisIndex: 1,
+                    showSymbol: false,
+                    smooth: true,
+                    data: CPI,
+                    lineStyle: {
+                        width: 1,
+                        color: "#FF0088"
                     },
                     markLine: {
                         symbol: ["none", "none"],
@@ -1121,17 +1170,30 @@
                     data: 摩擦失业率
                 },
                 {
-                    name: 'CPI_实际GDP',
+                    name: 'realGdp',
                     type: 'line',
                     lineStyle: {
-                        width: 1,
-                        //color: "green" //#825ea5 #fdc375
+                        width: 1.5,
+                        color: "#1179F1" //#825ea5 #fdc375
                     },
                     xAxisIndex: 2,
                     yAxisIndex: 2,
                     showSymbol: false,
                     smooth: true,
-                    data: CPI_实际GDP
+                    data: realGdp
+                },
+                {
+                    name: 'CPI_realGdp',
+                    type: 'line',
+                    lineStyle: {
+                        width: 1.5,
+                        color: "#FF2D06" //#825ea5 
+                    },
+                    xAxisIndex: 2,
+                    yAxisIndex: 2,
+                    showSymbol: false,
+                    smooth: true,
+                    data: CPI_realGdp
                 },
 
                 {
@@ -1157,7 +1219,7 @@
                     smooth: true,
                     lineStyle: {
                         width: 2,
-                        color: "yellow"
+                        color: "#a45db2"
                     },
                     markLine: {
                         symbol: ["none", "none"],

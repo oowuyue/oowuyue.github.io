@@ -17,16 +17,12 @@
         frameborder="0" style="overflow:hidden;width:100%;height:250px;" allowtransparency="true"
         loading="lazy"></iframe>
 
-    <iframe src="https://fred.stlouisfed.org/graph/graph-landing.php?g=Wwfm&width=1300&height=300" scrolling="yes"
-        frameborder="0" style="overflow:hidden;width:100%;height:65px; margin-bottom: -4px;" allowtransparency="true"
+    <iframe src="https://fred.stlouisfed.org/graph/graph-landing.php?g=Wwfm&width=1300&height=350" scrolling="yes"
+        frameborder="0" style="overflow:hidden;width:100%;height:120px; margin-bottom: -4px;" allowtransparency="true"
         loading="lazy"></iframe>
 
-    <iframe src="https://fred.stlouisfed.org/graph/graph-landing.php?g=Xk8N&width=1300&height=300" scrolling="yes"
-        frameborder="0" style="overflow:hidden;width:100%;height:100px; margin-bottom: -4px;" allowtransparency="true"
-        loading="lazy"></iframe>
-
-    <iframe src="https://fred.stlouisfed.org/graph/graph-landing.php?g=Xk9F&width=1300&height=450" scrolling="yes"
-        frameborder="0" style="overflow:hidden;width:100%;height:230px;" allowtransparency="true" loading="lazy"
+    <iframe src="https://fred.stlouisfed.org/graph/graph-landing.php?g=Xk9F&width=1300&height=430" scrolling="yes"
+        frameborder="0" style="overflow:hidden;width:100%;height:250px;" allowtransparency="true" loading="lazy"
         id="Gdp"></iframe>
 
     <iframe src="https://fred.stlouisfed.org/graph/graph-landing.php?g=Wwhb&width=1300&height=450" scrolling="yes"
@@ -34,20 +30,12 @@
         loading="lazy"></iframe>
 
 
-    <script type="text/javascript">
-        function changeGdp() {
-            let gdpQ = "https://fred.stlouisfed.org/graph/graph-landing.php?g=WwbP&width=1300&height=460"
-            let gdpM = "https://fred.stlouisfed.org/graph/graph-landing.php?g=Wwz8&width=1300&height=460"
-            document.getElementById("Gdp").src = document.getElementById("Gdp").src == gdpQ ? gdpM : gdpQ
-        }
-       /*******
-                  无提示
-                  realGdp = nominalGdp - CPI = PCE - CPI       正常需求主导经济周期    异常供给主导政治指令 战争疫情粮能CPI WwbP  WwaU
-                  cpi - realGdp =  cpi-（PCE - CPI）
-           *******/
-    </script>
-    <input type="button" value="GDP季月" onclick="changeGdp()" style="position: fixed; z-index: 1000; top: 610px; left: 70px; 
-       background-color: rgb(158, 158, 158); border: 0px none; height: 23px; border-radius: 5px;">
+    <!--季度经济数据 默认隐藏RESPPANWW Assets monthly
+                    【政府支持 投资  消费】       【消费】
+        realGdp =  nominalGdp - 总体通胀  ≈  PCE - CPI或PCEPI    正常货币需求主导经济周期  异常产品供给主导
+        CPI或PCEPI - realGdp                                          货币财政               政策战争疫情
+    -->
+
 </body>
 
 </html>

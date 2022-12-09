@@ -13,33 +13,26 @@
 </head>
 
 <body>
-    <iframe src="https://fred.stlouisfed.org/graph/graph-landing.php?g=Xk9M&width=1300&height=350" scrolling="yes"
+    <iframe src="https://fred.stlouisfed.org/graph/graph-landing.php?g=Xmwx&width=1300&height=350" scrolling="yes"
         frameborder="0" style="overflow:hidden;width:100%;height:250px;" allowtransparency="true"
         loading="lazy"></iframe>
 
-    <iframe src="https://fred.stlouisfed.org/graph/graph-landing.php?g=XkpG&width=1300&height=500" scrolling="yes"
+    <iframe src="https://fred.stlouisfed.org/graph/graph-landing.php?g=Xmup&width=1300&height=500" scrolling="yes"
         frameborder="0" style="overflow:hidden;width:100%;height:230px;" allowtransparency="true" loading="lazy"
         id="Gdp"></iframe>
-    
 
-    <iframe src="https://fred.stlouisfed.org/graph/graph-landing.php?g=Wwhb&width=1300&height=450" scrolling="yes"
+
+    <iframe src="https://fred.stlouisfed.org/graph/graph-landing.php?g=Xmw6&width=1300&height=450" scrolling="yes"
         frameborder="0" style="overflow:hidden;width:100%;height:310px;" allowtransparency="true"
         loading="lazy"></iframe>
 
-     <script type="text/javascript">
-        function changeGdp() {
-            let gdpQ = "https://fred.stlouisfed.org/graph/graph-landing.php?g=Xk2E&width=1300&height=460"
-            let gdpM = "https://fred.stlouisfed.org/graph/graph-landing.php?g=XkpG&width=1300&height=500"
-            document.getElementById("Gdp").src = document.getElementById("Gdp").src == gdpQ ? gdpM : gdpQ
-        }
-       /*******
-                  无提示
-                  realGdp = nominalGdp - CPI = PCE - CPI       正常货币需求主导经济周期  异常产品供给主导
-                  cpi - realGdp =  cpi-（PCE - CPI）              货币财政                政策战争疫情
-        *******/
-    </script>
-    <input type="button" value="GDP季月" onclick="changeGdp()" style="position: fixed; z-index: 1000; top: 610px; left: 70px; 
-       background-color: rgb(158, 158, 158); border: 0px none; height: 23px; border-radius: 5px;">
+
+    <!--月度经济数据 默认隐藏RESPPANWW Assets weekly
+                    【政府支持 投资  消费】       【消费】
+        realGdp =  nominalGdp - 总体通胀  ≈  PCE - CPI或PCEPI    正常货币需求主导经济周期  异常产品供给主导
+        CPI或PCEPI - realGdp                                          货币财政               政策战争疫情
+    -->
+
 </body>
 
 </html>
