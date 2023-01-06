@@ -81,36 +81,83 @@ const fs = require('fs');
             }
         }
 
-        if (value.name == "M1M2同比") {//legulegu
-            //broadMoneyOneYearIncrease    broadMoneyTwoYearIncrease     close      date 943977600000   "M1M2同比", "legulegu"
-            let M1M2同比 = value.resdata;
-            let M1同比 = M1M2同比.map(item => {
+        if (value.name == "M12_HS300") {//macromicro
+            let resdata260 = value.resdata;
+            if (resdata260.success == 0) console.log("M12_HS300 respones error " + resdata260.error);
+            let M1 = resdata260.data["c:260"].s[1].map(item => { item[0] = formatDate("macromicro", item[0]); return item })
+            let M2 = resdata260.data["c:260"].s[0].map(item => { item[0] = formatDate("macromicro", item[0]); return item })
+            let M1_M2 = resdata260.data["c:260"].s[2]
+            M1_M2 = M1_M2.map(item => { item[0] = formatDate("macromicro", item[0]); return item }).map(((item, index, arr) => {
                 let newArr = [];
-                newArr[0] = formatDate("legulegu", item.date).substring(0, 8) + "28"
-                newArr[1] = item.broadMoneyOneYearIncrease == 0 ? "" : item.broadMoneyOneYearIncrease;
-                return newArr;
-            });
-            let M2同比 = M1M2同比.map(item => {
-                let newArr = [];
-                newArr[0] = formatDate("legulegu", item.date).substring(0, 8) + "28"
-                newArr[1] = item.broadMoneyTwoYearIncrease == 0 ? "" : item.broadMoneyTwoYearIncrease;
-                return newArr;
-            });
-            let M1_M2同比 = M1M2同比.map(item => {
-                let newArr = [];
-                newArr[0] = formatDate("legulegu", item.date).substring(0, 8) + "28"
-                newArr[1] = item.broadMoneyOneYearIncrease - item.broadMoneyTwoYearIncrease
-                return newArr;
-            });
+                newArr[0] = item[0]
+                newArr[1] = item[1]
+                if (newArr[0].includes("01-28")) {
+                    let pre = M1_M2[index - 1] ? parseFloat(M1_M2[index - 1][1]) : 0
+                    let next = M1_M2[index + 1] ? parseFloat(M1_M2[index + 1][1]) : 0
+                    if ((pre * next) != 0)
+                        newArr[1] = (pre + next) / 2
+                    else
+                        newArr[1] = (pre + next)
 
-            M1同比 = "let M1同比 = " + JSON.stringify(M1同比, null, 4);
-            M2同比 = "let M2同比 = " + JSON.stringify(M2同比, null, 4);
-            M1_M2同比 = "let M1_M2同比 = " + JSON.stringify(M1_M2同比, null, 4);
-            M1M2同比 = M1同比 + "\r\n" + M2同比 + "\r\n" + M1_M2同比 + "\r\n";
+                    newArr[1] = newArr[1].toFixed(1)
+                }
+                return newArr;
+            }))
+            let HS300 = resdata260.data["c:260"].s[3].map(item => { return item })
+
+            M1 = "let M1 = " + JSON.stringify(M1, null, 4);
+            M2 = "let M2 = " + JSON.stringify(M2, null, 4);
+            M1_M2 = "let M1_M2 = " + JSON.stringify(M1_M2, null, 4);
+            HS300 = "let HS300 = " + JSON.stringify(HS300, null, 4);
+            let M_HS = M1 + "\r\n" + M2 + "\r\n" + M1_M2 + "\r\n" + HS300;
+            try {
+                fs.writeFileSync(folder + 'M12_HS300.js', M_HS);
+                console.log("M12_HS300 JSON data is saved.");
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        if (value.name == "信贷脉冲_房价同比") {//macromicro
+            let resdata = value.resdata;
+            if (resdata.success == 0) console.log("信贷脉冲_房价同比 respones error " + resdata.error);
+            let 信贷脉冲 = resdata.data["c:35559"].s[0].map(item => { item[0] = formatDate("macromicro", item[0]); return item })
+            let 房价同比 = resdata.data["c:35559"].s[1].map(item => { item[0] = formatDate("macromicro", item[0]); return item })
+            信贷脉冲 = "let 信贷脉冲 = " + JSON.stringify(信贷脉冲, null, 4);
+            房价同比 = "let 房价同比 = " + JSON.stringify(房价同比, null, 4);
+            let 信贷脉冲_房价同比 = 信贷脉冲 + "\r\n" + 房价同比;
+            try {
+                fs.writeFileSync(folder + '信贷脉冲_房价同比.js', 信贷脉冲_房价同比);
+                console.log("信贷脉冲_房价同比 JSON data is saved");
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        if (value.name == "社融存量同比") {//value500
+            let option
+            let colors
+            const regex = /option = ([\s\S]*?)};/g;
+            const found = value.resdata.match(regex);
+            eval(found[1])
+
+            let date = option.xAxis[0].data
+            let 社融存量同比 = option.series[0].data
+
+            社融存量同比 = date.map((item, index) => {
+                const firstSplit = item.split('年');
+                let year = firstSplit[0]
+                let month = firstSplit[1].split('月')[0];
+                return [`${year}-${month}-28`, 社融存量同比[index] ? 社融存量同比[index] : ""]
+            }).filter(item => {
+                return parseFloat(item[0].substring(0, 4)) >= 2008
+            })
+
+            社融存量同比 = "let 社融存量同比 = " + JSON.stringify(社融存量同比, null, 4);
 
             try {
-                fs.writeFileSync(folder + 'M1M2同比.js', M1M2同比);
-                console.log("M1M2同比 JSON data is saved");
+                fs.writeFileSync(folder + '社融存量同比.js', 社融存量同比 + "\r\n");
+                console.log("社融存量同比 JSON data is saved.");
             } catch (error) {
                 console.error(error);
             }
@@ -142,6 +189,95 @@ const fs = require('fs');
             try {
                 fs.writeFileSync(folder + 'M2供应量折算.js', M2供应量 + "\r\n" + M2折算 + "\r\n" + M2折算250);
                 console.log("M2供应量折算 JSON data is saved.");
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        if (value.name == "大盘拥挤度") {//legulegu
+            let 大盘拥挤度 = value.resdata.items.map(item => {
+                let newArr = []
+                newArr[0] = item.date
+                newArr[1] = item.congestion * 100
+                return newArr
+            })
+            大盘拥挤度 = "let 大盘拥挤度 = " + JSON.stringify(大盘拥挤度, null, 4);
+            try {
+                fs.writeFileSync(folder + '大盘拥挤度.js', 大盘拥挤度);
+                console.log("大盘拥挤度 JSON data is saved.");
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        if (value.name == "股市同比") {//value500
+            let option
+            let colors
+            const regex = /option = ([\s\S]*?)};/g;
+            const found = value.resdata.match(regex);
+            eval(found[0])
+
+            let date = option.xAxis[0].data
+            let 上证同比 = option.series[2].data
+            let HS300同比 = option.series[3].data
+
+            上证同比 = date.map((item, index) => {
+                const firstSplit = item.split('年');
+                let year = firstSplit[0]
+                let month = firstSplit[1].split('月')[0];
+                return [`${year}-${month}-28`, 上证同比[index] ? 上证同比[index] : ""]
+            }).filter(item => {
+                return parseFloat(item[0].substring(0, 4)) >= 2008
+            })
+
+            HS300同比 = date.map((item, index) => {
+                const firstSplit = item.split('年');
+                let year = firstSplit[0]
+                let month = firstSplit[1].split('月')[0];
+                return [`${year}-${month}-28`, HS300同比[index] ? HS300同比[index] : ""]
+            }).filter((item) => {
+                return parseFloat(item[0].substring(0, 4)) >= 2008
+            })
+
+            上证同比 = "let 上证同比 = " + JSON.stringify(上证同比, null, 4);
+            HS300同比 = "let HS300同比 = " + JSON.stringify(HS300同比, null, 4);
+            try {
+                fs.writeFileSync(folder + '股市同比.js', 上证同比 + "\r\n" + HS300同比);
+                console.log("股市同比 JSON data is saved.");
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        if (value.name == "十年国债收益率倒数与A股PE中位数") {//legulegu
+            let yield = value.resdata;
+            let HS300PE中位数 = yield.map(item => {
+                let newArr = [];
+                newArr[0] = formatDate("legulegu", item.date);
+                newArr[1] = item.hs300PeMiddle == 0 ? "" : item.hs300PeMiddle;
+                return newArr;
+            });
+            let A股PE中位数 = yield.map(item => {
+                let newArr = [];
+                newArr[0] = formatDate("legulegu", item.date);
+                newArr[1] = item.marketPe == 0 ? "" : item.marketPe;
+                return newArr;
+            });
+            let 十年期国债利率倒数 = yield.map(item => {
+                let newArr = [];
+                newArr[0] = formatDate("legulegu", item.date);
+                newArr[1] = item.marketPe == 0 ? "" : (1 / item.debtInterestRate * 100).toFixed(2)
+                return newArr;
+            });
+
+            HS300PE中位数 = "let HS300PE中位数 = " + JSON.stringify(HS300PE中位数, null, 4);
+            A股PE中位数 = "let A股PE中位数 = " + JSON.stringify(A股PE中位数, null, 4);
+            十年期国债利率倒数 = "let 十年期国债利率倒数 = " + JSON.stringify(十年期国债利率倒数, null, 4);
+            let yields = HS300PE中位数 + "\r\n" + A股PE中位数 + "\r\n" + 十年期国债利率倒数 + "\r\n";
+
+            try {
+                fs.writeFileSync(folder + '十年国债收益率倒数与A股PE中位数.js', yields);
+                console.log("十年国债收益率倒数与A股PE中位数 JSON data is saved.");
             } catch (error) {
                 console.error(error);
             }
@@ -216,48 +352,61 @@ const fs = require('fs');
         return promise1
     }
 
-    await taskPage("CPI同比", "macroview", "https://www.macroview.club/charts?name=cn_cpi", "/get-chart")
+    // await taskPage("CPI同比", "macroview", "https://www.macroview.club/charts?name=cn_cpi", "/get-chart")
 
-    await taskPage("PPI同比_工业企业利润同比", "macromicro", "https://sc.macromicro.me/collections/25/cn-industry-relative/14703/cn-industry-finished-goods-inventory-accumulated-ppi", "/charts/data/14703")
+    // await taskPage("PPI同比_工业企业利润同比", "macromicro", "https://sc.macromicro.me/collections/25/cn-industry-relative/14703/cn-industry-finished-goods-inventory-accumulated-ppi", "/charts/data/14703")
 
-    await taskPage("制造业PMI同比", "macromicro", "https://sc.macromicro.me/collections/25/cn-industry-relative/232/cn-pmi-caixin", "/charts/data/232")
+    // await taskPage("制造业PMI同比", "macromicro", "https://sc.macromicro.me/collections/25/cn-industry-relative/232/cn-pmi-caixin", "/charts/data/232")
 
-    await taskPage("M1M2同比", "legulegu", "https://legulegu.com/stockdata/m1m2", "getm1m2?token")
+    // await taskPage("M12_HS300", "macromicro", "https://sc.macromicro.me/collections/55/cn-shanghai-shengzhen-csi-300-index/260/cn-china-m1-m2", "/charts/data/260")
+       
+    await taskPage("香港M12", "macromicro", "    https://sc.macromicro.me/collections/1626/hk-finance-relative/13964/hk-m1-and-m2", "/charts/data/260")
 
-    await taskPage("大盘拥挤度", "legulegu", "https://legulegu.com/stockdata/ashares-congestion", "ashares-congestion?token")
-
-    await taskPage("十年国债收益率倒数与A股PE中位数", "legulegu", "https://legulegu.com/stockdata/china-10-year-bond-yield", "china-10-year-bond-yield-data?token")
-
-    await taskApi("M2供应量折算", "woniu500", "http://www.woniu500.com/data/mm2.json", "json")
-
-    await taskApi("股债差300平均", "value500", "http://value500.com/CSI300.asp", "html")
+    await taskPage("离岸人民币", "macromicro", "    https://sc.macromicro.me/collections/1626/hk-finance-relative/13964/hk-m1-and-m2", "/charts/data/260")
 
 
-    Promise.all(
-        [
-            taskPage("股票型基金仓位", "legulegu", "https://legulegu.com/stockdata/fund-position/pos-stock", "type=pos_stock", false),
-            taskPage("平衡混合型基金仓位", "legulegu", "https://legulegu.com/stockdata/fund-position/pos-pingheng", "type=pos_pingheng", false),
-        ]).then((values) => {
-            let 股票型基金仓位
-            let 平衡混合型基金仓位
-            values.forEach(value => {
-                if (value.name == "股票型基金仓位")
-                    股票型基金仓位 = value.resdata
-                if (value.name == "平衡混合型基金仓位")
-                    平衡混合型基金仓位 = value.resdata
-            });
+    usd-cnh
 
-            let 基金仓位 = 平衡混合型基金仓位.map((item, index) => {
-                return [item.date, (parseFloat(item.position) + parseFloat(股票型基金仓位[index].position)) / 200 * 100]
-            })
+    // await taskPage("信贷脉冲_房价同比", "macromicro", "https://sc.macromicro.me/collections/31/cn-finance-relative/35559/china-credit-impulse-index", "/charts/data/35559")
 
-            基金仓位 = "let 基金仓位 = " + JSON.stringify(基金仓位, null, 4);
-            try {
-                fs.writeFileSync(folder + '基金仓位.js', 基金仓位);
-                console.log("基金仓位 JSON data is saved.");
-            } catch (error) {
-                console.error(err);
-            }
-        }).catch((e) => console.log(e))
+    // await taskPage("大盘拥挤度", "legulegu", "https://legulegu.com/stockdata/ashares-congestion", "ashares-congestion?token")
+
+    // await taskPage("十年国债收益率倒数与A股PE中位数", "legulegu", "https://legulegu.com/stockdata/china-10-year-bond-yield", "china-10-year-bond-yield-data?token")
+
+    // await taskApi("M2供应量折算", "woniu500", "http://www.woniu500.com/data/mm2.json", "json")
+
+    // await taskApi("股市同比", "value500", "http://value500.com/SH000001.asp", "html")
+
+    // await taskApi("股债差300平均", "value500", "http://value500.com/CSI300.asp", "html")
+
+    // await taskApi("社融存量同比", "value500", "http://value500.com/srzl.asp", "html")
+
+
+    // Promise.all(
+    //     [
+    //         taskPage("股票型基金仓位", "legulegu", "https://legulegu.com/stockdata/fund-position/pos-stock", "type=pos_stock", false),
+    //         taskPage("平衡混合型基金仓位", "legulegu", "https://legulegu.com/stockdata/fund-position/pos-pingheng", "type=pos_pingheng", false),
+    //     ]).then((values) => {
+    //         let 股票型基金仓位
+    //         let 平衡混合型基金仓位
+    //         values.forEach(value => {
+    //             if (value.name == "股票型基金仓位")
+    //                 股票型基金仓位 = value.resdata
+    //             if (value.name == "平衡混合型基金仓位")
+    //                 平衡混合型基金仓位 = value.resdata
+    //         });
+
+    //         let 基金仓位 = 平衡混合型基金仓位.map((item, index) => {
+    //             return [item.date, (parseFloat(item.position) + parseFloat(股票型基金仓位[index].position)) / 200 * 100]
+    //         })
+
+    //         基金仓位 = "let 基金仓位 = " + JSON.stringify(基金仓位, null, 4);
+    //         try {
+    //             fs.writeFileSync(folder + '基金仓位.js', 基金仓位);
+    //             console.log("基金仓位 JSON data is saved.");
+    //         } catch (error) {
+    //             console.error(err);
+    //         }
+    //     }).catch((e) => console.log(e))
 
 })()

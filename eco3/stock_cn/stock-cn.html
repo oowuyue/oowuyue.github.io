@@ -6,235 +6,172 @@
 </head>
 
 <body style="height: 100%; margin: 0">
-    <script type="text/javascript" src="data/ppi_profile.js"></script>
-    <script type="text/javascript" src="data/cn_cpi_minus_ppi.js"></script>
+    <script type="text/javascript" src="data/CPI同比.js"></script>
+    <script type="text/javascript" src="data/PPI同比_工业企业利润同比.js"></script>
+    <script type="text/javascript" src="data/制造业PMI同比.js"></script>
     <script type="text/javascript" src="data/M12_HS300.js"></script>
-    <script type="text/javascript" src="data/usd_cnh.js"></script>
-    <script type="text/javascript" src="data/bond10_middlePe.js"></script>
-    <script type="text/javascript" src="data/guZhaiCha.js"></script>
-    <script type="text/javascript" src="data/gzb_erp.js"></script>
-    <script type="text/javascript" src="data/m2Total.js"></script>
-    <script type="text/javascript" src="data/vxeem.js"></script>
-    <script type="text/javascript" src="data/pos_fund.js"></script>
-    <script type="text/javascript" src="data/stockTongBi.js"></script>
-    <script type="text/javascript" src="data/ashares_congestion.js"></script>
-    <script type="text/javascript" src="data/cn_pmis.js"></script>
-    <script type="text/javascript" src="data/middle_indicators.js"></script>
-    <script type="text/javascript" src="data/mm_manucycle.js"></script>
-    <script type="text/javascript" src="data/cn_cars.js"></script>
+    <script type="text/javascript" src="data/信贷脉冲_房价同比.js"></script>
+    <script type="text/javascript" src="data/社融存量同比.js"></script>
+    <script type="text/javascript" src="data/M2供应量折算.js"></script>
+    <script type="text/javascript" src="data/基金仓位.js"></script>
+    <script type="text/javascript" src="data/大盘拥挤度.js"></script>
+    <script type="text/javascript" src="data/股市同比.js"></script>
+    <script type="text/javascript" src="data/十年国债收益率倒数与A股PE中位数.js"></script>
+    <script type="text/javascript" src="data/股债差300平均.js"></script>
+
     <div id="container" style="height: 100%; width: 80%;"></div>
     <script type="text/javascript" src="https://fastly.jsdelivr.net/npm/echarts@5.3.2/dist/echarts.min.js"></script>
     <script type="text/javascript">
-    ////仅为了对齐时间
-    function formatDate(site, date) {
-        if (site.includes("macromicro")) {
-            return date.substring(0, 8) + "28"
+        ////仅为了对齐时间
+        function formatDate(site, date) {
+            if (site.includes("macromicro")) {
+                return date.substring(0, 8) + "28"
+            }
+            if (site.includes("woniu500")) {
+                return date.slice(0, 4) + "-" + date.slice(4, 6) + '-28';
+            }
+            if (site.includes("legulegu")) {
+                var date = new Date(date);
+                var y = date.getFullYear(),
+                    m = date.getMonth() + 1,
+                    d = date.getDate();
+                if (m < 10)
+                    m = '0' + m;
+                if (d < 10)
+                    d = '0' + d;
+
+                if (d >= 28)
+                    var t = y + '-' + m + '-28';
+                else
+                    var t = y + '-' + m + '-' + d;
+                return t;
+
+            }
+            if (site.includes("value500")) {
+                if (date.includes("日"))
+                    return date.slice(0, 4) + "-" + date.slice(5, 7) + "-" + date.substring(8, 10);
+                return date.slice(0, 4) + "-" + date.slice(5, 7) + '-28';
+            }
         }
-        if (site.includes("woniu500")) {
-            return date.slice(0, 4) + "-" + date.slice(4, 6) + '-28';
-        }
-        if (site.includes("legulegu")) {
-            var date = new Date(date);
-            var y = date.getFullYear(),
-                m = date.getMonth() + 1,
-                d = date.getDate();
-            if (m < 10)
-                m = '0' + m;
-            if (d < 10)
-                d = '0' + d;
-
-            if (d >= 28)
-                var t = y + '-' + m + '-28';
-            else
-                var t = y + '-' + m + '-' + d;
-            return t;
-
-        }
-        if (site.includes("value500")) {
-            if (date.includes("日"))
-                return date.slice(0, 4) + "-" + date.slice(5, 7) + "-" + date.substring(8, 10);
-            return date.slice(0, 4) + "-" + date.slice(5, 7) + '-28';
-        }
-    }
-    Array.prototype.addStartEnd = function(start, end) {
-        let arr = this
-        arr = start.concat(arr)
-        end.forEach((item) => {
-            arr.push(item)
-        })
-        return arr
-    }
-    let currentDay = new Date()
-    currentDay = currentDay.getFullYear() + "-" + (currentDay.getMonth() + 1) + "-" + currentDay.getDate()
-    let justForAlignmentTime = []
-    for (var i = 0; i < yield_300PeMiddle.length; i++) { justForAlignmentTime[i] = Array.from(yield_300PeMiddle[i]) }
-    justForAlignmentTime = justForAlignmentTime.addStartEnd([
-        ["2000-01-28", ""]
-    ], [
-        [currentDay, " "]
-    ]).map(item => {
-        item[1] = ""
-        return item
-    })
-    ////仅为了对齐时间
-
-
-    //调整数据 为了显示方便 
-    usd_cnh = usd_cnh.map(item => {
-        item[1] = parseFloat(item[1]) - 5.5
-        return item
-    })
-
-    mm_manucycle = mm_manucycle.filter(item => {
-        return parseFloat(item[0].substring(0, 4)) >= 2000
-    }).map((item) => {
-        item[0] = item[0].substring(0, 8) + "28"
-        item[1] = (parseFloat(item[1]) * 10).toFixed(2)
-        return item
-    })
-
-    ashares_congestion = ashares_congestion.map(item => {
-        item[1] = (item[1] + 5).toFixed(2)
-        return item
-    })
-
-    function middle_indicators_avg(middle_indicators_nameArr, avgName) {
-
-        let middle_indicators_objArr = middle_indicators_nameArr.map((name) => {
-            let obj = {}
-            obj[name] = middle_indicators[name].map(item => {
-                let newArr = []
-                newArr[0] = formatDate("legulegu", item.quarter)
-                newArr[1] = item.opYoy //// orYoy 营业收入增长率  |    opYoy 营业利润增长率
-                return newArr
+        Array.prototype.addStartEnd = function (start, end) {
+            let arr = this
+            arr = start.concat(arr)
+            end.forEach((item) => {
+                arr.push(item)
             })
-            return obj
+            return arr
+        }
+        let currentDay = new Date()
+        currentDay = currentDay.getFullYear() + "-" + (currentDay.getMonth() + 1) + "-" + currentDay.getDate()
+        let justForAlignmentTime = []
+        for (var i = 0; i < HS300PE中位数.length; i++) { justForAlignmentTime[i] = Array.from(HS300PE中位数[i]) }
+        justForAlignmentTime = justForAlignmentTime.addStartEnd([
+            ["2000-01-28", ""]
+        ], [
+            [currentDay, " "]
+        ]).map(item => {
+            item[1] = ""
+            return item
+        })
+        ////仅为了对齐时间
+
+
+        //调整数据 为了显示方便 
+        大盘拥挤度 = 大盘拥挤度.map(item => {
+            item[1] = (item[1] + 5).toFixed(2)
+            return item
         })
 
-        let middle_indicators_obj = {}
-        for (let index = 0; index < middle_indicators_objArr.length; index++) {
-            middle_indicators_obj = { ...middle_indicators_obj, ...middle_indicators_objArr[index] }
+        function findSameTime(array, time) {
+            for (let index = 0; index < array.length; index++) { const element = array[index]; if (element[0] == time) return parseFloat(element[1]) }
+            return null
         }
-
-        let avgArr = middle_indicators_obj[middle_indicators_nameArr[0]].map((item, index) => {
+        官方制造业PMI = 官方制造业PMI.map(item => {
+            item[1] = (item[1] - 50)
+            return item
+        })
+        财新制造业PMI = 财新制造业PMI.map(item => {
+            item[1] = (item[1] - 50)
+            return item
+        })
+        let 制造业PMI = 官方制造业PMI.map((item, index) => {
             let newArr = []
             newArr[0] = item[0]
-
-            let sum = 0
-            for (let index2 = 0; index2 < middle_indicators_nameArr.length; index2++) {
-                let name = middle_indicators_nameArr[index2]
-                sum += middle_indicators_obj[name][index][1]
-            }
-            newArr[1] = sum / middle_indicators_objArr.length
+            let avg
+            let cx = findSameTime(财新制造业PMI, item[0])
+            if (cx) avg = (item[1] * 0.5 + cx * 0.5)
+            else avg = item[1]
+            newArr[1] = avg
             return newArr
         })
-        let avgObj = {}
-        avgObj[avgName] = avgArr
-
-        middle_indicators_obj = { ...middle_indicators_obj, ...avgObj };
-        return middle_indicators_obj
-    }
-    // let cpi行业 = middle_indicators_avg(["食品饮料"], "cpi行业平均")
-    // let ppi行业 = middle_indicators_avg(["汽车"], "ppi行业平均")//汽车时间不全要在数组最后面
-    // console.log(ppi行业)
-
-
-    function findSameTime(array, time) {
-        for (let index = 0; index < array.length; index++) { const element = array[index]; if (element[0] == time) return parseFloat(element[1]) }
-        return null
-    }
-
-    cn_pmi = cn_pmi.map(item => {
-        item[1] = (item[1] - 50)
-        return item
-    })
-    cn_pmi_cx = cn_pmi_cx.map(item => {
-        item[1] = (item[1] - 50)
-        return item
-    })
-    let cn_pmi_avg = cn_pmi.map((item, index) => {
-        let newArr = []
-        newArr[0] = item[0]
-        let avg
-        let cx = findSameTime(cn_pmi_cx, item[0])
-        if (cx) avg = (item[1] * 0.5 + cx * 0.5)
-        else avg = item[1]
-        newArr[1] = avg
-        return newArr
-    })
-    let cn_pmi_avg10 = cn_pmi.map((item, index) => {
-        let newArr = []
-        newArr[0] = item[0]
-        let avg
-        let cx = findSameTime(cn_pmi_cx, item[0])
-        if (cx) avg = (item[1] * 0.5 + cx * 0.5) * 10
-        else avg = item[1]
-        newArr[1] = avg
-        return newArr
-    })
+        let 制造业PMI10 = 官方制造业PMI.map((item, index) => {
+            let newArr = []
+            newArr[0] = item[0]
+            let avg
+            let cx = findSameTime(财新制造业PMI, item[0])
+            if (cx) avg = (item[1] * 0.5 + cx * 0.5) * 10
+            else avg = item[1]
+            newArr[1] = avg
+            return newArr
+        })
 
 
-    cn_cpi_minus_ppi["000001.SH"] = cn_cpi_minus_ppi["000001.SH"].filter(item => {
-        return parseFloat(item[0].substring(0, 4)) >= 2000
-    })
+        var dom = document.getElementById('container');
+        var myChart = echarts.init(dom, "red", {
+            renderer: 'canvas',
+            useDirtyRect: false
+        });
+        var app = {};
+        var option;
+        option = {
+            title: {},
+            tooltip: {
+                trigger: 'axis',
+                show: true,
+                position: ['70%', '41%'],
+                order: 'seriesDesc',
+                axisPointer: {
+                    type: 'cross',
+                    show: false
+                },
+                backgroundColor: "white",
+                formatter: function (params, ticket, callback) {
+                    return null;
+                    // seriesName : "股债差" ,  value : ['2017-02-28', 4.11]
+                    let nameList = ["ppi", "profile", "M1_M2", "离岸人民币", "沪深300", "300中位PE", "全A中位PE", "十年收益率倒数", "300平均股债差"]
+                    nameList = nameList.map(name => {
+                        let reslt = ''
+                        params.forEach(ele => {
+                            if (ele.seriesName == name) {
+                                if (ele.seriesName == "离岸人民币") {
+                                    let usd_cnh = ele.value[1] + 5.5
+                                    reslt += `<div style="line-height: 25px"> ${ele.seriesName} <span style="text-align: right; float:right;font-weight:bold;"> ${usd_cnh}  </span> </div>`
+                                } else {
+                                    reslt += `<div style="line-height: 25px"> ${ele.seriesName} <span style="text-align: right; float:right;font-weight:bold;"> ${ele.value[1]}  </span> </div>`
+                                }
 
-
-    var dom = document.getElementById('container');
-    var myChart = echarts.init(dom, "red", {
-        renderer: 'canvas',
-        useDirtyRect: false
-    });
-    var app = {};
-    var option;
-    option = {
-        title: {},
-        tooltip: {
-            trigger: 'axis',
-            show: true,
-            position: ['70%', '41%'],
-            order: 'seriesDesc',
-            axisPointer: {
-                type: 'cross',
-                show: false
-            },
-            backgroundColor: "white",
-            formatter: function(params, ticket, callback) {
-                return null;
-                // seriesName : "股债差" ,  value : ['2017-02-28', 4.11]
-                let nameList = ["ppi", "profile", "M1_M2", "离岸人民币", "沪深300", "300中位PE", "全A中位PE", "十年收益率倒数", "300平均股债差"]
-                nameList = nameList.map(name => {
-                    let reslt = ''
-                    params.forEach(ele => {
-                        if (ele.seriesName == name) {
-                            if (ele.seriesName == "离岸人民币") {
-                                let usd_cnh = ele.value[1] + 5.5
-                                reslt += `<div style="line-height: 25px"> ${ele.seriesName} <span style="text-align: right; float:right;font-weight:bold;"> ${usd_cnh}  </span> </div>`
-                            } else {
-                                reslt += `<div style="line-height: 25px"> ${ele.seriesName} <span style="text-align: right; float:right;font-weight:bold;"> ${ele.value[1]}  </span> </div>`
                             }
-
-                        }
-                    });
-                    return reslt
-                }).join('')
-                return nameList;
-            }
-        },
-        legend: {
-            left: "7%",
-            top: "31%",
-            orient: 'vertical',
-            backgroundColor: "white"
-        },
-        axisPointer: {
-            link: [{
-                xAxisIndex: 'all'
-            }],
-            lineStyle: {
-                color: "black"
-            }
-        },
-        dataZoom: [{
+                        });
+                        return reslt
+                    }).join('')
+                    return nameList;
+                }
+            },
+            legend: {
+                left: "7%",
+                top: "39%",
+                orient: 'vertical',
+                backgroundColor: "white"
+            },
+            axisPointer: {
+                link: [{
+                    xAxisIndex: 'all'
+                }],
+                lineStyle: {
+                    color: "black"
+                }
+            },
+            dataZoom: [{
                 show: true,
                 realtime: true,
                 start: 0,
@@ -249,8 +186,8 @@
                 end: 100,
                 xAxisIndex: [0, 1, 2, 3, 4, 5]
             }
-        ],
-        grid: [{
+            ],
+            grid: [{
                 left: 60,
                 right: 80,
                 top: "0%",
@@ -271,7 +208,7 @@
                 left: 60,
                 right: 80,
                 top: "24%",
-                height: '13%',
+                height: '31%', //13
                 show: true,
                 backgroundColor: '#c1c4c3',
             },
@@ -279,8 +216,8 @@
             {
                 left: 60,
                 right: 80,
-                top: "37.5%",
-                height: '31%',
+                top: "55.5%",
+                height: '17%',  //31
                 show: true,
                 backgroundColor: '#c1c4c3',
             },
@@ -289,8 +226,8 @@
             {
                 left: 60,
                 right: 80,
-                top: "69%",
-                height: '17%',
+                top: "73%",
+                height: '12%',  //17
                 show: true,
                 backgroundColor: '#c1c4c3',
             },
@@ -298,13 +235,13 @@
             {
                 left: 60,
                 right: 80,
-                top: "86.5%",
-                height: '12%',
+                top: "85.5%",
+                height: '13%',  //13
                 show: true,
                 backgroundColor: '#c1c4c3',
             },
-        ],
-        xAxis: [{
+            ],
+            xAxis: [{
                 gridIndex: 0,
                 type: "time",
                 splitNumber: 20,
@@ -431,173 +368,190 @@
                     padding: [-7, -20, 0, 0], // [上, 右, 下, 左] 
                 },
             },
-        ],
-        yAxis: [{
-                gridIndex: 0,
-                type: 'value',
-                splitLine: {
-                    show: false
-                },
-            },
-
-            {
-                gridIndex: 0,
-                type: 'value',
-                splitLine: {
-                    show: false
-                },
-            },
-
-            {
-                gridIndex: 1,
-                type: 'value',
-                splitLine: {
-                    show: false
-                },
-                max: 50,
-                min: -20,
-            },
-
-            {
-                gridIndex: 1,
-                type: 'value',
-                splitLine: {
-                    show: false
-                },
-                position: "right",
-                //min: -20
-            },
-
-
-            {
-                gridIndex: 2,
-                type: 'value',
-                splitLine: {
-                    show: false
-                },
-                axisLabel: {
-                    formatter: (value, index) => {
-                        if ((value + 5.5) < 6) return ""
-                        else return value + 5.5
-                    }
-                },
-                interval: 0.5,
-                position: "right",
-            },
-            {
-                gridIndex: 2,
-                type: 'value',
-                splitLine: {
-                    show: false
-                },
-
-            },
-
-            {
-                gridIndex: 3,
-                type: 'value',
-                splitLine: {
-                    show: false
-                },
-                min: 1000
-            },
-            {
-                gridIndex: 3,
-                type: 'value',
-                splitLine: {
-                    show: false
-                },
-                interval: 10,
-                max: 90,
-                min: -20
-            },
-
-
-            {
-                gridIndex: 4,
-                type: 'value',
-                splitLine: {
-                    show: false
-                },
-                axisLabel: {
-                    formatter: (value, index) => {
-                        if (value > 60 || value <= 0) return ""
-                        else return value
-                    }
-                },
-                interval: 10,
-                position: "right",
-                max: 65,
-                min: 15
-            },
-            {
-                gridIndex: 4,
-                type: 'value',
-                splitLine: {
-                    show: false
-                },
-            },
-
-
-            {
-                gridIndex: 5,
-                type: 'value',
-                splitLine: {
-                    show: false
-                },
-                position: "right",
-                axisLabel: {
-                    formatter: (value, index) => {
-                        if (value >= 8) return ""
-                        else return value
-                    }
-                },
-                max: 8,
-                min: -1,
-            },
-            {
-                gridIndex: 5,
-                type: 'value',
-                splitLine: {
-                    show: false
-                },
-            },
-        ],
-        series: [{
-                name: 'ppi',
-                type: 'line',
-                xAxisIndex: 0,
-                yAxisIndex: 0,
-                showSymbol: false,
-                smooth: true,
-                lineStyle: {
-                    width: 1.5,
-                },
-                itemStyle: {
-                    normal: {
-                        color: {
-                            "type": "linear",
-                            "x": 0,
-                            "y": 0,
-                            "x2": 0,
-                            "y2": 1,
-                            "colorStops": [{
-                                    "offset": 1,
-                                    "color": "#0081B6"
-                                },
-
-                                {
-                                    "offset": 0.1,
-                                    "color": '#FD4142'
-                                }
-                            ],
-                            "globalCoord": true
-                        }
+            ],
+            yAxis: [
+                {
+                    gridIndex: 0,
+                    type: 'value',
+                    splitLine: {
+                        show: false
                     },
                 },
-                markLine: {
-                    symbol: ["none", "none"],
-                    data: [{
+                {
+                    gridIndex: 0,
+                    type: 'value',
+                    splitLine: {
+                        show: false
+                    },
+                    position: "right",
+                },
+
+                {
+                    gridIndex: 1,
+                    type: 'value',
+                    splitLine: {
+                        show: false
+                    },
+                    max: 70,
+                    min: -30
+                },
+                {
+                    gridIndex: 1,
+                    type: 'value',
+                    splitLine: {
+                        show: false
+                    },
+                    position: "right",
+
+
+                },
+
+                {
+                    gridIndex: 2,
+                    type: 'value',
+                    splitLine: {
+                        show: false
+                    },
+                    min: 1000
+                },
+                {
+                    gridIndex: 2,
+                    type: 'value',
+                    splitLine: {
+                        show: false
+                    },
+                    position: "right",
+                    max: 100,
+                    min: -20
+                },
+
+                {
+                    gridIndex: 3,
+                    type: 'value',
+                    splitLine: {
+                        show: false
+                    },
+
+                },
+                {
+                    gridIndex: 3,
+                    type: 'value',
+                    splitLine: {
+                        show: false
+                    },
+                    interval: 10,
+                    position: "right",
+                    axisLabel: {
+                        formatter: (value, index) => {
+                            if (value >= 70) return ""
+                            else return value
+                        }
+                    },
+                    max: 70,
+                    min: 10
+                },
+
+                {
+                    gridIndex: 4,
+                    type: 'value',
+                    splitLine: {
+                        show: false
+                    },
+
+                },
+                {
+                    gridIndex: 4,
+                    type: 'value',
+                    splitLine: {
+                        show: false
+                    },
+                    axisLabel: {
+                        formatter: (value, index) => {
+                            if (value <= 0) return ""
+                            else return value
+                        }
+                    },
+                    position: "right",
+                    inverse: true,
+                    max: 8,
+                    min: 0,
+                },
+
+
+                {
+                    gridIndex: 5,
+                    type: 'value',
+                    splitLine: {
+                        show: false
+                    },
+                },
+                {
+                    gridIndex: 5,
+                    type: 'value',
+                    splitLine: {
+                        show: false
+                    },
+                    position: "right",
+                    axisLabel: {
+                        formatter: (value, index) => {
+                            if (value >= 40) return ""
+                            else return value
+                        }
+                    },
+                    max: 40,
+                    min: 15
+                },
+            ],
+            series: [
+                {
+                    name: 'CPI',
+                    type: 'line',
+                    xAxisIndex: 0,
+                    yAxisIndex: 1,
+                    data: [],//CPI同比.cpi,
+                    showSymbol: false,
+                    lineStyle: {
+                        width: 1.5,
+                        color: "black"
+                    },
+                },
+                {
+                    name: 'PPI',
+                    type: 'line',
+                    xAxisIndex: 0,
+                    yAxisIndex: 0,
+                    showSymbol: false,
+                    smooth: true,
+                    lineStyle: {
+                        width: 1.5,
+                    },
+                    itemStyle: {
+                        normal: {
+                            color: {
+                                "type": "linear",
+                                "x": 0,
+                                "y": 0,
+                                "x2": 0,
+                                "y2": 1,
+                                "colorStops": [
+                                    {
+                                        "offset": 0.15,
+                                        "color": '#FD4142'
+                                    },
+                                    {
+
+                                        "offset": 1,
+                                        "color": "#0081B6"
+                                    },
+
+                                ],
+                                "globalCoord": true
+                            }
+                        },
+                    },
+                    markLine: {
+                        symbol: ["none", "none"],
+                        data: [{
                             lineStyle: {
                                 width: 1,
                                 color: "#ff535c",
@@ -624,77 +578,98 @@
                             },
                             yAxis: 0, // 标线值  
                         },
-                    ],
+                        ],
+                    },
+                    tooltip: {
+                        show: true
+                    },
+                    data: PPI同比,
                 },
-                tooltip: {
-                    show: true
-                },
-                data: ppi,
-            },
 
 
-            {
-                name: 'profile',
-                type: 'line',
-                xAxisIndex: 1,
-                yAxisIndex: 2,
-                showSymbol: false,
-                smooth: true,
-                lineStyle: {
-                    width: 1.5,
+                {
+                    name: 'PMI',
+                    type: 'line',
+                    xAxisIndex: 1,
+                    yAxisIndex: 2,
+                    data: 制造业PMI10,
+                    showSymbol: false,
+                    itemStyle: {
+                        normal: {
+                            color: {
+                                "type": "linear",
+                                "x": 0,
+                                "y": 0,
+                                "x2": 0,
+                                "y2": 1,
+                                "colorStops": [
+                                    {
+                                        "offset": 0.3, //red 大下 
+                                        "color": '#FD4142'
+                                    }, {
+                                        "offset": 0.5, //blue 大下 
+                                        "color": "#0081B6"
+                                    },
+                                ],
+                                "globalCoord": true
+                            }
+                        },
+                    },
+                    lineStyle: {
+                        width: 1.5,
+                        //color: "black"
+                    },
                 },
-                markLine: {
-                    symbol: ["none", "none"],
-                    data: [{
-                            lineStyle: {
-                                width: 1,
-                                color: "#ff535c",
+                {
+                    name: '工业企业利润同比',
+                    type: 'line',
+                    xAxisIndex: 1,
+                    yAxisIndex: 2,
+                    showSymbol: false,
+                    smooth: true,
+                    lineStyle: {
+                        width: 1.5,
+                    },
+                    markLine: {
+                        symbol: ["none", "none"],
+                        data: [
+                            {
+                                lineStyle: {
+                                    width: 1,
+                                    color: "#ff535c",
+                                },
+                                label: {
+                                    formatter: "30",
+                                    color: "#ff535c",
+                                    fontSize: 10,
+                                    position: 'insideStartBottom',
+                                },
+                                yAxis: 30,
                             },
-                            label: {
-                                formatter: "上下穿30",
-                                color: "#ff535c",
-                                fontSize: 10,
-                                position: 'insideStartTop',
+                            {
+                                lineStyle: {
+                                    width: 1,
+                                    color: "black",
+                                },
+                                label: {
+                                    formatter: "0",
+                                    color: "#0081B6",
+                                    fontSize: 10,
+                                    position: 'insideStartBottom',
+                                },
+                                yAxis: 0,
                             },
-                            yAxis: 30,
-                        },
-                        {
-                            lineStyle: {
-                                width: 1,
-                                color: "#ff535c",
-                            },
-                            label: {
-                                formatter: "20",
-                                color: "#ff535c",
-                                fontSize: 10,
-                                position: 'insideStartBottom',
-                            },
-                            yAxis: 20,
-                        },
-                        {
-                            lineStyle: {
-                                width: 1,
-                                color: "black",
-                            },
-                            label: {
-                                formatter: "0",
-                                color: "#0081B6",
-                                fontSize: 10,
-                                position: 'insideStartBottom',
-                            },
-                            yAxis: 0,
-                        },
-                    ],
-                },
-                itemStyle: {
-                    normal: {
-                        color: {
-                            "type": "linear",
-                            "x": 0,
-                            "y": 0,
-                            "x2": 0,
-                            "y2": 1,
-                            "colorStops": [{
+                        ],
+                    },
+                    itemStyle: {
+                        normal: {
+                            color: {
+                                "type": "linear",
+                                "x": 0,
+                                "y": 0,
+                                "x2": 0,
+                                "y2": 1,
+                                "colorStops": [{
                                     "offset": 0.9,
                                     "color": "#0081B6"
                                 },
@@ -702,161 +677,95 @@
                                     "offset": 0.65,
                                     "color": '#FD4142'
                                 }
-                            ],
-                            "globalCoord": true
+                                ],
+                                "globalCoord": true
+                            }
+                        },
+                    },
+                    tooltip: {
+                        show: true
+                    },
+                    data: 工业企业利润同比,
+                },
+
+                {
+                    name: '沪深300',
+                    type: 'line',
+                    xAxisIndex: 2,
+                    yAxisIndex: 4,
+                    data: HS300,
+                    showSymbol: false,
+                    lineStyle: {
+                        width: 0,
+                        //color: "black" #825ea5 #fdc375  5372d3
+                    },
+                    itemStyle: {
+                        normal: {
+                            areaStyle: {
+                                color: "#a45db2"
+                            },
+                        },
+                        emphasis: {
+                            areaStyle: {
+                                color: "#a45db2"
+                            },
                         }
-                    },
-                },
-                tooltip: {
-                    show: true
-                },
-                data: profile,
-            },
-            {
-                name: 'pmi',
-                type: 'line',
-                xAxisIndex: 1,
-                yAxisIndex: 2,
-                data: cn_pmi_avg10,
-                showSymbol: false,
-                lineStyle: {
-                    width: 1.5,
-                    color: "black"
-                },
-
-            },
-
-
-            {
-                name: 'M1_M2', //主要看方向
-                type: 'line',
-                xAxisIndex: 2,
-                yAxisIndex: 5,
-                data: M1_M2,
-                showSymbol: false,
-                lineStyle: {
-                    width: 1.5,
-                    color: "#4764bd"
-                },
-            },
-            {
-                name: '离岸人民币', //主要看方向离岸香港美元
-                type: 'line',
-                xAxisIndex: 2,
-                yAxisIndex: 4,
-                data: usd_cnh,
-                showSymbol: false,
-                lineStyle: {
-                    width: 1,
-                    color: "gray"
-                },
-            },
-
-
-            {
-                name: '上证',
-                type: 'line',
-                xAxisIndex: 3,
-                yAxisIndex: 6,
-                data: cn_cpi_minus_ppi["000001.SH"],
-                showSymbol: false,
-                lineStyle: {
-                    width: 0,
-                    //color: "black" #825ea5 #fdc375
-                },
-                itemStyle: {
-                    normal: {
-                        areaStyle: {
-                            // color: "#5372d3"
-                        },
-                    },
-                    emphasis: {
-                        areaStyle: {
-                            //  color: "#5372d3"
-                        },
                     }
-                }
-            },
-
-            {
-                name: '沪深300',
-                type: 'line',
-                xAxisIndex: 3,
-                yAxisIndex: 6,
-                data: HS300,
-                showSymbol: false,
-                lineStyle: {
-                    width: 0,
-                    //color: "black" #825ea5 #fdc375
                 },
-                itemStyle: {
-                    normal: {
-                        areaStyle: {
-                            color: "#5372d3"
-                        },
+                {
+                    name: '沪深300M2',
+                    type: 'line',
+                    xAxisIndex: 2,
+                    yAxisIndex: 4,
+                    showSymbol: false,
+                    smooth: true,
+                    lineStyle: {
+                        width: 0.5,
+                        color: "blue"
                     },
-                    emphasis: {
-                        areaStyle: {
-                            color: "#5372d3"
-                        },
-                    }
-                }
-            },
-
-            {
-                name: '沪深300M2',
-                type: 'line',
-                xAxisIndex: 3,
-                yAxisIndex: 6,
-                showSymbol: false,
-                smooth: true,
-                lineStyle: {
-                    width: 0.5,
-                    color: "blue"
+                    tooltip: {
+                        show: false
+                    },
+                    data: M2折算,
                 },
-                tooltip: {
-                    show: false
+                {
+                    name: '沪深300M2',
+                    type: 'line',
+                    xAxisIndex: 2,
+                    yAxisIndex: 4,
+                    showSymbol: false,
+                    smooth: true,
+                    lineStyle: {
+                        width: 0.5,
+                        color: "blue"
+                    },
+                    tooltip: {
+                        show: false
+                    },
+                    data: M2折算250
                 },
-                data: M2zheSuan,
-            },
-            {
-                name: '沪深300M2',
-                type: 'line',
-                xAxisIndex: 3,
-                yAxisIndex: 6,
-                showSymbol: false,
-                smooth: true,
-                lineStyle: {
-                    width: 0.5,
-                    color: "blue"
-                },
-                tooltip: {
-                    show: false
-                },
-                data: M2zheSuan250
-            },
-            {
-                name: 'pos_fund',
-                type: 'line',
-                xAxisIndex: 3,
-                yAxisIndex: 7,
-                showSymbol: false,
-                smooth: true,
-                lineStyle: {
-                    width: 1.5,
-                },
-                tooltip: {
-                    show: false
-                },
-                itemStyle: {
-                    normal: {
-                        color: {
-                            type: 'linear',
-                            x: 0,
-                            y: 0,
-                            x2: 0,
-                            y2: 1,
-                            colorStops: [{
+                {
+                    name: '基金仓位',
+                    type: 'line',
+                    xAxisIndex: 2,
+                    yAxisIndex: 5,
+                    showSymbol: false,
+                    smooth: true,
+                    lineStyle: {
+                        width: 1.5,
+                    },
+                    tooltip: {
+                        show: false
+                    },
+                    itemStyle: {
+                        normal: {
+                            color: {
+                                type: 'linear',
+                                x: 0,
+                                y: 0,
+                                x2: 0,
+                                y2: 1,
+                                colorStops: [{
                                     offset: 0,
                                     color: 'red'
                                 },
@@ -869,14 +778,14 @@
                                     offset: 1,
                                     color: 'green'
                                 }
-                            ],
-                            globalCoord: true
-                        }
+                                ],
+                                globalCoord: true
+                            }
+                        },
                     },
-                },
-                markLine: {
-                    symbol: ["none", "none"],
-                    data: [{
+                    markLine: {
+                        symbol: ["none", "none"],
+                        data: [{
                             lineStyle: {
                                 width: 0.5,
                                 color: "green",
@@ -904,23 +813,23 @@
                             yAxis: 85, // 标线值
                             x: '73.5%'
                         },
-                    ],
+                        ],
+                    },
+                    data: 基金仓位
                 },
-                data: pos_fund
-            },
-            {
-                name: 'ashares_congestion',
-                type: 'line',
-                xAxisIndex: 3,
-                yAxisIndex: 7,
-                showSymbol: false,
-                smooth: true,
-                lineStyle: {
-                    width: 1,
-                },
-                markLine: {
-                    symbol: ["none", "none"],
-                    data: [{
+                {
+                    name: '大盘拥挤度',
+                    type: 'line',
+                    xAxisIndex: 2,
+                    yAxisIndex: 5,
+                    showSymbol: false,
+                    smooth: true,
+                    lineStyle: {
+                        width: 1,
+                    },
+                    markLine: {
+                        symbol: ["none", "none"],
+                        data: [{
                             lineStyle: {
                                 width: 0.5,
                                 color: "green",
@@ -948,17 +857,17 @@
                             yAxis: 55, // 标线值
                             x: '70%'
                         },
-                    ],
-                },
-                itemStyle: {
-                    normal: {
-                        color: {
-                            type: 'linear',
-                            x: 0,
-                            y: 0,
-                            x2: 0,
-                            y2: 1,
-                            colorStops: [{
+                        ],
+                    },
+                    itemStyle: {
+                        normal: {
+                            color: {
+                                type: 'linear',
+                                x: 0,
+                                y: 0,
+                                x2: 0,
+                                y2: 1,
+                                colorStops: [{
                                     offset: 0,
                                     color: 'red'
                                 },
@@ -971,37 +880,36 @@
                                     offset: 1,
                                     color: 'green'
                                 }
-                            ],
-                            globalCoord: true
-                        }
+                                ],
+                                globalCoord: true
+                            }
+                        },
                     },
+                    data: 大盘拥挤度
                 },
-                data: ashares_congestion
-            },
-
-                        {
-                name: 'tongBiSH',
-                type: 'line',
-                xAxisIndex: 3,
-                yAxisIndex: 7,
-                showSymbol: false,
-                smooth: true,
-                lineStyle: {
-                    width: 1.5,
-                    //color: "gray"
-                },
-                tooltip: {
-                    show: false
-                },
-                itemStyle: {
-                    normal: {
-                        color: {
-                            type: 'linear',
-                            x: 0,
-                            y: 0,
-                            x2: 0,
-                            y2: 1,
-                            colorStops: [{
+                {
+                    name: 'HS300同比',
+                    type: 'line',
+                    xAxisIndex: 2,
+                    yAxisIndex: 5,
+                    showSymbol: false,
+                    smooth: true,
+                    lineStyle: {
+                        width: 2,
+                        //color: "gray"
+                    },
+                    tooltip: {
+                        show: false
+                    },
+                    itemStyle: {
+                        normal: {
+                            color: {
+                                type: 'linear',
+                                x: 0,
+                                y: 0,
+                                x2: 0,
+                                y2: 1,
+                                colorStops: [{
                                     offset: 0.45, //大 下
                                     color: 'red'
                                 },
@@ -1011,17 +919,17 @@
                                 },
 
                                 {
-                                    offset: 0.8, //小 上
+                                    offset: 0.75, //小 上
                                     color: 'green'
                                 }
-                            ],
-                            globalCoord: true
-                        }
+                                ],
+                                globalCoord: true
+                            }
+                        },
                     },
-                },
-                markLine: {
-                    symbol: ["none", "none"],
-                    data: [{
+                    markLine: {
+                        symbol: ["none", "none"],
+                        data: [{
                             lineStyle: {
                                 width: 0.5,
                                 color: "green",
@@ -1049,64 +957,99 @@
                             yAxis: 30, // 标线值
                             x: '25%'
                         },
-                    ],
+                        ],
+                    },
+                    data: HS300同比
                 },
-                data: tongBiSH
-            },
-            {
-                name: 'tongBi300',
-                type: 'line',
-                xAxisIndex: 3,
-                yAxisIndex: 7,
-                showSymbol: false,
-                smooth: true,
-                lineStyle: {
-                    width: 1.5,
-                    //color: "gray"
+
+                {
+                    name: '300中位PE', //300剔除后中位
+                    type: 'line',
+                    xAxisIndex: 3,
+                    yAxisIndex: 7,
+                    data: HS300PE中位数,
+                    showSymbol: false,
+                    lineStyle: {
+                        width: 1.5,
+                        color: "#a45db2"
+                    },
                 },
-                tooltip: {
-                    show: false
+                {
+                    name: 'A股PE中位数', //全a剔除后中位
+                    type: 'line',
+                    xAxisIndex: 3,
+                    yAxisIndex: 7,
+                    data: A股PE中位数,
+                    showSymbol: false,
+                    lineStyle: {
+                        width: 1.5,
+                        color: "#ff814f"
+                    },
                 },
-                itemStyle: {
-                    normal: {
-                        color: {
-                            type: 'linear',
-                            x: 0,
-                            y: 0,
-                            x2: 0,
-                            y2: 1,
-                            colorStops: [{
-                                    offset: 0.45, //大 下
+                {
+                    name: '十年期国债利率倒数',
+                    type: 'line',
+                    xAxisIndex: 3,
+                    yAxisIndex: 7,
+                    data: 十年期国债利率倒数,
+                    showSymbol: false,
+                    lineStyle: {
+                        width: 1.5,
+                        color: "black"
+                    },
+                },
+
+                {
+                    name: '股债差300平均', //300全平均pe - 10年国债 
+                    type: 'line',
+                    xAxisIndex: 4,
+                    yAxisIndex: 9,
+                    data: 股债差300平均,
+                    showSymbol: false,
+                    lineStyle: {
+                        width: 1.5,
+                        //color:"#a45db2"
+                    },
+                    itemStyle: {
+                        normal: {
+                            color: {
+                                type: 'linear',
+                                x: 0,
+                                y: 0,
+                                x2: 0,
+                                y2: 1,
+                                colorStops: [{
+                                    offset: 0.35,
                                     color: 'red'
                                 },
                                 {
-                                    offset: 0.6,
+                                    offset: 0.55,
                                     color: 'orange'
                                 },
 
                                 {
-                                    offset: 0.8, //小 上
+                                    offset: 1,
                                     color: 'green'
                                 }
-                            ],
-                            globalCoord: true
-                        }
+                                ],
+                                globalCoord: true
+                            }
+                        },
                     },
-                },
-                markLine: {
-                    symbol: ["none", "none"],
-                    data: [{
+                    markLine: {
+                        symbol: ["none", "none"],
+                        data: [{
                             lineStyle: {
                                 width: 0.5,
                                 color: "green",
                             },
                             label: {
-                                formatter: "0低估",
-                                color: "green",
+                                formatter: "6低估",
                                 fontSize: "10",
+                                color: "green",
                                 position: 'start',
                             },
-                            yAxis: 0, // 标线值
+                            yAxis: 6, // 标线值
                             x: '25%' //固定起点的 x 像素位置
                         },
                         {
@@ -1115,284 +1058,185 @@
                                 color: "red",
                             },
                             label: {
-                                formatter: "30高估",
-                                color: "red",
+                                formatter: "3高估",
                                 fontSize: "10",
+                                color: "red",
                                 position: 'start',
+                            },
+                            yAxis: 3, // 标线值
+                            x: '25%'
+                        },
+                        ],
+                    },
+                },
+
+                {
+                    name: 'M1_M2',
+                    type: 'line',
+                    xAxisIndex: 5,
+                    yAxisIndex: 10,
+                    data: M1_M2,//usd_cnh,
+                    showSymbol: false,
+                    lineStyle: {
+                        width: 1,
+                        color: "gray"
+                    },
+                },
+                {
+                    name: '信贷脉冲',
+                    type: 'line',
+                    xAxisIndex: 5,
+                    yAxisIndex: 11,
+                    data: 信贷脉冲,
+                    showSymbol: false,
+                    itemStyle: {
+                        normal: {
+                            color: {
+                                "type": "linear",
+                                "x": 0,
+                                "y": 0,
+                                "x2": 0,
+                                "y2": 1,
+                                "colorStops": [
+
+                                    {
+                                        "offset": 0.35,
+                                        "color": '#FD4142'
+                                    },
+                                    {
+
+                                        "offset": 0.75,
+                                        "color": "#0081B6"
+                                    },
+                                ],
+                                "globalCoord": true
+                            }
+                        },
+                    },
+                    lineStyle: {
+                        width: 1.5,
+                        //color: "gray"
+                    },
+                    markLine: {
+                        symbol: ["none", "none"],
+                        data: [{
+                            lineStyle: {
+                                width: 1,
+                                color: "#ff535c",
+                            },
+                            label: {
+                                formatter: "上下穿30",
+                                color: "#ff535c",
+                                fontSize: 10,
+                                position: 'insideStartTop',
                             },
                             yAxis: 30, // 标线值
-                            x: '25%'
                         },
-                    ],
-                },
-                data: tongBi300
-            },
 
-            {
-                name: '300中位PE', //300剔除后中位
-                type: 'line',
-                xAxisIndex: 4,
-                yAxisIndex: 8,
-                data: yield_300PeMiddle,
-                showSymbol: false,
-                lineStyle: {
-                    width: 1.5,
-                    color: "#a45db2"
-                },
-            },
-            {
-                name: '全A中位PE', //全a剔除后中位
-                type: 'line',
-                xAxisIndex: 4,
-                yAxisIndex: 8,
-                data: yield_APeMiddle,
-                showSymbol: false,
-                lineStyle: {
-                    width: 1.5,
-                    color: "#ff814f"
-                },
-            },
-            {
-                name: '十年收益率倒数',
-                type: 'line',
-                xAxisIndex: 4,
-                yAxisIndex: 8,
-                data: yield_TenNaDeb,
-                showSymbol: false,
-                lineStyle: {
-                    width: 1.5,
-                    color: "black"
-                },
-            },
-
-            {
-                name: '300平均股债差', //300全平均pe - 10年国债 
-                type: 'line',
-                xAxisIndex: 5,
-                yAxisIndex: 10,
-                data: guZhaiCha,
-                showSymbol: false,
-                lineStyle: {
-                    width: 1.5,
-                },
-                itemStyle: {
-                    normal: {
-                        color: {
-                            type: 'linear',
-                            x: 0,
-                            y: 0,
-                            x2: 0,
-                            y2: 1,
-                            colorStops: [{
-                                    offset: 0.2,
-                                    color: 'green'
-                                },
-                                {
-                                    offset: 0.45,
-                                    color: 'orange'
-                                },
-
-                                {
-                                    offset: 1,
-                                    color: 'red'
-                                }
-                            ],
-                            globalCoord: true
-                        }
-                    },
-                },
-                markLine: {
-                    symbol: ["none", "none"],
-                    data: [{
-                            lineStyle: {
-                                width: 0.5,
-                                color: "green",
-                            },
-                            label: {
-                                formatter: "6低估",
-                                fontSize: "10",
-                                color: "green",
-                                position: 'start',
-                            },
-                            yAxis: 6, // 标线值
-                            x: '25%' //固定起点的 x 像素位置
-                        },
                         {
                             lineStyle: {
-                                width: 0.5,
-                                color: "red",
+                                width: 1,
+                                color: "black",
                             },
                             label: {
-                                formatter: "3高估",
-                                fontSize: "10",
-                                color: "red",
-                                position: 'start',
+                                formatter: "0",
+                                color: "#0081B6",
+                                fontSize: 10,
+                                position: 'insideStartBottom',
                             },
-                            yAxis: 3, // 标线值
-                            x: '25%'
+                            yAxis: 25, // 标线值  
                         },
-                    ],
-                },
-            },
-
-            {
-                name: '上证平均股债差', //300全平均pe - 10年国债 
-                type: 'line',
-                xAxisIndex: 5,
-                yAxisIndex: 10,
-                data: gzb_erp,
-                showSymbol: false,
-                lineStyle: {
-                    width: 1.5,
-                },
-                itemStyle: {
-                    normal: {
-                        color: {
-                            type: 'linear',
-                            x: 0,
-                            y: 0,
-                            x2: 0,
-                            y2: 1,
-                            colorStops: [{
-                                    offset: 0.2,
-                                    color: 'green'
-                                },
-                                {
-                                    offset: 0.45,
-                                    color: 'orange'
-                                },
-
-                                {
-                                    offset: 1,
-                                    color: 'red'
-                                }
-                            ],
-                            globalCoord: true
-                        }
+                        ],
                     },
                 },
-                markLine: {
-                    symbol: ["none", "none"],
-                    data: [{
-                            lineStyle: {
-                                width: 0.5,
-                                color: "green",
-                            },
-                            label: {
-                                formatter: "6低估",
-                                fontSize: "10",
-                                color: "green",
-                                position: 'start',
-                            },
-                            yAxis: 6, // 标线值
-                            x: '25%' //固定起点的 x 像素位置
-                        },
-                        {
-                            lineStyle: {
-                                width: 0.5,
-                                color: "red",
-                            },
-                            label: {
-                                formatter: "3高估",
-                                fontSize: "10",
-                                color: "red",
-                                position: 'start',
-                            },
-                            yAxis: 3, // 标线值
-                            x: '25%'
-                        },
-                    ],
-                },
-            },
 
 
 
-
-            ///以下仅为了对齐时间
-            {
-                name: '',
-                type: 'line',
-                xAxisIndex: 0,
-                yAxisIndex: 0,
-                tooltip: false,
-                data: justForAlignmentTime,
-                showSymbol: false,
-                lineStyle: {
-                    width: 0,
-                    color: "black"
+                ///以下仅为了对齐时间
+                {
+                    name: '',
+                    type: 'line',
+                    xAxisIndex: 0,
+                    yAxisIndex: 0,
+                    tooltip: false,
+                    data: justForAlignmentTime,
+                    showSymbol: false,
+                    lineStyle: {
+                        width: 0,
+                        color: "black"
+                    },
                 },
-            },
-            {
-                name: '',
-                type: 'line',
-                xAxisIndex: 1,
-                yAxisIndex: 2,
-                tooltip: false,
-                data: justForAlignmentTime,
-                showSymbol: false,
-                lineStyle: {
-                    width: 2,
-                    color: "black"
+                {
+                    name: '',
+                    type: 'line',
+                    xAxisIndex: 1,
+                    yAxisIndex: 2,
+                    tooltip: false,
+                    data: justForAlignmentTime,
+                    showSymbol: false,
+                    lineStyle: {
+                        width: 2,
+                        color: "black"
+                    },
                 },
-            },
-            {
-                name: '',
-                type: 'line',
-                xAxisIndex: 2,
-                yAxisIndex: 5,
-                tooltip: false,
-                data: justForAlignmentTime,
-                showSymbol: false,
-                lineStyle: {
-                    width: 0,
-                    color: "black"
+                {
+                    name: '',
+                    type: 'line',
+                    xAxisIndex: 2,
+                    yAxisIndex: 5,
+                    tooltip: false,
+                    data: justForAlignmentTime,
+                    showSymbol: false,
+                    lineStyle: {
+                        width: 0,
+                        color: "black"
+                    },
                 },
-            },
-            {
-                name: '',
-                type: 'line',
-                xAxisIndex: 3,
-                yAxisIndex: 6,
-                tooltip: false,
-                data: justForAlignmentTime,
-                showSymbol: false,
-                lineStyle: {
-                    width: 0,
-                    color: "black"
+                {
+                    name: '',
+                    type: 'line',
+                    xAxisIndex: 3,
+                    yAxisIndex: 6,
+                    tooltip: false,
+                    data: justForAlignmentTime,
+                    showSymbol: false,
+                    lineStyle: {
+                        width: 0,
+                        color: "black"
+                    },
                 },
-            },
-            {
-                name: '',
-                type: 'line',
-                xAxisIndex: 4,
-                yAxisIndex: 8,
-                tooltip: false,
-                data: justForAlignmentTime,
-                showSymbol: false,
-                lineStyle: {
-                    width: 0,
-                    color: "black"
+                {
+                    name: '',
+                    type: 'line',
+                    xAxisIndex: 4,
+                    yAxisIndex: 8,
+                    tooltip: false,
+                    data: justForAlignmentTime,
+                    showSymbol: false,
+                    lineStyle: {
+                        width: 0,
+                        color: "black"
+                    },
                 },
-            },
-            {
-                name: '',
-                type: 'line',
-                xAxisIndex: 5,
-                yAxisIndex: 10,
-                tooltip: false,
-                data: justForAlignmentTime,
-                showSymbol: false,
-                lineStyle: {
-                    width: 0,
-                    color: "black"
+                {
+                    name: '',
+                    type: 'line',
+                    xAxisIndex: 5,
+                    yAxisIndex: 10,
+                    tooltip: false,
+                    data: justForAlignmentTime,
+                    showSymbol: false,
+                    lineStyle: {
+                        width: 0,
+                        color: "black"
+                    },
                 },
-            },
-        ]
-    }
-    if (option && typeof option === 'object') {
-        myChart.setOption(option);
-    }
-    window.addEventListener('resize', myChart.resize);
+            ]
+        }
+        if (option && typeof option === 'object') {
+            myChart.setOption(option);
+        }
+        window.addEventListener('resize', myChart.resize);
     </script>
 </body>
 

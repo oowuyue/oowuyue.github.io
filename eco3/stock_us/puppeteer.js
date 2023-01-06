@@ -98,16 +98,20 @@ const path = require('path');
     }
     let taskFileDownload = async (dataNames, site = "fred.stlouisfed", pageUrl) => {
 
-        // const page = await browser.newPage()
-        // const client = await page.target().createCDPSession()
-        // await client.send('Page.setDownloadBehavior', {
-        //     behavior: 'allow',
-        //     downloadPath: path.resolve(folder)
-        // });
-        // await page.goto(pageUrl, { waitUntil: 'networkidle2' })
-        // await page.click('#download-button')
-        // await page.waitForSelector('#download-data-csv')
-        // await page.click('#download-data-csv')
+        const page = await browser.newPage()
+        const client = await page.target().createCDPSession()
+        await client.send('Page.setDownloadBehavior', {
+            behavior: 'allow',
+            downloadPath: path.resolve(folder)
+        });
+        await page.goto(pageUrl, { waitUntil: 'networkidle2' })
+        await page.click('#download-button')
+        await page.waitForSelector('#download-data-csv')
+        await page.click('#download-data-csv')
+        function wait(ms) {
+            return new Promise(resolve => setTimeout(() => resolve(), ms))
+        }
+        await wait(1000)
 
         let csvFile = `${folder}fredgraph.csv`  //多个数据下载文件名是fredgraph.csv
         fs.readFile(csvFile, "utf-8", (err, data) => {
@@ -135,10 +139,9 @@ const path = require('path');
                 } catch (error) {
                     console.error(error);
                 }
-                //fs.unlink(csvFile, (err) => { })
+                fs.unlink(csvFile, (err) => { })
             }
-
-        })
+        })//readfile
     }
 
     // await taskPage("标普500", "macromicro", "https://sc.macromicro.me/collections/34/us-stock-relative/402/us-optimus-prime-index-gspc", "/charts/data/402", 1)
@@ -149,7 +152,8 @@ const path = require('path');
     // await taskPage("MM美股基本指数", "macromicro", "https://sc.macromicro.me/collections/34/us-stock-relative/444/us-mm-gspc", "/charts/data/444")
     // await taskPage("MM制造业周期指标", "macromicro", "https://sc.macromicro.me/collections/3261/sector-industrial/47492/mm-manufacturing-cycle-index", "/charts/data/47492")
     // await taskPage("标普股利国债差", "macromicro", "https://sc.macromicro.me/collections/34/us-stock-relative/3231/sp500-dividendyield-2yr-bondyield-spread", "/charts/data/3231", 2)
-    await taskFileDownload("PCE-CPI-PCEPI", "fred.stlouisfed", "https://fred.stlouisfed.org/graph/?g=XmVr")
-
+    // await taskFileDownload("PCE-CPI-PCEPI", "fred.stlouisfed", "https://fred.stlouisfed.org/graph/?g=XmVr")
+    await taskFileDownload("CPI_realGdpQ-realGdpQ", "fred.stlouisfed", " https://fred.stlouisfed.org/graph/?g=Y8fk")
+    // await taskFileDownload("Rate-Yield10 -Assets", "fred.stlouisfed", "https://fred.stlouisfed.org/graph/?g=XBS2")
 
 })()
