@@ -1110,13 +1110,59 @@
                     type: 'line',
                     lineStyle: {
                         width: 1,
-                        color: "#1179F1" //#825ea5 #fdc375
+                        color: "#1179F1"
                     },
                     xAxisIndex: 1,
                     yAxisIndex: 1,
                     showSymbol: false,
                     smooth: true,
                     data: 失业率
+                },
+                {
+                    name: 'CPI',
+                    type: 'line',
+                    xAxisIndex: 1,
+                    yAxisIndex: 1,
+                    showSymbol: false,
+                    smooth: true,
+                    data: CPI,
+                    lineStyle: {
+                        width: 1,
+                        color: "#FF0088"
+                    },
+                    markLine: {
+                        symbol: ["none", "none"],
+                        data: [
+                            {
+                                lineStyle: {
+                                    width: 1,
+                                    color: "black",
+                                },
+                                label: {
+                                    formatter: "",
+                                    color: "#ff535c",
+                                    fontSize: 10,
+                                    //position:'insideStartMiddle',
+                                },
+                                yAxis: 2, // 标线值
+                            },
+
+                            {
+                                lineStyle: {
+                                    width: 1,
+                                    color: "white",
+                                    type: "solid"
+                                },
+                                label: {
+                                    formatter: "",
+                                    color: "#ff535c",
+                                    fontSize: 10,
+                                    //position:'insideStartMiddle',
+                                },
+                                yAxis: 15, // 标线值
+                            },
+                        ],
+                    },
                 },
                 {
                     name: 'PCEPI',
@@ -1168,59 +1214,14 @@
                         ],
                     },
                 },
-                {
-                    name: 'CPI',
-                    type: 'line',
-                    xAxisIndex: 1,
-                    yAxisIndex: 1,
-                    showSymbol: false,
-                    smooth: true,
-                    data: CPI,
-                    lineStyle: {
-                        width: 1,
-                        color: "#FF0088"
-                    },
-                    markLine: {
-                        symbol: ["none", "none"],
-                        data: [
-                            {
-                                lineStyle: {
-                                    width: 1,
-                                    color: "black",
-                                },
-                                label: {
-                                    formatter: "",
-                                    color: "#ff535c",
-                                    fontSize: 10,
-                                    //position:'insideStartMiddle',
-                                },
-                                yAxis: 2, // 标线值
-                            },
 
-                            {
-                                lineStyle: {
-                                    width: 1,
-                                    color: "white",
-                                    type: "solid"
-                                },
-                                label: {
-                                    formatter: "",
-                                    color: "#ff535c",
-                                    fontSize: 10,
-                                    //position:'insideStartMiddle',
-                                },
-                                yAxis: 15, // 标线值
-                            },
-                        ],
-                    },
-                },
 
                 {
                     name: 'realGdp',
                     type: 'line',
                     lineStyle: {
                         width: 1,
-                        color: "green" //#825ea5 #fdc375
+                        color: "green"
                     },
                     xAxisIndex: 2,
                     yAxisIndex: 2,
@@ -1233,7 +1234,7 @@
                     type: 'line',
                     lineStyle: {
                         width: 1,
-                        color: "#FF2D06" //#825ea5 
+                        color: "#FF2D06"
                     },
                     xAxisIndex: 2,
                     yAxisIndex: 2,
@@ -1282,7 +1283,21 @@
                 },
 
                 {
-                    name: '制造业周期',
+                    name: 'MM制造业周期',
+                    type: 'line',
+                    xAxisIndex: 3,
+                    yAxisIndex: 3,
+                    showSymbol: false,
+                    smooth: true,
+                    lineStyle: {
+                        width: 1,
+                        color: "#9f39b3"
+
+                    },
+                    data: MM制造业周期指标.map(v => { v[1] = parseFloat(v[1]) * 10; return v })
+                },
+                {
+                    name: 'MM美股基本指数',
                     type: 'line',
                     xAxisIndex: 3,
                     yAxisIndex: 3,
@@ -1291,8 +1306,9 @@
                     lineStyle: {
                         width: 1,
                         color: "black"
+
                     },
-                    data: MM制造业周期指标
+                    data: MM美股基本指数
                 },
 
                 {
@@ -1304,24 +1320,12 @@
                     smooth: true,
                     lineStyle: {
                         width: 1,
-                        color: "#a45db2"
+                        color: "#FFFF00"
                     },
                     data: 标普股利国债差
                 },
 
-                {
-                    name: '中国PPI',
-                    type: 'line',
-                    xAxisIndex: 4,
-                    yAxisIndex: 4,
-                    showSymbol: false,
-                    smooth: true,
-                    lineStyle: {
-                        width: 1,
-                        color: "#a45db2"
-                    },
-                    data: PPI同比
-                },
+
 
                 {
                     name: 'Rate',

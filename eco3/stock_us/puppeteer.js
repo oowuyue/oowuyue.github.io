@@ -153,7 +153,7 @@ const path = require('path');
     // await taskPage("MM制造业周期指标", "macromicro", "https://sc.macromicro.me/collections/3261/sector-industrial/47492/mm-manufacturing-cycle-index", "/charts/data/47492")
     // await taskPage("标普股利国债差", "macromicro", "https://sc.macromicro.me/collections/34/us-stock-relative/3231/sp500-dividendyield-2yr-bondyield-spread", "/charts/data/3231", 2)
     // await taskFileDownload("PCE-CPI-PCEPI", "fred.stlouisfed", "https://fred.stlouisfed.org/graph/?g=XmVr")
-    await taskFileDownload("CPI_realGdpQ-realGdpQ", "fred.stlouisfed", " https://fred.stlouisfed.org/graph/?g=Y8fk")
+    //await taskFileDownload("CPI_realGdpQ-realGdpQ", "fred.stlouisfed", " https://fred.stlouisfed.org/graph/?g=Y8fk")
     // await taskFileDownload("Rate-Yield10 -Assets", "fred.stlouisfed", "https://fred.stlouisfed.org/graph/?g=XBS2")
 
 })()
