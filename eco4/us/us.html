@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="zh-CN" style="height: 100%">
+
+<head>
+    <meta charset="utf-8">
+</head>
+
+<body style="height: 100%;width: 100%; margin: 0">
+    <div id="container" style="height: 100%; width: 100%;"></div>
+    <script type="text/javascript" src="./data/标普500.js"></script>
+    <script type="text/javascript" src="./data/铜金比.js"></script>
+    <script type="text/javascript" src="./data/咨商领先指标.js"></script>
+    <script type="text/javascript" src="./data/MM美股基本指数.js"></script>
+    <script type="text/javascript" src="./data/MM制造业周期指标.js"></script>
+    <script type="text/javascript" src="./data/标普股利国债差.js"></script>
+    <script type="text/javascript" src="./data/usm1.js"></script>
+    <script type="text/javascript" src="./data/usm2.js"></script>
+
+    <script type="text/javascript" src="./data/Y10.js"></script>
+    <script type="text/javascript" src="./data/Y2.js"></script>
+    <script type="text/javascript" src="./data/Y10_2.js"></script>
+
+    <script type="text/javascript" src="./data/Rate-Yield10-Assets.js"></script>
+    
+    <script type="text/javascript" src="https://fastly.jsdelivr.net/npm/echarts@5.3.2/dist/echarts.min.js"></script>
+    <script type="text/javascript">
+    var dom = document.getElementById('container');
+    var myChart = echarts.init(dom, "red", {
+        renderer: 'canvas',
+        useDirtyRect: false
+    });
+    var app = {};
+    var option;
+    ////仅为了对齐时间
+    function formatDate(site, date) {
+        if (site.includes("macromicro")) {
+            return date.substring(0, 8) + "28"
+        }
+        if (site.includes("woniu500")) {
+            return date.slice(0, 4) + "-" + date.slice(4, 6) + '-28';
+        }
+        if (site.includes("legulegu")) {
+            var date = new Date(date);
+            var y = date.getFullYear(),
+                m = date.getMonth() + 1,
+                d = date.getDate();
+            if (m < 10)
+                m = '0' + m;
+            if (d < 10)
+                d = '0' + d;
+
+            if (d >= 28)
+                var t = y + '-' + m + '-28';
+            else
+                var t = y + '-' + m + '-' + d;
+            return t;
+
+        }
+        if (site.includes("value500")) {
+            if (date.includes("日"))
+                return date.slice(0, 4) + "-" + date.slice(5, 7) + "-" + date.substring(8, 10);
+            return date.slice(0, 4) + "-" + date.slice(5, 7) + '-28';
+        }
+    }
+    Array.prototype.addStartEnd = function(start, end) {
+        let arr = this
+        arr = start.concat(arr)
+        end.forEach((item) => {
+            arr.push(item)
+        })
+        return arr
+    }
+    let currentDay = new Date()
+    currentDay = currentDay.getFullYear() + "-" + (currentDay.getMonth() + 1) + "-" + currentDay.getDate()
+    let justForAlignmentTime = []
+    for (var i = 0; i < 标普500.length; i++) { justForAlignmentTime[i] = Array.from(标普500[i]) }
+    justForAlignmentTime = justForAlignmentTime.addStartEnd([], []).map(item => {
+        item[1] = ""
+        return item
+    }).addStartEnd([], [currentDay])
+    ////仅为了对齐时间
+
+
+    option = {
+        title: {},
+        tooltip: {
+            trigger: 'axis',
+            show: true,
+            position: ['4.5%', '10%'],
+            order: 'seriesDesc',
+            axisPointer: {
+                type: 'cross',
+                show: true
+            },
+            formatter: function (params, ticket, callback) {
+                    return null;
+            }
+        },
+        legend: {},
+        axisPointer: {
+            link: [{
+                xAxisIndex: 'all'
+            }],
+            lineStyle: {
+                color: "black"
+            }
+        },
+        dataZoom: [{
+                show: true,
+                realtime: true,
+                start: 0,
+                end: 100,
+                xAxisIndex: [0, 1, 2, 3, 4, 5],
+                bottom: -9
+            },
+            {
+                type: 'inside',
+                realtime: true,
+                start: 0,
+                end: 100,
+                xAxisIndex: [0, 1, 2, 3, 4, 5],
+            }
+        ],
+
+        grid: [{
+                left: 60,
+                right: 80,
+                top: "0.5%",
+                height: '96.5%',
+                show: true,
+                backgroundColor: '#c1c4c3',
+
+            },
+            {
+                left: 60,
+                right: 80,
+                top: "0.5%",
+                height: '20%',
+                show: true,
+                backgroundColor: '#c1c4c3',
+            },
+            {
+                left: 60,
+                right: 80,
+                top: "21%",
+                height: '20%',
+                show: true,
+                backgroundColor: '#c1c4c3',
+            },
+            {
+                left: 60,
+                right: 80,
+                top: "41.5%",
+                height: '10%',
+                show: true,
+                backgroundColor: '#c1c4c3',
+            },
+            {
+                left: 60,
+                right: 80,
+                top: "52%",
+                height: '22%',
+                show: true,
+                backgroundColor: '#c1c4c3',
+            },
+            {
+                left: 60,
+                right: 80,
+                top: "74.5%",
+                height: '22.5%',
+                show: true,
+                backgroundColor: '#c1c4c3',
+            },
+        ],
+
+        xAxis: [{
+                gridIndex: 0,
+                type: "time",
+                splitNumber: 30,
+                axisLabel: {
+                    fontSize: 10,
+                    formatter: "{yyyy}",
+                    padding: [0, -50, 0, 0],
+                },
+                splitLine: {
+                    show: true,
+                    lineStyle: {
+                        color: ['#aaa']
+                    }
+                },
+                axisLabel: {
+                    fontSize: 10,
+                    formatter: "{yyyy}",
+                    padding: [0, -50, 0, 0],
+                },
+            },
+            {
+                gridIndex: 1,
+                type: "time",
+                axisLine: {
+                    show: true,
+                },
+                axisLabel: {
+                    show: false
+                },
+                axisPointer: {
+                    show: true,
+                    label: {
+                        show: false
+                    }
+                }
+
+            },
+            {
+                gridIndex: 2,
+                type: "time",
+                axisLine: {
+                    show: true,
+                },
+                axisLabel: {
+                    show: false
+                },
+                axisPointer: {
+                    show: true,
+                    label: {
+                        show: false
+                    }
+                }
+            },
+            {
+                gridIndex: 3,
+                type: "time",
+                axisLine: {
+                    show: true,
+                },
+                axisLabel: {
+                    show: false
+                },
+                axisPointer: {
+                    show: true,
+                    label: {
+                        show: false
+                    }
+                }
+            },
+            {
+                gridIndex: 4,
+                type: "time",
+                axisLine: {
+                    show: true,
+                },
+                axisLabel: {
+                    show: false
+                },
+                axisPointer: {
+                    show: true,
+                    label: {
+                        show: false
+                    }
+                }
+            },
+            {
+                gridIndex: 5,
+                type: "time",
+                axisLine: {
+                    show: true,
+                },
+                axisLabel: {
+                    show: false
+                },
+                axisPointer: {
+                    show: true,
+                    label: {
+                        show: false
+                    }
+                }
+            },
+        ],
+
+        yAxis: [{
+                gridIndex: 0,
+                type: 'value',
+                splitLine: {
+                    show: false
+                },
+                position: "right",
+
+            },
+            {
+                gridIndex: 1,
+                type: 'value',
+                splitLine: {
+                    show: false
+                },
+                max:0.5,
+                min: 0.15
+
+            },
+            {
+                gridIndex: 2,
+                type: 'value',
+                splitLine: {
+                    show: false
+                },
+                
+
+
+            },
+            {
+                gridIndex: 3,
+                type: 'value',
+                splitLine: {
+                    show: false
+                },
+
+            },
+            {
+                gridIndex: 4,
+                type: 'value',
+                splitLine: {
+                    show: false
+                },
+                //inverse:true,
+              
+
+            },
+            {
+                gridIndex: 5,
+                type: 'value',
+                splitLine: {
+                    show: false
+                },
+
+            },
+        ],
+
+        series: [{
+                name: '标普500',
+                type: 'line',
+                lineStyle: {
+                    width: 0,
+                },
+                itemStyle: { //#fdc375
+                    normal: {
+                        areaStyle: {
+                            color: "#fdc375"
+                        },
+                    },
+                    emphasis: {
+                        areaStyle: {
+                            color: "#fdc375"
+                        },
+                    }
+                },
+                showSymbol: false,
+                xAxisIndex: 0,
+                yAxisIndex: 0,
+                data: 标普500
+            },
+
+
+            {
+                name: '铜金比',
+                type: 'line',
+                xAxisIndex: 1,
+                yAxisIndex: 1,
+                showSymbol: false,
+                smooth: true,
+                data: 铜金比,
+                lineStyle: {
+                    width: 1,//
+                    color: "#008080"
+                },
+
+            },
+
+            {
+                name: 'MM制造业周期', //全球製造业、零售、运输、贸易相关数据
+                type: 'line',
+                xAxisIndex: 2,
+                yAxisIndex: 2,
+                showSymbol: false,
+                smooth: true,
+                lineStyle: {
+                    width: 1,
+                    color: "#3974b6"
+
+                },
+                data: MM制造业周期指标.map(v => { v[1] = parseFloat(v[1]) * 10; return v })
+            },
+
+            {
+                name: 'MM基本面', //柯博文重卡  企业税后获利  信用风险利差企业债-10年国债9f39b3
+                type: 'line',
+                xAxisIndex: 2,
+                yAxisIndex: 2,
+                showSymbol: false,
+                smooth: true,
+                lineStyle: {
+                    width: 1.5,
+                    color: "#0033ff"
+
+                },
+                data: MM美股基本指数
+            },
+
+
+ 
+
+            {
+                name: '标普股利国债差',
+                type: 'line',
+                xAxisIndex: 3,
+                yAxisIndex: 3,
+                showSymbol: false,
+                smooth: true,
+                lineStyle: {
+                    width: 1,//#1e87c7
+                    color: "black"
+                },
+                data: 标普股利国债差.filter(item => {
+                    return parseFloat(item[0].substring(0, 4)) >= 2006
+                }),
+            },
+
+            {
+                name: 'Y10_2',
+                type: 'line',
+                xAxisIndex: 4,
+                yAxisIndex: 4,
+                showSymbol: false,
+                smooth: true,
+                lineStyle: {
+                    width: 1.5,
+                    color: "red"
+                },
+                data: Y10_2
+            },
+
+            {
+                name: 'usm1',
+                type: 'line',
+                xAxisIndex: 4,
+                yAxisIndex: 4,
+                showSymbol: false,
+                smooth: true,
+                lineStyle: {
+                    width: 1.5,//#dd29d8
+                    color: "#d77a07"
+                },
+                data: usm1.filter(item => {
+                    return parseFloat(item[0].substring(0, 4)) >= 1980
+                }).map(v => {
+                    v[1] = v[1] > 20 ? 20 : v[1]
+                    v[1] = v[1] / 5
+                    return v
+                })
+            },
+
+
+            {
+                name: 'Rate',
+                type: 'line',
+                xAxisIndex: 5,
+                yAxisIndex: 5,
+                showSymbol: false,
+                smooth: true,
+                lineStyle: {
+                    width: 1.5,
+                    color: "black"
+                },
+                data: Rate,
+            },
+
+            {
+                name: 'Assets',
+                type: 'line',
+                xAxisIndex: 5,
+                yAxisIndex: 5,
+                showSymbol: false,
+                smooth: true,
+                lineStyle: {
+                    width: 1.5,
+                    color: "#a000a0"
+                },
+                data: Assets,
+            },
+
+
+
+
+
+            ///以下仅为了对齐时间
+            {
+                name: '',
+                type: 'line',
+                xAxisIndex: 0,
+                yAxisIndex: 0,
+                tooltip: false,
+                data: justForAlignmentTime,
+                showSymbol: false,
+                lineStyle: {
+                    width: 0,
+                    color: "black"
+                },
+            },
+            {
+                name: '',
+                type: 'line',
+                xAxisIndex: 1,
+                yAxisIndex: 1,
+                tooltip: false,
+                data: justForAlignmentTime,
+                showSymbol: false,
+                lineStyle: {
+                    width: 0,
+                    color: "black"
+                },
+            },
+            {
+                name: '',
+                type: 'line',
+                xAxisIndex: 2,
+                yAxisIndex: 2,
+                tooltip: false,
+                data: justForAlignmentTime,
+                showSymbol: false,
+                lineStyle: {
+                    width: 0,
+                    color: "black"
+                },
+            },
+            {
+                name: '',
+                type: 'line',
+                xAxisIndex: 3,
+                yAxisIndex: 3,
+                tooltip: false,
+                data: justForAlignmentTime,
+                showSymbol: false,
+                lineStyle: {
+                    width: 0,
+                    color: "black"
+                },
+            },
+            {
+                name: '',
+                type: 'line',
+                xAxisIndex: 4,
+                yAxisIndex: 4,
+                tooltip: false,
+                data: justForAlignmentTime,
+                showSymbol: false,
+                lineStyle: {
+                    width: 0,
+                    color: "black"
+                },
+            },
+            {
+                name: '',
+                type: 'line',
+                xAxisIndex: 5,
+                yAxisIndex: 5,
+                tooltip: false,
+                data: justForAlignmentTime,
+                showSymbol: false,
+                lineStyle: {
+                    width: 0,
+                    color: "black"
+                },
+            },
+        ]
+    };
+
+    if (option && typeof option === 'object') {
+        myChart.setOption(option);
+    }
+    window.addEventListener('resize', myChart.resize)
+
+    /*                      红2 蓝0 ；近 蓝低红穿0绿 下0
+        正常外内货币需求周期  预防性升降息    货币           股CPI能租
+                                           财政           股PPi                             
+                           红上穿蓝 ；                     债       金融市场    实体市场                             
+        异常外部大宗供给因素  应急性升降息    战争           货币                            
+                                           自然           CPI粮能
+        
+    */
+    </script>
+</body>
+
+</html>

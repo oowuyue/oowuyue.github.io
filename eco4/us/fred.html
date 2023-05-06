@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <style type="text/css">
+        iframe {
+            margin-bottom: -2px;
+        }
+    </style>
+    <title></title>
+</head>
+
+<body>
+
+    <iframe src="https://fred.stlouisfed.org/graph/graph-landing.php?g=11Ssr&width=1300&height=350" scrolling="yes"
+        frameborder="0" style="overflow:hidden;width:100%;height:210px;" allowtransparency="true"
+        loading="lazy"></iframe>
+    <!--月度 同比下穿20危险-->
+
+
+    <iframe src="https://fred.stlouisfed.org/graph/graph-landing.php?g=137iB&width=1300&height=500" scrolling="yes"
+        frameborder="0" style="overflow:hidden;width:100%;height:310px;" allowtransparency="true" loading="lazy"
+        id="Gdp"></iframe>
+    <!--月度cpi 失业率
+         
+        默认季度11Sst   月度137iB
+        realGdp  =  nominalGdp - CPI或PCEPI ≈ PCE - CPI或PCEPI
+        CPI-realGdp    上穿0  上穿realGdp
+        摩擦失业率      小于0
+    -->
+
+
+    <iframe src="https://fred.stlouisfed.org/graph/graph-landing.php?g=11Ssv&width=1300&height=500" scrolling="yes"
+        frameborder="0" style="overflow:hidden;width:100%;height:250px;" allowtransparency="true"
+        loading="lazy"></iframe>
+    <!--月度 120rl 11Ssv  同异向 程度                     
+                                   相对量        相对收益率           角度         
+                国债等金融资产供需宽紧 量 价格  反 收益率角度   静储
+                         货币供需宽紧 量 价格  =  收益率角度   流交
+
+                         通过cpi失业率GDP表现出来
+
+               政治战争自然因素             内循环货币债务
+            异常大宗供应链供给主导      正常货币需求主导经济周期
+                应急式托压                  提前预判式托压
+    -->
+
+</body>
+
+</html>
