@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+<html lang="zh-CN" style="height: 100%">
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta charset="utf-8">
+    <title>cn2</title>
+    <script type="text/javascript" src="data/CPI,PPI,CPI_PPI.js"></script>
+    <script type="text/javascript" src="data/M1,M1_M2,沪深300.js"></script>
+
+    <script type="text/javascript" src="data/雪球行情/中国银行.js"></script>
+    <script type="text/javascript" src="data/雪球行情/工商银行.js"></script>
+
+    <script type="text/javascript" src="data/雪球行情/中信证券.js"></script>
+    <script type="text/javascript" src="data/雪球行情/光大证券.js"></script>
+
+    <script type="text/javascript" src="data/雪球行情/中证红利.js"></script>
+    <script type="text/javascript" src="data/雪球行情/大宗商品.js"></script>
+    <script type="text/javascript" src="data/雪球行情/上证消费.js"></script>
+
+    <script type="text/javascript" src="data/雪球行情/沪深300Month.js"></script>
+    <script type="text/javascript" src="data/雪球行情/沪深300Week.js"></script>
+    <script>
+        function stampToDate(stamp) {
+            var date = new Date(stamp);
+            var y = date.getFullYear(),
+                m = date.getMonth() + 1,
+                d = date.getDate();
+            if (m < 10)
+                m = '0' + m;
+            if (d < 10)
+                d = '0' + d;
+
+            if (d >= 23) //过年 大概
+                var t = y + '-' + m + '-28';
+            else
+                var t = y + '-' + m + '-' + d;
+            return t;
+        }
+
+        function sectorIndexToObj(ele) {
+            let newItem = {}
+            newItem.stamp = ele[0]
+            newItem.date = stampToDate(ele[0])
+            newItem.open = ele[2]//open
+            newItem.close = ele[5]//close
+            // newItem.high = ele[3]//high
+            // newItem.low = ele[4]//low
+            return newItem
+        }
+
+        function sectorIndexYoY(ele, index, datasArr) {
+
+            const preItem = datasArr.find(element => {
+                let preYear = '' + (parseInt(ele.date.slice(0, 4)) - 1) + ele.date.substring(4, 10)
+                return element.date == preYear
+            })
+            if (preItem) {
+                let openYoY = (ele.open - preItem.open) / preItem.open
+                let closeYoY = (ele.close - preItem.close) / preItem.close
+                let highYoY = (ele.high - preItem.high) / preItem.high
+                let lowYoY = (ele.low - preItem.low) / preItem.low
+                ele.openYoY = openYoY
+                ele.closeYoY = closeYoY
+                ele.highYoY = highYoY
+                ele.lowYoY = lowYoY
+            }
+            else {
+                ele.openYoY = ""
+                ele.closeYoY = ""
+                ele.highYoY = ""
+                ele.lowYoY = ""
+            }
+            return ele
+
+        }
+
+        function sectorIndexWoW(ele, index, datasArr) {
+            //上周同比
+            const preItem = datasArr.find(element => {
+                return element.stamp + 604800000 == ele.stamp
+            })
+            if (preItem) {
+                let openYoY = (ele.open - preItem.open) / preItem.open
+                let closeYoY = (ele.close - preItem.close) / preItem.close
+                ele.openYoY = openYoY
+                ele.closeYoY = closeYoY
+            }
+            else {
+                ele.openYoY = ""
+                ele.closeYoY = ""
+            }
+            return ele
+
+        }
+
+        function sectorIndexMa(MA, ele, index, datasArr) {
+            let { ...copyItem } = ele
+            if (index < MA) {
+                return copyItem
+            }
+            let sumOpenYoY = 0
+            let sumCloseYoY = 0
+            for (let i = index - MA; i < index; i++) {
+                sumOpenYoY += parseFloat(datasArr[i].openYoY)
+                sumCloseYoY += parseFloat(datasArr[i].closeYoY)
+            }
+
+            copyItem[`openYoYMA${MA}`] = parseFloat((sumOpenYoY / MA).toFixed(2))
+            copyItem[`closeYoYMA${MA}`] = parseFloat((sumCloseYoY / MA).toFixed(2))
+
+            return copyItem
+        }
+
+
+        沪深300Month = 沪深300Month.data.item.map((ele) => {
+            return sectorIndexToObj(ele)
+        }).map((ele, index, 沪深300Month) => {
+            return sectorIndexYoY(ele, index, 沪深300Month)
+        })
+
+        上证消费 = 上证消费.data.item.map((ele) => {
+            return sectorIndexToObj(ele)
+        }).map((ele, index, 上证消费) => {
+            return sectorIndexYoY(ele, index, 上证消费)
+        })
+
+        大宗商品 = 大宗商品.data.item.map((ele) => {
+            return sectorIndexToObj(ele)
+        }).map((ele, index, 大宗商品) => {
+            return sectorIndexYoY(ele, index, 大宗商品)
+        })
+
+        中证红利 = 中证红利.data.item.map((ele) => {
+            return sectorIndexToObj(ele)
+        }).map((ele, index, 中证红利) => {
+            return sectorIndexYoY(ele, index, 中证红利)
+        })
+
+
+
+    </script>
+
+    <script type="text/javascript" src="data/财新制造业PMI,官方制造业PMI.js"></script>
+    <script>
+        function findSameTime(array, time) {
+            for (let index = 0; index < array.length; index++) {
+                const element = array[index];
+                if (element[0] == time) return parseFloat(element[1])
+            }
+            return null
+        }
+        官方制造业PMI = 官方制造业PMI.map(item => {
+            item[1] = parseFloat(((item[1] - 50) * 1).toFixed(2))
+            return item
+        })
+        财新制造业PMI = 财新制造业PMI.map(item => {
+            item[1] = parseFloat(((item[1] - 50) * 1).toFixed(2))
+            return item
+        })
+        let cn_pmi_平均 = 官方制造业PMI.map((item, index) => {
+            let newArr = []
+            newArr[0] = item[0]
+            let avg
+            let cx = findSameTime(财新制造业PMI, item[0])
+            if (cx) avg = (item[1] * 0.5 + cx * 0.5).toFixed(2)
+            else avg = item[1].toFixed(2)
+            newArr[1] = parseFloat(avg)
+            return newArr
+        }).filter(item => {
+            return true //parseFloat(item[0].substring(0, 4)) >= 2008
+        })
+    </script>
+
+    <script type="text/javascript" src="../../eco3/stock_cn/data1/月周总.js"></script>
+    <script type="text/javascript" src="../../eco3/stock_cn/data1/周日总.js"></script>
+    <script type="text/javascript">
+        let 月周kdj = 月周总
+        let 月周kdj统计 = {};
+        月周kdj.forEach((element) => {
+            let startTime = element[2].substring(0, 7);
+            if (月周kdj统计[startTime]) {
+                月周kdj统计[startTime].count += 1;
+                月周kdj统计[startTime].detail.push(element);
+            } else 月周kdj统计[startTime] = { count: 1, detail: [element] };
+        });
+
+
+        let 月周kdj统计Arr = [];
+        for (var key of Object.keys(月周kdj统计)) {
+            月周kdj统计Arr.push([key + "-28", 月周kdj统计[key].count]);
+        }
+        月周kdj统计Arr = 月周kdj统计Arr.filter((item) => {
+            return item[1] >= 3
+        }).map((item) => {
+            item[1] = item[1] > 30 ? 30 : item[1]
+            return item
+        })
+        console.log(月周kdj统计Arr);
+
+
+        ///////
+        let 周日kdj = 周日总
+        let 周日kdj统计 = {};
+        周日kdj.forEach((element) => {
+            let startTime = element[2].substring(0, 7);
+            if (周日kdj统计[startTime]) {
+                周日kdj统计[startTime].count += 1;
+                周日kdj统计[startTime].detail.push(element);
+            } else 周日kdj统计[startTime] = { count: 1, detail: [element] };
+        });
+
+
+        let 周日kdj统计Arr = [];
+        for (var key of Object.keys(周日kdj统计)) {
+            周日kdj统计Arr.push([key + "-28", 周日kdj统计[key].count]);
+        }
+        周日kdj统计Arr = 周日kdj统计Arr.filter((item) => {
+            return item[1] >= 3
+        }).map((item) => {
+            item[1] = item[1] > 30 ? 30 : item[1]
+            return item
+        })
+        console.log(周日kdj统计Arr);
+
+        ////
+
+
+    </script>
+    <script>
+
+        function stampToDate(stamp) {
+            var date = new Date(stamp);
+            var y = date.getFullYear(),
+                m = date.getMonth() + 1,
+                d = date.getDate();
+            if (m < 10)
+                m = '0' + m;
+            if (d < 10)
+                d = '0' + d;
+
+            var t = y + '-' + m + '-' + d;
+            return t;
+        }
+
+        中国银行 = 中国银行.data.item.filter((value) => {
+            return value[7] >= 6
+        }).map((value) => {
+            let newValue = {}
+            newValue.date = stampToDate(value[0])
+            newValue.percent = value[7]
+            return newValue
+        })
+        console.log(中国银行)
+
+
+        工商银行 = 工商银行.data.item.filter((value) => {
+            return value[7] >= 6
+        }).map((value) => {
+            let newValue = {}
+            newValue.date = stampToDate(value[0])
+            newValue.percent = value[7]
+            return newValue
+        })
+        console.log(工商银行)
+
+
+        光大证券 = 光大证券.data.item.filter((value) => {
+            return value[7] >= 8
+        }).map((value) => {
+            let newValue = {}
+            newValue.date = stampToDate(value[0])
+            newValue.percent = value[7]
+            return newValue
+        })
+        console.log(光大证券)
+
+
+        中信证券 = 中信证券.data.item.filter((value) => {
+            return value[7] >= 8
+        }).map((value) => {
+            let newValue = {}
+            newValue.date = stampToDate(value[0])
+            newValue.percent = value[7]
+            return newValue
+        })
+        console.log(中信证券)
+
+    </script>
+</head>
+
+<body style="height: 100%; width: 100%; margin: 0">
+
+    <div id="container" style="height: 100%; width: 90%"></div>
+
+    <script type="text/javascript" src="https://fastly.jsdelivr.net/npm/echarts@5.3.2/dist/echarts.min.js"></script>
+    <script type="text/javascript">
+        var dom = document.getElementById("container");
+        var myChart = echarts.init(dom, "red", {
+            renderer: "canvas",
+            useDirtyRect: false,
+        });
+        var app = {};
+        var option;
+        ////仅为了对齐时间
+        function formatDate(site, date) {
+            if (site.includes("macromicro")) {
+                return date.substring(0, 8) + "28";
+            }
+            if (site.includes("woniu500")) {
+                return date.slice(0, 4) + "-" + date.slice(4, 6) + "-28";
+            }
+            if (site.includes("legulegu")) {
+                var date = new Date(date);
+                var y = date.getFullYear(),
+                    m = date.getMonth() + 1,
+                    d = date.getDate();
+                if (m < 10) m = "0" + m;
+                if (d < 10) d = "0" + d;
+
+                if (d >= 28) var t = y + "-" + m + "-28";
+                else var t = y + "-" + m + "-" + d;
+                return t;
+            }
+            if (site.includes("value500")) {
+                if (date.includes("日"))
+                    return (
+                        date.slice(0, 4) +
+                        "-" +
+                        date.slice(5, 7) +
+                        "-" +
+                        date.substring(8, 10)
+                    );
+                return date.slice(0, 4) + "-" + date.slice(5, 7) + "-28";
+            }
+        }
+        Array.prototype.addStartEnd = function (start, end) {
+            let arr = this;
+            arr = start.concat(arr);
+            end.forEach((item) => {
+                arr.push(item);
+            });
+            return arr;
+        };
+        let currentDay = new Date();
+        currentDay = currentDay.getFullYear() + "-" + (currentDay.getMonth() + 1) + "-" + currentDay.getDate();
+        let justForAlignmentTime = [];
+        //截取时间最久数据  从2005年开始
+        CPI = CPI.filter(item => {
+            return parseFloat(item[0].substring(0, 4)) >= 2005
+        })
+        PPI = PPI.filter(item => {
+            return parseFloat(item[0].substring(0, 4)) >= 2005
+        })
+        for (var i = 0; i < PPI.length; i++) {
+            justForAlignmentTime[i] = Array.from(PPI[i]);
+        }
+        justForAlignmentTime = justForAlignmentTime
+            .addStartEnd([], [])
+            .map((item) => {
+                item[1] = "";
+                return item;
+            })
+            .addStartEnd([], [currentDay]);
+        ////仅为了对齐时间
+
+        option = {
+            title: {},
+            tooltip: {
+                trigger: 'item',
+                show: true,
+                position: ['30%', '80%'],
+                order: 'seriesDesc',
+                axisPointer: {
+                    type: 'cross',
+                    show: true
+                },
+                // formatter: function (params, ticket, callback) {
+                //    console.log(params, ticket, callback) 
+                // }
+                formatter: '{a}: {c}'
+            },
+            legend: {
+                //type: "scroll",
+                left: 60,
+                width: "30%",
+                top: "80%",
+                inactiveColor: 'gray',
+                //selector: ['all', 'inverse'],
+            },
+            axisPointer: {
+                type: "cross",
+                show: true,
+                link: [{
+                    xAxisIndex: "all",
+                },],
+                lineStyle: {
+                    color: "black",// 鼠标十字竖轴
+                },
+            },
+            dataZoom: [{
+                show: true,
+                realtime: true,
+                start: 0,
+                end: 100,
+                xAxisIndex: [0, 1, 2, 3, 4, 5, 6],
+                bottom: -10
+            },
+            {
+                type: 'inside',
+                realtime: true,
+                start: 0,
+                end: 100,
+                xAxisIndex: [0, 1, 2, 3, 4, 5, 6],
+            }
+            ],
+            grid: [
+                {
+                    left: 60,
+                    right: 80,
+                    top: "0%",
+                    height: '97%',
+                    show: true,
+                    //backgroundColor: "#dadcdc",
+                },
+                {
+                    left: 60,
+                    right: 80,
+                    top: "0%",
+                    height: '50%',
+                    show: true,
+                    // backgroundColor: "#dadcdc",
+
+                },
+                {
+                    left: 60,
+                    right: 80,
+                    top: "50%",
+                    height: '15%',
+                    show: true,
+                    // backgroundColor: "#dadcdc",
+                },
+                {
+                    left: 60,
+                    right: 80,
+                    top: "65%",
+                    height: '15%',
+                    show: true,
+                    // backgroundColor: "#dadcdc",
+                },
+                {
+                    left: 60,
+                    right: 80,
+                    top: "80%",
+                    height: '18%',
+                    show: true,
+                    //  backgroundColor: "#dadcdc",
+                },
+
+
+
+                {
+                    left: 60,
+                    right: 80,
+                    top: "25%",
+                    height: '25%',
+                    show: true,
+                    //  backgroundColor: "#dadcdc", pmi
+                },
+
+
+                {
+                    left: 60,
+                    right: 80,
+                    top: "0%",
+                    height: '25%',
+                    show: true,
+                    //  backgroundColor: "#dadcdc", pmi
+                },
+
+
+
+            ],
+            xAxis: [
+                {
+                    gridIndex: 0,
+                    type: "time",
+                    splitNumber: 15,
+                    splitLine: {
+                        show: true,
+                        lineStyle: {
+                            color: ['#aaa']
+                        }
+                    },
+                    axisPointer: {
+                        show: true,
+                        label: {
+                            show: false
+                        }
+                    },
+                    axisLabel: {
+                        fontSize: 10,
+                        formatter: "{yyyy}",
+                        padding: [0, -50, 0, 0],
+                    },
+                },
+                {
+                    gridIndex: 1,
+                    type: "time",
+                    axisPointer: {
+                        show: true, //抓数据十字线焦点圆圈
+                        label: {
+                            show: false //显示十字线竖线的时间
+                        }
+                    },
+                    axisLabel: {
+                        show: false //显示图形底部时间
+                    },
+                    show: true, //显示x 0轴黑线 优先级高
+                    axisLine: {
+                        show: true //显示x 0轴黑线
+                    },
+                },
+                {
+                    gridIndex: 2,
+                    type: "time",
+                    axisPointer: {
+                        show: true,
+                        label: {
+                            show: false
+                        }
+                    },
+                    axisLabel: {
+                        show: false
+                    },
+                },
+                {
+                    gridIndex: 3,
+                    type: "time",
+                    axisPointer: {
+                        show: true,
+                        label: {
+                            show: false
+                        }
+                    },
+                    axisLabel: {
+                        show: false
+                    },
+                },
+                {
+                    gridIndex: 4,
+                    type: "time",
+                    axisPointer: {
+                        show: true,
+                        label: {
+                            show: true
+                        }
+                    },
+                    axisLabel: {
+                        show: false
+                    },
+                },
+
+                {
+                    gridIndex: 5, //pmi
+                    type: "time",
+                    axisPointer: {
+                        show: true,
+                        label: {
+                            show: false
+                        }
+                    },
+                    axisLabel: {
+                        show: false
+                    },
+                },
+
+                {
+                    gridIndex: 6, //etf tongbi
+                    type: "time",
+                    axisPointer: {
+                        show: true,
+                        label: {
+                            show: false
+                        }
+                    },
+                    axisLabel: {
+                        show: false
+                    },
+                },
+            ],
+            yAxis: [
+                {
+                    gridIndex: 0,
+                    type: 'value',
+                    splitLine: {
+                        show: false
+                    },
+                },
+                {
+                    gridIndex: 1, //沪深300
+                    type: 'value',
+                    splitLine: {
+                        show: false
+                    },
+
+                },
+                {
+                    gridIndex: 2, //银行
+                    type: 'value',
+                    splitLine: {
+                        show: true
+                    },
+                    position: "right",
+                    min: 2
+
+                },
+                {
+                    gridIndex: 3, //证券
+                    type: 'value',
+                    splitLine: {
+                        show: true
+                    },
+                    position: "right",
+                    min: 4
+
+                },
+                {
+                    gridIndex: 4, //kdj统计
+                    type: 'value',
+                    splitLine: {
+                        show: true
+                    },
+                    position: "right",
+
+                },
+
+
+
+                {
+                    gridIndex: 5, //pmi
+                    type: 'value',
+                    splitLine: {
+                        show: true
+                    },
+                    position: "right",
+                    interval: 2.5,
+                    max: 10,
+                    min: -5
+                },
+
+
+                {
+                    gridIndex: 6, //同比
+                    type: 'value',
+                    splitLine: {
+                        show: true
+                    },
+                    interval: 20,
+                    position: "right",
+                    //max: 200,
+                    min: -40
+
+                },
+
+
+
+            ],
+            series: [
+
+                {
+                    name: '沪深300',
+                    type: 'line',
+                    xAxisIndex: 1,
+                    yAxisIndex: 1,
+                    showSymbol: false,
+                    lineStyle: {
+                        width: 0,
+                    },
+                    itemStyle: {
+                        normal: {
+                            areaStyle: {
+                                color: "#92cad3" // 57aacb
+                            },
+                        },
+                        emphasis: {
+                            areaStyle: {
+                                color: "#92cad3"
+                            },
+                        }
+                    },
+                    data: 沪深300
+                },
+
+
+                {
+                    name: '工商银行',
+                    type: 'scatter',
+                    xAxisIndex: 2,
+                    yAxisIndex: 2,
+                    itemStyle: {
+                        normal: {
+                            //color: "red"
+                        }
+                    },
+                    symbolSize: function (val) {
+                        return 7;
+                    },
+                    data: 工商银行.map((item) => {
+                        let arr = []
+                        arr[0] = item.date
+                        arr[1] = item.percent
+                        return arr
+                    })
+                },
+
+                {
+                    name: '中国银行',
+                    type: 'scatter',
+                    xAxisIndex: 2,
+                    yAxisIndex: 2,
+                    itemStyle: {
+                        normal: {
+                            //color: "yellow"
+                        }
+                    },
+                    symbolSize: function (val) {
+                        return 10;
+                    },
+                    data: 中国银行.map((item) => {
+                        let arr = []
+                        arr[0] = item.date
+                        arr[1] = item.percent
+                        return arr
+                    }).filter((item) => {
+                        return item[1] < 15
+                    })
+                },
+
+                {
+                    name: '中信证券',
+                    type: 'scatter',
+                    xAxisIndex: 3,
+                    yAxisIndex: 3,
+                    itemStyle: {
+                        normal: {
+                            //color: "yellow"
+                        }
+                    },
+                    symbolSize: function (val) {
+                        return 10;
+                    },
+                    data: 中信证券.map((item) => {
+                        let arr = []
+                        arr[0] = item.date
+                        arr[1] = item.percent
+                        return arr
+                    }).filter((item) => {
+                        return parseFloat(item[0].substring(0, 4)) >= 2006;
+                    })
+                },
+                {
+                    name: '光大证券',
+                    type: 'scatter',
+                    xAxisIndex: 3,
+                    yAxisIndex: 3,
+
+                    itemStyle: {
+                        normal: {
+                            //opacity: 0.8,
+                            //color: "yellow"
+                        }
+                    },
+                    symbolSize: function (val) {
+                        return 7;
+                    },
+                    data: 光大证券.map((item) => {
+                        let arr = []
+                        arr[0] = item.date
+                        arr[1] = item.percent
+                        return arr
+                    }).filter((item) => {
+                        return item[1] < 12
+                    })
+                },
+
+
+                {
+                    name: '月周kdj统计Arr',
+                    type: 'scatter',
+                    xAxisIndex: 4,
+                    yAxisIndex: 4,
+                    itemStyle: {
+                        normal: {
+                            opacity: 1,
+                            //color: "yellow"
+                        }
+                    },
+                    symbolSize: function (val) {
+                        return val[1] < 10 ? 10 : val[1]
+                    },
+                    data: 月周kdj统计Arr
+                },
+
+
+                {
+                    name: '周日kdj统计Arr',
+                    type: 'scatter',
+                    xAxisIndex: 4,
+                    yAxisIndex: 4,
+                    itemStyle: {
+                        normal: {
+                            opacity: 1,
+                            //color: "yellow"
+                        }
+                    },
+                    symbolSize: function (val) {
+                        return val[1] < 10 ? 10 : val[1]
+                    },
+                    data: 周日kdj统计Arr
+                },
+
+
+                {
+                    name: '官方制造业PMI',
+                    type: 'line',
+                    xAxisIndex: 5,
+                    yAxisIndex: 5,
+                    showSymbol: false,
+                    smooth: true,
+                    lineStyle: {
+                        width: 1.5,
+
+                    },
+                    data: 官方制造业PMI
+                },
+
+                {
+                    name: '财新制造业PMI',
+                    type: 'line',
+                    xAxisIndex: 5,
+                    yAxisIndex: 5,
+                    showSymbol: false,
+                    smooth: true,
+                    lineStyle: {
+                        width: 1.5,
+
+                    },
+                    data: 财新制造业PMI
+                },
+
+                {
+                    name: 'PPI',
+                    type: 'line',
+                    xAxisIndex: 5,
+                    yAxisIndex: 5,
+                    showSymbol: false,
+                    smooth: true,
+                    lineStyle: {
+                        width: 2,
+                        color: "#0081B6"
+
+                    },
+                    data: PPI
+                },
+
+
+
+                {
+                    name: "消费",
+                    type: "line",
+                    xAxisIndex: 6,
+                    yAxisIndex: 6,
+                    showSymbol: false,
+                    smooth: true,
+                    lineStyle: {
+                        width: 1,
+                        color: "red"
+                    },
+                    data: 上证消费.map((item) => {
+                        let tmp = []
+                        tmp[0] = item.date
+                        tmp[1] = item.openYoY ? item.openYoY * 100 : ""
+                        return tmp
+                    })
+                },
+
+                {
+                    name: "消费",
+                    type: "line",
+                    xAxisIndex: 6,
+                    yAxisIndex: 6,
+                    showSymbol: false,
+                    smooth: true,
+                    lineStyle: {
+                        width: 1.5,
+                        color: "red",
+                        type: 'dotted'
+                    },
+                    data: 上证消费.map((item) => {
+                        let tmp = []
+                        tmp[0] = item.date
+                        tmp[1] = item.closeYoY ? item.closeYoY * 100 : ""
+                        return tmp
+                    })
+                },
+
+
+                {
+                    name: "大宗商品",
+                    type: "line",
+                    xAxisIndex: 6,
+                    yAxisIndex: 6,
+                    showSymbol: false,
+                    smooth: true,
+                    lineStyle: {
+                        width: 1.5,
+                        color: "black",
+
+                    },
+                    data: 大宗商品.map((item) => {
+                        let tmp = []
+                        tmp[0] = item.date
+                        tmp[1] = item.openYoY ? item.openYoY * 100 : ""
+                        return tmp
+                    })
+                },
+
+                {
+                    name: "大宗商品",
+                    type: "line",
+                    xAxisIndex: 6,
+                    yAxisIndex: 6,
+                    showSymbol: false,
+                    smooth: true,
+                    lineStyle: {
+                        width: 1.5,
+                        color: "black",
+                        type: 'dotted'
+                    },
+                    data: 大宗商品.map((item) => {
+                        let tmp = []
+                        tmp[0] = item.date
+                        tmp[1] = item.closeYoY ? item.closeYoY * 100 : ""
+                        return tmp
+                    })
+                },
+
+                {
+                    name: "中证红利",
+                    type: "line",
+                    xAxisIndex: 6,
+                    yAxisIndex: 6,
+                    showSymbol: false,
+                    smooth: true,
+                    lineStyle: {
+                        width: 1.5,
+                        color: "green",
+
+                    },
+                    data: 中证红利.map((item) => {
+                        let tmp = []
+                        tmp[0] = item.date
+                        tmp[1] = item.openYoY ? item.openYoY * 100 : ""
+                        return tmp
+                    })
+                },
+
+                {
+                    name: "中证红利",
+                    type: "line",
+                    xAxisIndex: 6,
+                    yAxisIndex: 6,
+                    showSymbol: false,
+                    smooth: true,
+                    lineStyle: {
+                        width: 1.5,
+                        color: "green",
+                        type: 'dotted'
+                    },
+                    data: 中证红利.map((item) => {
+                        let tmp = []
+                        tmp[0] = item.date
+                        tmp[1] = item.closeYoY ? item.closeYoY * 100 : ""
+                        //tmp[1] = item.openYoY ? (item.openYoY + item.closeYoY) / 2 * 100 : ""
+                        return tmp
+                    })
+                },
+
+
+                {
+                    name: "沪深300Month",
+                    type: "line",
+                    xAxisIndex: 6,
+                    yAxisIndex: 6,
+                    showSymbol: false,
+                    smooth: true,
+                    lineStyle: {
+                        width: 1.5,
+                        color: "#0000ff",
+
+                    },
+                    data: 沪深300Month.map((item) => {
+                        let tmp = []
+                        tmp[0] = item.date
+                        tmp[1] = item.openYoY ? item.openYoY * 100 : ""
+                        return tmp
+                    })
+                },
+
+                {
+                    name: "沪深300Month",
+                    type: "line",
+                    xAxisIndex: 6,
+                    yAxisIndex: 6,
+                    showSymbol: false,
+                    smooth: true,
+                    lineStyle: {
+                        width: 1.5,
+                        color: "#0000ff",
+                        type: 'dotted'
+                    },
+                    data: 沪深300Month.map((item) => {
+                        let tmp = []
+                        tmp[0] = item.date
+                        tmp[1] = item.closeYoY ? item.closeYoY * 100 : ""
+                        //tmp[1] = item.openYoY ? (item.openYoY + item.closeYoY) / 2 * 100 : ""
+                        return tmp
+                    })
+                },
+
+
+
+
+
+                ///以下仅为了对齐时间
+                {
+                    name: '',
+                    type: 'line',
+                    xAxisIndex: 0,
+                    yAxisIndex: 0,
+                    tooltip: false,
+                    data: justForAlignmentTime,
+                    showSymbol: false,
+                    lineStyle: {
+                        width: 0,
+                        color: "black"
+                    },
+                },
+                {
+                    name: '',
+                    type: 'line',
+                    xAxisIndex: 1,
+                    yAxisIndex: 1,
+                    tooltip: false,
+                    data: justForAlignmentTime,
+                    showSymbol: false,
+                    lineStyle: {
+                        width: 2,
+                        color: "black"
+                    },
+                },
+                {
+                    name: '',
+                    type: 'line',
+                    xAxisIndex: 2,
+                    yAxisIndex: 2,
+                    tooltip: false,
+                    data: justForAlignmentTime,
+                    showSymbol: false,
+                    lineStyle: {
+                        width: 0,
+                        color: "black"
+                    },
+                },
+                {
+                    name: '',
+                    type: 'line',
+                    xAxisIndex: 3,
+                    yAxisIndex: 3,
+                    tooltip: false,
+                    data: justForAlignmentTime,
+                    showSymbol: false,
+                    lineStyle: {
+                        width: 0,
+                        color: "black"
+                    },
+                },
+                {
+                    name: '',
+                    type: 'line',
+                    xAxisIndex: 4,
+                    yAxisIndex: 4,
+                    tooltip: false,
+                    data: justForAlignmentTime,
+                    showSymbol: false,
+                    lineStyle: {
+                        width: 0,
+                        color: "black"
+                    },
+                },
+
+                {
+                    name: '',
+                    type: 'line',
+                    xAxisIndex: 5,
+                    yAxisIndex: 5,
+                    tooltip: false,
+                    data: justForAlignmentTime,
+                    showSymbol: false,
+                    lineStyle: {
+                        width: 0,
+                        color: "black"
+                    },
+                },
+
+
+                {
+                    name: '',
+                    type: 'line',
+                    xAxisIndex: 6,
+                    yAxisIndex: 6,
+                    tooltip: false,
+                    data: justForAlignmentTime,
+                    showSymbol: false,
+                    lineStyle: {
+                        width: 0,
+                        color: "black"
+                    },
+                },
+            ]
+
+        }
+        if (option && typeof option === "object") {
+            myChart.setOption(option);
+        }
+        window.addEventListener("resize", myChart.resize);
+
+    </script>
+</body>
+
+</html>

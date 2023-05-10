@@ -226,6 +226,127 @@ const path = require('path');
         return promise1
     }
 
+
+    let task_woniu500 = async (datasInfo) => {
+        let woniu500Root = "http://www.woniu500.com/"
+        function httpPromise(dataName, dataJsonApi) {
+            const promise1 = new Promise((resolve, reject) => {
+                const req2 = http.request(woniu500Root + dataJsonApi, function (res) {
+                    res.setEncoding('utf-8')
+                    let allchunk = ""
+                    res.on('data', function (chunk) { allchunk += chunk })
+                    res.on("end", () => {
+                        resdata = JSON.parse(allchunk)
+                        resolve({ [dataName]: resdata }) //使用变量作为object的key
+                    })
+                })
+                req2.on('error', function (e) { reject(e.message); console.log(e.message) })
+                req2.end()
+            })
+            return promise1
+        }
+        let httpPromiseArr = []
+        for (let dataName in datasInfo) {
+            httpPromiseArr.push(httpPromise(dataName, datasInfo[dataName]))
+        }
+        Promise.all(httpPromiseArr).then((values) => {
+            let fileName = ''
+            let fileStr = ''
+            values.forEach(objItem => {
+
+                for (let dataName in objItem) {
+                    let dataValue = objItem[dataName].map(function (item) {
+                        let newItem = []
+                        newItem[0] = formatDate("woniu500", item[0])
+                        newItem[1] = item[1][3]
+                        return newItem
+                    })//map
+                    fileName += `${fileNameDelimiter}${dataName}`
+                    fileStr += `let ${dataName} = ` + JSON.stringify(dataValue, null, 4) + "\r\n"
+                }//forin
+
+
+            })//forEach
+
+            try {
+                fileName = fileName.substring(1)
+                fs.writeFileSync(`${folder}${fileName}.js`, fileStr);
+                console.log(`${fileName} JSON data is saved   ${folder}${fileName}.js `)
+            } catch (error) {
+                console.error(error);
+            }
+
+        })
+    }
+
+    let task_xueqiu = async (datasInfoArr) => {
+
+        //先访问页面?
+        const page = await browser.newPage();
+        await page.setRequestInterception(true)
+        page.on('request', (request) => { request.continue() })
+        page.on('load', () => { })
+        await page.goto("https://xueqiu.com/", { waitUntil: 'networkidle2' })
+
+
+
+        let task_xueqiu_data = async (datasInfo) => {
+
+            let nowTimestamp = new Date().getTime();
+            let pageUrl = `https://stock.xueqiu.com/v5/stock/chart/kline.json?symbol=${datasInfo.symbol}&begin=${nowTimestamp}&period=${datasInfo.period}&type=before&count=-30000&indicator=kline`
+
+            const page2 = await browser.newPage();
+            await page2.setRequestInterception(true)
+            page2.on('request', (request) => { request.continue() })
+            const promise1 = new Promise((resolve, reject) => {
+                page2.on('response', async (response) => {
+                    if (response.url().includes(pageUrl)) {
+                        resdata = await response.json()
+                        let fileStr = `let ${datasInfo.name} = ` + JSON.stringify(resdata, null, 4) + "\r\n"
+                        try {
+                            fs.writeFileSync(`${folder}雪球行情/${datasInfo.name}.js`, fileStr);
+                            console.log(`${datasInfo.name} JSON data is saved   ${folder}${datasInfo.name}.js `)
+                        } catch (error) {
+                            resolve(false)
+                            console.error(error);
+                        }
+                        resolve(true)
+                    }
+                })
+            })//Promise
+            await page2.goto(pageUrl, { waitUntil: 'networkidle2' })
+            page2.close()
+            return promise1
+        }
+
+        let datasInfoResArr = datasInfoArr.map((datasInfo) => {
+            return task_xueqiu_data(datasInfo)
+        })
+
+        Promise.all(datasInfoResArr).then((values) => {
+            console.log(values)
+        })
+    }
+
+
+
+    // await task_xueqiu([
+    //     // { "name": "沪深300Week", "symbol": "SH000300", "period": "week" },
+    //     //{ "name": "沪深300Month", "symbol": "SH000300", "period": "month" },
+
+    //     // { "name": "大宗商品", "symbol": "SH000979", "period": "month" },
+    //     // { "name": "上证消费", "symbol": "SH000036", "period": "month" },
+    //     // { "name": "中证红利", "symbol": "SH000922", "period": "month" },
+
+    //     // { "name": "中国银行", "symbol": "SH601988", "period": "day" },
+    //     // { "name": "工商银行", "symbol": "SH601398", "period": "day" },
+    //     // { "name": "光大证券", "symbol": "SH601788", "period": "day" },
+    //     // { "name": "中信证券", "symbol": "SH600030", "period": "day" }
+    // ])
+
+
+    // await task_woniu500({ "化工": "data/z801030_zhg.json", "有色": "data/z801050_zysjs.json" })
+
     // await task_legulegu({ "沪深300PE中位数": "hs300PeMiddle", "全A股PE中位数": "marketPe", "十年期国债利率倒数": "debtInterestRate" }, "https://legulegu.com/stockdata/china-10-year-bond-yield", "china-10-year-bond-yield-data?token")
 
     // await task_value500({ "上证同比": { "chartOptionId": 0, "chartSerieId": 2 }, "沪深300同比": { "chartOptionId": 0, "chartSerieId": 3 }, "M2": { "chartOptionId": 1, "chartSerieId": 1 } }, "http://value500.com/SH000001.asp")
@@ -236,7 +357,9 @@ const path = require('path');
 
     // await task_macroview({ "利润同比": "industryindicator_profit", "亏损增减": "industryindicator" }, "https://www.macroview.club/charts?name=cn_industry_indicator", "/get-chart")
 
-    await task_macromicro({ "M1": 1, "M1_M2": 2, "沪深300": 3 }, "https://sc.macromicro.me/collections/55/cn-shanghai-shengzhen-csi-300-index/260/cn-china-m1-m2", "/charts/data/260")
+    // await task_macromicro({ "财新制造业PMI": 0, "官方制造业PMI": 1}, "https://sc.macromicro.me/collections/25/cn-industry-relative/232/cn-pmi-caixin", "/charts/data/232")
+
+    // await task_macromicro({ "M1": 1, "M1_M2": 2, "沪深300": 3 }, "https://sc.macromicro.me/collections/55/cn-shanghai-shengzhen-csi-300-index/260/cn-china-m1-m2", "/charts/data/260")
 
     // await task_macromicro({ "信贷脉冲": 0 }, "https://sc.macromicro.me/collections/31/cn-finance-relative/35559/china-credit-impulse-index", "/charts/data/35559")
 

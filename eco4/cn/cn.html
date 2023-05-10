@@ -20,7 +20,6 @@
 
     <script type="text/javascript" src="./data/M1,M1_M2,沪深300.js"></script>
     <script type="text/javascript" src="./data/信贷脉冲.js"></script>
-
     <script type="text/javascript">
         M1 = M1.map(((item, index, arr) => {
             if (item[0].includes("01-28")) {
@@ -70,6 +69,63 @@
         })
     </script>
 
+
+    <script type="text/javascript" src="./data/手动下载雪球行业ETF指数.js"></script>
+    <script>
+        function stampToDate(stamp) {
+            var date = new Date(stamp);
+            var y = date.getFullYear(),
+                m = date.getMonth() + 1,
+                d = date.getDate();
+            if (m < 10)
+                m = '0' + m;
+            if (d < 10)
+                d = '0' + d;
+
+            if (d >= 23) //过年 大概
+                var t = y + '-' + m + '-28';
+            else
+                var t = y + '-' + m + '-' + d;
+            return t;
+        }
+
+        //https://stock.xueqiu.com/v5/stock/chart/kline.json?symbol=SH512890&begin=1683614942062&period=month&type=before&count=-284&indicator=kline,pe,pb,ps,pcf,market_capital,agt,ggt,balance
+        function sectorIndexYoY(sectorIndex) {
+            sectorIndex = sectorIndex.data.item.map((value) => {
+                let newItem = {}
+                newItem.date = stampToDate(value[0])
+                newItem.open = value[2]//open
+                newItem.close = value[5]//close
+                return newItem
+            })
+            sectorIndex = sectorIndex.map((item) => {
+                const preItem = sectorIndex.find(element => {
+                    let preYear = '' + (parseInt(item.date.slice(0, 4)) - 1) + item.date.substring(4, 10)
+                    return element.date == preYear
+                })
+                if (preItem) {
+                    let openYoY = (item.open - preItem.open) / preItem.open
+                    let closeYoY = (item.close - preItem.close) / preItem.close
+                    item.openYoY = openYoY
+                    item.closeYoY = closeYoY
+                    return item
+                } else {
+                    item.openYoY = ""
+                    item.closeYoY = ""
+                    return item
+                }
+            })
+            return sectorIndex
+        }
+
+        大宗指数 = sectorIndexYoY(大宗指数)
+        消费指数 = sectorIndexYoY(消费指数)
+        红利低波 = sectorIndexYoY(红利低波)
+
+        console.log(大宗指数, 消费指数)
+    </script>
+
+
     <script type="text/javascript" src="../../eco3/stock_cn/data1/月周总.js"></script>
     <script type="text/javascript" src="../../eco3/stock_cn/data1/周日总.js"></script>
     <script type="text/javascript">
@@ -82,13 +138,13 @@
                 月周kdj统计[startTime].detail.push(element);
             } else 月周kdj统计[startTime] = { count: 1, detail: [element] };
         });
-        console.log(月周kdj统计);
+        //console.log(月周kdj统计);
 
         let 月周kdj统计Arr = [];
         for (var key of Object.keys(月周kdj统计)) {
             月周kdj统计Arr.push([key + "-28", 月周kdj统计[key].count]);
         }
-        console.log(月周kdj统计Arr);
+        //console.log(月周kdj统计Arr);
 
         ///////
         let 周日kdj = 周日总
@@ -100,13 +156,13 @@
                 周日kdj统计[startTime].detail.push(element);
             } else 周日kdj统计[startTime] = { count: 1, detail: [element] };
         });
-        console.log(周日kdj统计);
+        //console.log(周日kdj统计);
 
         let 周日kdj统计Arr = [];
         for (var key of Object.keys(周日kdj统计)) {
             周日kdj统计Arr.push([key + "-28", 周日kdj统计[key].count]);
         }
-        console.log(周日kdj统计Arr);
+        //console.log(周日kdj统计Arr);
 
         ////
 
@@ -204,11 +260,15 @@
                 }
             },
             legend: {
-                //data: [],  
+                //data: [], 
+                inactiveColor: 'white',
                 selected: {
-                    "沪深300同比": false
+                    "沪深300同比": false,
+                    "消费同比": false,
+                    "红低同比": false,
+                    "大宗同比": false,
                 },
-                //left: "6%",
+                left: "5%",
                 //top: "47%",
             },
             axisPointer: {
@@ -954,6 +1014,65 @@
                     })
                 },
 
+                {
+                    name: "消费同比",
+                    type: "line",
+                    xAxisIndex: 5,
+                    yAxisIndex: 5,
+                    showSymbol: false,
+                    smooth: true,
+                    lineStyle: {
+                        width: 1,
+                        color: "blue"
+                    },
+                    data: 消费指数.map((item) => {
+                        let tmp = []
+                        tmp[0] = item.date
+                        tmp[1] = item.openYoY ? (item.openYoY + item.closeYoY) / 2 * 100 : ""
+                        return tmp
+                    })
+                },
+                {
+                    name: "红低同比",
+                    type: "line",
+                    xAxisIndex: 5,
+                    yAxisIndex: 5,
+                    showSymbol: false,
+                    smooth: true,
+                    lineStyle: {
+                        width: 1,
+                        color: "#470024"
+                    },
+                    data: 红利低波.map((item) => {
+                        let tmp = []
+                        tmp[0] = item.date
+                        tmp[1] = item.openYoY ? (item.openYoY + item.closeYoY) / 2 * 100 : ""
+                        return tmp
+                    })
+                },
+                {
+                    name: "大宗同比",
+                    type: "line",
+                    xAxisIndex: 5,
+                    yAxisIndex: 5,
+                    showSymbol: false,
+                    smooth: true,
+                    lineStyle: {
+                        width: 1,
+                        color: "black"
+                    },
+                    data: 大宗指数.map((item) => {
+                        let tmp = []
+                        tmp[0] = item.date
+                        tmp[1] = item.openYoY ? (item.openYoY + item.closeYoY) / 2 * 100 : ""
+                        return tmp
+                    })
+                },
+
+
+
+
+
 
                 ///以下仅为了对齐时间
                 {
@@ -1043,17 +1162,22 @@
 
         myChart.on('legendselectchanged', function (params) {
 
-            if (params.name == "沪深300同比") {//初次点击显示    hs300&全A中位&十年倒数   hs300同比
+            if (params.name.includes("同比")) {//初次点击显示    hs300&全A中位&十年倒数   hs300同比
+                option.legend.selected[params.name] = option.legend.selected[params.name] === true ? false : true
                 option.yAxis[5].max = 100
                 option.yAxis[5].min = -50
-                option.legend.selected["沪深300同比"] = true
                 option.legend.selected["沪深300&全A中位&十年倒数"] = false
             }
+
             if (params.name == "沪深300&全A中位&十年倒数") {
+                option.legend.selected["沪深300&全A中位&十年倒数"] = option.legend.selected["沪深300&全A中位&十年倒数"] === true ? false : true
                 option.yAxis[5].max = 70
                 option.yAxis[5].min = 15
-                option.legend.selected["沪深300同比"] = false
-                option.legend.selected["沪深300&全A中位&十年倒数"] = true
+                for (let legendName in option.legend.selected) {
+                    if (legendName.includes("同比")) {
+                        option.legend.selected[legendName] = false
+                    }
+                }
             }
 
 
