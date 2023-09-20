@@ -1,275 +1,130 @@
-﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<!DOCTYPE html>
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>WEB打印控件LODOP的样 例三:用程序代码生成打印页</title>
 
-<script language="javascript" src="LodopFuncs.js"></script>
-
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" type="text/css" href="http://121.196.197.102:8000/c_c2.css" />
+<script src="http://121.196.197.102:8000/CLodopfuncs.js"></script>
+<title>Welcome to C-Lodop</title>
 </head>
+<body onLoad="demoCreatePrinterList()">
+<center>
+<div id="itopform" >
+     <form>
+       <h1>欢迎使用C-Lodop打印服务系统
+	   <span class="small">The Cloud Web Service System for Lodop HTML Print</span>
+	</h1><hr>
+    </form>
+ </div>
+</center>
 
-<body style="zoom:1;font-family:'adobe-clean',sans-serif">
+<h3>&nbsp;使用说明：</h3>
 
-<h2><font color="#009999">演示用程序代码生成打印页：</font></h2>
-<table cellpadding="0" cellspacing="0" border="0" class="numberedList" width="572">
-  <tr id="eCE2" vAlignment="top" class>
-    <td Alignment="right" class="dropCapQ" nowrap width="6"></td>
-    <td width="812">
-      <table name="tiba" class="tiba" width="769" height="1007">
-        <tr>
-          <td height="18">一般B/S系统总是“页面看到什么才能打印什么”，这种局面即便是采用</td>
-        </tr>
-        <tr>
-          <td height="18">一些传统打印控件也没有改观。现在利用Lodop简单强大的几个函数，配合</td>
-        </tr>
-        <tr>
-          <td height="18">JavaScript完全进入了“只看想看的、打印想打的”理想时代！</td>
-        </tr>
-        <tr>
-          <td height="18">
+<script>
+        function demoPrint(toPreview){
+                var strHTML=document.getElementsByTagName("html")[0].innerHTML;
+                LODOP.PRINT_INITA(10,20,810,610,"测试C-Lodop远程打印四步骤");
+                LODOP.SET_PRINTER_INDEXA(document.getElementById("Select02").value);
+                LODOP.SET_PRINT_PAGESIZE(0,0,0,document.getElementById("Select03").value);
+                LODOP.ADD_PRINT_TEXT(1,1,300,200,"下面输出的是本页源代码及其展现效果：");
+                LODOP.ADD_PRINT_TEXT(20,10,"90%","95%",strHTML);
+                LODOP.SET_PRINT_STYLEA(0,"ItemType",4);
+                LODOP.NewPageA();
+                LODOP.ADD_PRINT_HTM(20,10,"90%","95%",strHTML);
+                if (toPreview)
+                    LODOP.PREVIEW();
+                else
+                    LODOP.PRINT();
+        }
+        function demoCreatePrinterList(){
+                CLODOP.Create_Printer_List(document.getElementById('Select02'));
+                demoCreatePagSizeList();
+                demoAlertOnPrinterChanged();
+        }
+        function demoCreatePagSizeList(){
+                var oSelect=document.getElementById('Select03');
+                var iPrintIndex=document.getElementById("Select02").value;
+                CLODOP.Create_PageSize_List(oSelect,iPrintIndex);
+        }
+        function demoCreateCLodopJSscript(strSrc){
+                         var ScriptSS=document.getElementsByTagName("script");
+                         for(var i in ScriptSS){
+                                   if (ScriptSS[i] && ScriptSS[i].src && (ScriptSS[i].src.indexOf("CLodopfuncs.js")>=0)) {
+                                        if (ScriptSS[i].parentNode) ScriptSS[i].parentNode.removeChild( ScriptSS[i] );
+                                   }
+                         }
+                         var oscript=document.createElement("script");
+                         if (strSrc.indexOf("src=")>=0) {strSrc=strSrc.match(/=[\',\"][^\',^\"].*(?=[\',\"])/i);strSrc=strSrc[0].slice(2);}
+                         oscript.src=strSrc;
+                         var head = document.head || document.getElementsByTagName("head")[0] || document.documentElement;
+                         head.insertBefore(oscript,head.firstChild);
+                         return oscript;
+        }
+        function demoSetClodopJS(strSrc){
+                 var oscript=demoCreateCLodopJSscript(strSrc);
+                 oscript.onload =oscript.onreadystatechange= function() {
+                         if ((!oscript.readyState|| /loaded|complete/.test(oscript.readyState)))
+                         demoCreatePrinterList();
+                 };
+        }
+        function demoAlertOnPrinterChanged(){
+                 CLODOP.On_Broadcast=function(strMessage){
+                        if (strMessage.indexOf("PRINTER_CHANGED")>=0)
+                            document.getElementById('id_ldms').style.display="";
+                        else
+                            alert("web服务广播消息:"+strMessage);
+                 };
+                 CLODOP.On_Broadcast_Remain=true;
+        }
+</script>
 
-          </td>
-        </tr>
-        <tr style="padding:0px 0px 7px 0px;border:inset 1px #f00;">
-          <td  style="vertical-Alignment: top" width="739" height="18">
-            <h4><font color="#009999">下面模拟打印一张名片，了解这几个函数</font></h4>
-          </td>
-        </tr>
-        <tr style="padding:0px 0px 7px 0px;border:inset 1px #f00;">
-          <td  style="vertical-Alignment: top" width="739" height="18"><b>1、画一个名片大小的矩形边框：</b></td>
-        </tr>
-        <tr style="padding:0px 0px 7px 0px;border:inset 1px #f00;">
-          <td  style="vertical-Alignment: top" width="739" height="15">
-          <font color="#0000FF" size="2">LODOP.ADD_PRINT_RECT(10,55,360,220,0,1);</font></td>
-        </tr>
-        <tr style="padding:0px 0px 7px 0px;border:inset 1px #f00;">
-          <td  style="vertical-Alignment: top" width="739" height="15">
-          <font size="2">边框离纸张顶端10px(px是绝对值长度，等于1/96英寸,下同)距左边55px、宽360px、高220px、</font></td>              
-        </tr>
-        <tr style="padding:0px 0px 7px 0px;border:inset 1px #f00;">
-          <td  style="vertical-Alignment: top" width="739" height="15">
-          <font size="2">框为实线(0-实线                                            
-            1-破折线 2-点线 3-点划线 4-双点划线)、线宽为1px</font></td>                                        
-        </tr>             
-        <tr>             
-          <td  style="vertical-Alignment: top" width="739" height="18"></td>             
-        </tr>             
-        <tr>             
-          <td  style="vertical-Alignment: top" width="739" height="18"><b>2、设置基本打印风格：</b></td>             
-        </tr>             
-        <tr>             
-          <td  style="vertical-Alignment: top" width="739" height="15">             
-          <font color="#0000FF" size="2">LODOP.SET_PRINT_STYLE(&quot;FontSize&quot;,11);</font></td>             
-        </tr>             
-        <tr>             
-          <td  style="vertical-Alignment: top" width="739" height="15">             
-          <font size="2">&quot;FontSize&quot;</font><font size="2">是系统关键字，表示设置字体大小，11是字体大小值，单位是pt。</font></td>             
-        </tr>             
-        <tr>             
-          <td  style="vertical-Alignment: top" width="739" height="21">&nbsp;&nbsp;</td>             
-        </tr>             
-        <tr>             
-          <td  style="vertical-Alignment: top" width="739" height="18"><b>3、在矩形框内打印姓名栏：</b></td>             
-        </tr>             
-        <tr>             
-          <td  style="vertical-Alignment: top" width="739" height="15">             
-          <font color="#0000FF" size="2">LODOP.ADD_PRINT_TEXT(20,180,100,25,&quot;郭德强&quot;);</font></td>             
-        </tr>             
-        <tr>             
-          <td  style="vertical-Alignment: top" width="739" height="15">             
-          <font size="2">姓名栏离纸张顶端20px、距左边180px、宽100px、高25px、内容为“郭德强”</font></td>             
-        </tr>             
-        <tr>             
-          <td  style="vertical-Alignment: top" width="739" height="21">&nbsp;&nbsp;</td>             
-        </tr>             
-        <tr>             
-          <td  style="vertical-Alignment: top" width="739" height="18"><b>4、设置姓名栏的打印风格：</b></td>             
-        </tr>             
-        <tr>             
-          <td  style="vertical-Alignment: top" width="739" height="15">             
-          <font color="#0000FF" size="2">LODOP.SET_PRINT_STYLEA(2,&quot;FontName&quot;,&quot;隶书&quot;);</font></td>             
-        </tr>             
-        <tr>             
-          <td  style="vertical-Alignment: top" width="739" height="15">             
-          <font color="#0000FF" size="2">LODOP.SET_PRINT_STYLEA(2,&quot;FontSize&quot;,15);</font></td>             
-        </tr>             
-        <tr>             
-          <td  style="vertical-Alignment: top" width="739" height="15">             
-          <font size="2">2是姓名栏的增加顺序号,</font><font color="#0000FF" size="2">&quot;FontName&quot;</font><font size="2">和</font><font color="#0000FF" size="2">&quot;FontSize&quot;</font><font size="2">是</font><font size="2">系统关键字</font><font size="2">,表示设置字体名和字体大小。</font></td>             
-        </tr>             
-        <tr>             
-          <td  style="vertical-Alignment: top" width="739" height="15">             
-          <font size="2">&quot;隶书&quot;是字体名值,同操作系统的字体名，15是字体大小值，单位是pt。</font></td>                                     
-        </tr>             
-        <tr>             
-          <td  style="vertical-Alignment: top" width="739" height="13"><font size="2">序号设0表示最新对象，注意</font><font color="#0000FF" size="2">SET_PRINT_STYLEA</font><font size="2">与</font><font color="#0000FF" size="2">SET_PRINT_STYLE</font><font size="2">的区别。</font></td>             
-        </tr>             
-        <tr>             
-          <td  style="vertical-Alignment: top" width="739" height="21"></td>             
-        </tr>             
-        <tr>             
-          <td  style="vertical-Alignment: top" width="739" height="18">             
-          <b>5、下面打印其职务、地址、电话等</b>(用基本风格)：</td>             
-        </tr>             
-        <tr>             
-          <td  style="vertical-Alignment: top" width="739" height="41">             
-          <font color="#0000FF" size="2">LODOP.ADD_PRINT_TEXT(53,187,75,20,&quot;科学家&quot;);<br>             
-            LODOP.ADD_PRINT_TEXT(100,131,272,20,&quot;地址：中国北京社会科学院附近东大街西胡同&quot;);<br>             
-            LODOP.ADD_PRINT_TEXT(138,132,166,20,&quot;电话：010-88811888&quot;);</font></td>             
-        </tr>             
-        <tr>             
-          <td  style="vertical-Alignment: top" width="739" height="21">&nbsp;</td>             
-        </tr>             
-        <tr>             
-          <td  style="vertical-Alignment: top" width="739" height="18">             
-          <b>6、在发送以上指令前，一般要初始化并设置打印任务名：</b></td>             
-        </tr>             
-        <tr>             
-          <td  style="vertical-Alignment: top" width="739" height="15">             
-          <font color="#0000FF" size="2">LODOP.PRINT_INIT(&quot;打印插件功能演示_代码功能_名片&quot;);</font></td>            
-        </tr>            
-        <tr>            
-          <td  style="vertical-Alignment: top" width="739" height="15">            
-          <font size="2">初始化并指定打印任务名是&quot;打印插件功能演示_代码功能_名片&quot;</font></td>            
-        </tr>            
-        <tr>            
-          <td  style="vertical-Alignment: top" width="739" height="21">&nbsp;</td>            
-        </tr>            
-        <tr>            
-          <td  style="vertical-Alignment: top" width="739" height="18">            
-          现在用以上代码打印，先看看<a href="javascript:myPreview()"><b>打印预览</b></a>效果！</td>            
-        </tr>            
-        <tr>            
-          <td  style="vertical-Alignment: top" width="739" height="18">            
-          如果效果好可以<a href="javascript:myPrint()"><b>直接打印</b></a>            
-          ，打印机多就<a href="javascript:myPrintA()"><b>选择打印机</b></a>打印！</td>            
-        </tr>            
-        <tr>            
-          <td  style="vertical-Alignment: top" width="739" height="18">            
-          效果不好又懒地改，干脆让操作者自己<a href="javascript:mySetup()"><b>打印维护</b></a>吧！</td>            
-        </tr>            
-        <tr>            
-          <td  style="vertical-Alignment: top" width="739" height="21">&nbsp;</td>            
-        </tr>            
-        <tr>            
-          <td  style="vertical-Alignment: top" width="739" height="18">尽管这些函数足够简单，可理解其参数也是不胜其烦，</td>            
-        </tr>            
-        <tr>            
-          <td  style="vertical-Alignment: top" width="739" height="18">但事实上包括我写这些样例也不是人工计算其参数的，</td>            
-        </tr>            
-        <tr>            
-          <td  style="vertical-Alignment: top" width="739" height="18">            
-          全得益于打印控件提供的强大<a href="javascript:myDesign()"><b>打印设计</b></a>功能！</td>            
-        </tr>            
-        <tr>            
-          <td  style="vertical-Alignment: top" width="739" height="21">            
-          &nbsp;</td>            
-        </tr>            
-        <tr>            
-          <td  style="vertical-Alignment: top" width="739" height="18">进入<a href="javascript:myBlankDesign()"><b>空白设计</b></a>自己涂鸦一番，多用用其中“生成程序代码”菜单哟！</td>            
-        </tr>            
-        <tr>  
-          <td  style="vertical-Alignment: top" width="739" height="18">“打印维护”和“打印设计”有点类似，二者的区别是功能权限不同，</td>            
-        </tr>  
-        <tr>  
-          <td  style="vertical-Alignment: top" width="739" height="18">后者是开发人员用的，前者可根据实际情况提供给最终用户。</td>            
-        </tr>  
-        <tr>            
-          <td  style="vertical-Alignment: top" width="739" height="18"></td>            
-        </tr>            
-        <tr>            
-          <td  style="vertical-Alignment: top" width="739" height="18"><b>7、用超文本实现该名片打印：</b></td>           
-        </tr>           
-        <tr>           
-          <td  style="vertical-Alignment: top" width="739" height="22"><font color="#0000FF" size="2">LODOP.ADD_PRINT_HTM(10,55,&quot;100%&quot;,&quot;100%&quot;,strHtml);</font></td>        
-        </tr>        
-        <tr> 
-          <td  style="vertical-Alignment: top" width="739" height="22"><font size="2">前俩参数设置超文本对象位置，两个100%设置对象区域可达纸张边，最后参数是超文本代码</font></td>       
-        </tr>
-        <tr>
-          <td  style="vertical-Alignment: top" width="739" height="17"></td>       
-        </tr>
-        <tr>
-          <td  style="vertical-Alignment: top" width="739" height="22">用超文本实现如上效果更好理解，只需一条<font color="#0000FF">ADD_PRINT_HTM</font>指令把如下文本框里的</td>       
-        </tr>
-        <tr>
-          <td  style="vertical-Alignment: top" width="739" height="17">超文本内容传给控件就行，样式全依赖HTML展现,
-点<a href="javascript:;" onclick="javascript:myAddHtml();LODOP.PREVIEW();">打印预览</a>
-或<a href="javascript:;" onclick="javascript:myAddHtml();LODOP.PRINT_DESIGN();">打印设计</a>看看。</td>        
-        </tr> 
-        <tr>        
-          <td  style="vertical-Alignment: top" width="739" height="18">        
-<textarea rows="15" id="textarea01" cols="80">
-<table border="1" width="360" height="220" style="border-collapse:collapse;border:solid 1px" bordercolor="#000000">
-  <tr>
-    <td width="100%" height="240">
-      <p align="center"> 
-      <font face="隶书" size="5" style="letter-spacing: 10px">郭德强</font>
-      <p align="center"><font face="宋体" size="3">科学家</font></p>
-      <p align="left"><font face="宋体" size="3">　地址：中国北京社会科学院附近东大街西胡同</font></p>
-      <p align="left"><font face="宋体" size="3">　电话：010-88811888</font></p>
-      <p><br>      　
-      </p>
-    </td>
-  </tr>
-</table>
-</textarea>       
-          </td>       
-        </tr>       
-      </table>       
-    </td>       
-  </tr>       
-</table>       
-<p Alignment="left"><a href="PrintSampIndex.html">&lt;&lt;回样例目录</a>       
-</p>       
-<script language="javascript" type="text/javascript">        
-        var LODOP; //声明为全局变量       
-	function myPrint() {		       
-		CreatePrintPage();       
-		LODOP.PRINT();		       
-	};         
-	function myPrintA() {		       
-		CreatePrintPage();       
-		LODOP.PRINTA();		       
-	};  	       
-	function myPreview() {		       
-		CreatePrintPage();       
-		LODOP.PREVIEW();		       
-	};		       
-	function mySetup() {		       
-		CreatePrintPage();       
-		LODOP.PRINT_SETUP();		       
-	};	       
-	function myDesign() {		       
-		CreatePrintPage();       
-		LODOP.PRINT_DESIGN();		       
-	};	       
-	function myBlankDesign() {       
-		LODOP=getLodop();         
-   		LODOP.PRINT_INIT("打印控件功能演示_Lodop功能_空白练习");		       
-		LODOP.PRINT_DESIGN();		       
-	};			       
-	function CreatePrintPage() {       
-		LODOP=getCLodop();
-		console.log("getCLodop");
-		LODOP.PRINT_INIT("打印控件功能演示_Lodop功能_名片");       
-		LODOP.ADD_PRINT_RECT(10,55,360,220,0,1);       
-		LODOP.SET_PRINT_STYLE("FontSize",11);       
-		LODOP.ADD_PRINT_TEXT(20,180,100,25,"郭德强");       
-		LODOP.SET_PRINT_STYLEA(2,"FontName","隶书");       
-		LODOP.SET_PRINT_STYLEA(2,"FontSize",15);		       
-		LODOP.ADD_PRINT_TEXT(53,187,75,20,"科学家");       
-		LODOP.ADD_PRINT_TEXT(100,131,272,20,"地址：中国北京社会科学院附近东大街西胡同");       
-		LODOP.ADD_PRINT_TEXT(138,132,166,20,"电话：010-88811888");	       
-	};       
-	function myAddHtml() {       
-		LODOP=getLodop();   
-		console.log("getLodop")
-   		LODOP.PRINT_INIT("");		            
-		LODOP.ADD_PRINT_HTM(10,55,"100%","100%",document.getElementById("textarea01").value);	       
-	};	       
-</script>        
-       
-       
-</body>       
+<span style="font-size:14px">
+&nbsp;一、C-Lodop是云打印服务，可接受JS语句实现远端输出，它是因满足平板电脑和手机浏览器打印而诞生的，由于其轻巧便捷，<br><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;所以也可以安装在PC本地，是打印控件Lodop的升级产品。其在保持打印性能的同时，能适应所有浏览器的各种版本。<br><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;引用C-Lodop很简单，在页面head中<a href="javascript:;" onclick="javascript:demoSetClodopJS(document.getElementById('T01').value);">添加</a>
+如下路径的js文件，就可用固定变量名LODOP或CLODOP发打印请求了:<br><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="text" name="T1" id ="T01" size="100" value="<script src='http://121.196.197.102:8000/CLodopfuncs.js'></script>"><br><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 如果C-Lodop安装在PC本地，采用localhost或127.0.0.1，当有多个引用时，用name设置新变量名来区分调用：<br><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="text" name="T2" size="100" value="<script src='http://localhost:8000/CLodopfuncs.js?name=CLODOPA'></script>"> <br><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;页面引用了C-Lodop的js之后，就可以调用Lodop传统功能，
+点<a href="javascript:;" onclick="javascript:eval(document.getElementById('text01').value);">打印预览</a>执行如下经典语句(注意区分大小写)看看效果：<br><br>
+
+<textarea rows="7" id="text01" cols="100">
+  var strHTML=document.getElementsByTagName("html")[0].innerHTML;
+  LODOP.PRINT_INITA(1,1,770,660,"测试预览功能");
+  LODOP.ADD_PRINT_TEXT(10,60,300,200,"这是测试的纯文本，下面是超文本:");
+  LODOP.ADD_PRINT_HTM(30,5,"100%","80%",strHTML);
+  LODOP.PREVIEW();
+</textarea>
+
+<br><br>
+&nbsp;&nbsp;&nbsp;&nbsp;下面是远程打印的常见四步骤：<br><br>
+&nbsp;&nbsp;&nbsp;&nbsp;第一步选择云主机:<select id="Select01" size="1" onchange="demoSetClodopJS(document.getElementById('Select01').value)">
+  <option value="http://localhost:8000/CLodopfuncs.js">本机方式1：http://localhost:8000/CLodopfuncs.js</option>
+  <option value="http://127.0.0.1:8000/CLodopfuncs.js">本机方式2：http://127.0.0.1:8000/CLodopfuncs.js</option>
+  <option value="http://121.196.197.102:8000/CLodopfuncs.js">按IP地址：http://121.196.197.102:8000/CLodopfuncs.js</option>
+</select>
+
+<br><br>
+&nbsp;&nbsp;&nbsp;&nbsp;第二步选择打印机:<select id="Select02" size="1" onchange="demoCreatePagSizeList()"></select>
+<font id='id_ldms' style="display:none" color="red">web打印服务消息:打印机有变化,建议刷新一下本页面！</font>
+
+<br><br>
+&nbsp;&nbsp;&nbsp;&nbsp;第三步选纸张类型:<select id="Select03" size="1"></select><br><br>
+&nbsp;&nbsp;&nbsp;&nbsp;最后是<a href="javascript:demoPrint(true);">打印预览</a>，或者不预览而<a href="javascript:demoPrint();">直接打印</a>
+
+<br><br>
+&nbsp;二、默认情况下，只要能访问本页，都可以通过本服务控制打印机输出，为了阻止陌生请求，<br><br>
+&nbsp;&nbsp;&nbsp;&nbsp;管理者可以从这里为guest用户<a href="/c_mpermit">设置密码或限定白名单</a>（设置前需用admin身份登录，初始密码皆空）。<br><br>
+&nbsp;三、本服务的俩http端口默认是"8000"和"18000"，安全协议<a href="https://121.196.197.102:8443/" target="_blank">https端口是"8443"</a>，页面程序可同时双引用。<br><br>
+&nbsp;四、这是一个免费打印服务软件，您可以长期使用，但不能用来<a href="/c_mlicense" target="_blank">商用</a>谋利。<br><br>
+&nbsp;五、如果出现故障，可以点这里<a href="/c_sysmessage" target="_blank">查看系统信息</a>。<br><br>
+&nbsp;六、传统用户可对比欣赏用其实现&nbsp;<a href="/CLodopDemos/PrintSampIndex.html" target="_blank">Lodop全部经典例子>></a>
+<br><br>&nbsp;七、当前C-Lodop版本支持"主动在线(<b>A</b>ctive-<b>O</b>nline)"打印机，欢迎高端用户<a href="/c_aoprint" target="_blank">进入AO打印</a>或<a href="/c_pdfprint" target="_blank">PDF打印</a>深入研究。
+<hr><br>
+&nbsp;C-Lodop安装程序可通过<a href="/c_update" target="_blank">本站下载</a>或从<a href="http://www.c-lodop.com/download.html" target="_blank">官网www.c-lodop.com下载</a>最新版。
+</span>
+<br><br><br><br>
+</body>
 </html>
