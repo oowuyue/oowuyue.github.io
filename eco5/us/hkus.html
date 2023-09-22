@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="zh-CN" style="height: 100%">
+
+<head>
+    <meta charset="utf-8">
+</head>
+
+<body style="height: 100%;width: 100%; margin: 0">
+    <div id="container" style="height: 100%; width: 100%;"></div>
+
+    <script type="text/javascript" src="data/恒生指数.js"></script>
+    <script type="text/javascript" src="../cn/data/领先指标.js"></script>
+
+
+    <script type="text/javascript" src="data/美元指数.js"></script>
+    <script type="text/javascript" src="data/MM美元基本面.js"></script>
+
+    <script type="text/javascript" src="./data/MM美股基本指数.js"></script>
+    <script type="text/javascript" src="./data/MM制造业周期指标.js"></script>
+    <script type="text/javascript" src="./data/Y10.js"></script>
+    <script type="text/javascript" src="./data/Y2.js"></script>
+    <script type="text/javascript" src="./data/Y10_2.js"></script>
+    <script type="text/javascript" src="./data/Rate-Yield10-Assets.js"></script>
+    <script type="text/javascript" src="./data/标普500.js"></script>
+
+    <!-- 
+    <script type="text/javascript" src="./data/标普股利国债差.js"></script>
+    <script type="text/javascript" src="./data/usm1.js"></script>
+    <script type="text/javascript" src="./data/usm2.js"></script>
+    <script type="text/javascript" src="./data/铜金比.js"></script>
+    <script type="text/javascript" src="./data/咨商领先指标.js"></script> 
+   -->
+
+    <script type="text/javascript" src="../cn/data/财新制造业PMI,官方制造业PMI.js"></script>
+    <script>
+        function findSameTime(array, time) {
+            for (let index = 0; index < array.length; index++) {
+                const element = array[index];
+                if (element[0] == time) return parseFloat(element[1])
+            }
+            return null
+        }
+        官方制造业PMI = 官方制造业PMI.map(item => {
+            item[1] = parseFloat(((item[1] - 50) * 1).toFixed(2))
+            return item
+        })
+        财新制造业PMI = 财新制造业PMI.map(item => {
+            item[1] = parseFloat(((item[1] - 50) * 1).toFixed(2))
+            return item
+        })
+        let cn_pmi_平均 = 官方制造业PMI.map((item, index) => {
+            let newArr = []
+            newArr[0] = item[0]
+            let avg
+            let cx = findSameTime(财新制造业PMI, item[0])
+            if (cx) avg = (item[1] * 0.5 + cx * 0.5).toFixed(2)
+            else avg = item[1].toFixed(2)
+            newArr[1] = parseFloat(avg)
+            return newArr
+        }).filter(item => {
+            return true //parseFloat(item[0].substring(0, 4)) >= 2008
+        })
+    </script>
+
+    <script>
+        function formatDate(site, date) {
+            if (site.includes("macromicro")) {
+                return date.substring(0, 8) + "28"
+            }
+            if (site.includes("woniu500")) {
+                return date.slice(0, 4) + "-" + date.slice(4, 6) + '-28';
+            }
+            if (site.includes("legulegu")) {
+                var date = new Date(date);
+                var y = date.getFullYear(),
+                    m = date.getMonth() + 1,
+                    d = date.getDate();
+                if (m < 10)
+                    m = '0' + m;
+                if (d < 10)
+                    d = '0' + d;
+
+                if (d >= 28)
+                    var t = y + '-' + m + '-28';
+                else
+                    var t = y + '-' + m + '-' + d;
+                return t;
+
+            }
+            if (site.includes("value500")) {
+                if (date.includes("日"))
+                    return date.slice(0, 4) + "-" + date.slice(5, 7) + "-" + date.substring(8, 10);
+                return date.slice(0, 4) + "-" + date.slice(5, 7) + '-28';
+            }
+        }
+        function isSameMonth(date) {
+            var current_date = new Date();
+            var current_y = current_date.getFullYear(),
+                current_m = current_date.getMonth() + 1,
+                current_d = current_date.getDate();
+            if (current_m < 10)
+                current_m = '0' + current_m;
+            if (current_d < 10)
+                current_d = '0' + current_d;
+
+            if (date.substring(0, 7) == (current_y + '-' + current_m)) {//当月不处理
+                return true
+            } else {
+                return false
+            }
+        }
+
+        let 美元指数同比 = 美元指数
+            .filter((ele, index, datasArr) => { //月最后一天
+                currentMonth = ele[0].substring(5, 7)
+                if (index < datasArr.length - 1) {
+                    nextMonth = datasArr[index + 1][0].substring(5, 7)
+                    return currentMonth != nextMonth
+                } else {
+                    return true
+                }
+            })
+            .map((ele, index, datasArr) => { // yoY 同比
+                let preYear = '' + (parseInt(ele[0].substring(0, 4)) - 1) + ele[0].substring(4, 10)
+                let preItem = datasArr.find(element => {
+                    return element[0] == preYear
+                })
+
+                if (!preItem) { //去原始数据找
+                    let currentDayInt = parseInt(ele[0].substring(8, 10))
+                    let preYearMonth = '' + (parseInt(ele[0].substring(0, 4)) - 1) + ele[0].substring(4, 7)
+                    let n = 0
+                    while (-5 < n) { //向前查找
+                        let dayInt = currentDayInt + n
+                        let dayStr = dayInt >= 10 ? '' + dayInt : "0" + dayInt
+                        let preYearMonthDay = '' + preYearMonth + "-" + dayStr
+                        preItem = 美元指数.find(element => {
+                            return element[0] == preYearMonthDay
+                        })
+                        if (preItem) break
+                        n--
+                    }
+                }
+                let yoY = ""
+                if (preItem) {
+                    preItem[1] = parseFloat(preItem[1])
+                    ele[1] = parseFloat(ele[1])
+                    yoY = preItem[1] ? (ele[1] - preItem[1]) / preItem[1] : ""
+                }
+                return [ele[0], yoY * 100]
+            })
+            .map((item, index, datasArr) => {
+                if (index < datasArr.length - 1) {
+                    item[0] = formatDate("macromicro", item[0])
+                }
+                return item
+            })
+
+        let 恒生指数week = 恒生指数.filter((item) => {
+            return parseFloat(item[0].substring(0, 4)) >= 2000;
+        }).filter(item => {
+            return new Date(item[0]).getDay() == 5 || isSameMonth(item[0]) || item[0].substring(8, 10) == "28" //周五 当月 28号
+        })
+        let 恒生指数week同比 = 恒生指数week.map((ele, index, datasArr) => { // yoY 同比
+            let preYear = '' + (parseInt(ele[0].substring(0, 4)) - 1) + ele[0].substring(4, 10)
+            let preItem = 恒生指数.find(element => {
+                return element[0] == preYear
+            })
+            if (!preItem) { //去原始数据找
+                let currentDayInt = parseInt(ele[0].substring(8, 10))
+                let preYearMonth = '' + (parseInt(ele[0].substring(0, 4)) - 1) + ele[0].substring(4, 7)
+                let n = 0
+                while (-5 < n) { //向前查找
+                    let dayInt = currentDayInt + n
+                    let dayStr = dayInt >= 10 ? '' + dayInt : "0" + dayInt
+                    let preYearMonthDay = '' + preYearMonth + "-" + dayStr
+                    preItem = 恒生指数.find(element => {
+                        return element[0] == preYearMonthDay
+                    })
+                    if (preItem) break
+                    n--
+                }
+            }
+
+            let yoY = ""
+            if (preItem) {
+                preItem[1] = parseFloat(preItem[1])
+                ele[1] = parseFloat(ele[1])
+                yoY = preItem[1] ? (ele[1] - preItem[1]) / preItem[1] * 100 : ""
+            }
+            return [ele[0], yoY]
+        })
+
+        美元指数同比 = 美元指数同比.filter((item) => {
+            return parseFloat(item[0].substring(0, 4)) >= 2000;
+        })
+
+        let 标普500week = 标普500.filter((item) => {
+            return parseFloat(item[0].substring(0, 4)) >= 2000;
+        }).filter(item => {
+            return isSameMonth(item[0]) || new Date(item[0]).getDay() == 5 || item[0].substring(8, 10) == "28"
+        })
+
+        MM制造业周期指标 = MM制造业周期指标.filter((item) => {
+            return parseFloat(item[0].substring(0, 4)) >= 2000;
+        }).map((item) => {
+            item[0] = formatDate("macromicro", item[0])
+            return item
+        })
+
+        MM美股基本指数 = MM美股基本指数.filter((item) => {
+            return parseFloat(item[0].substring(0, 4)) >= 2000;
+        }).map((item) => {
+            item[0] = formatDate("macromicro", item[0])
+            return item
+        })
+
+    </script>
+
+
+    <script type="text/javascript" src="https://fastly.jsdelivr.net/npm/echarts@5.3.2/dist/echarts.min.js"></script>
+    <script type="text/javascript">
+        var dom = document.getElementById('container');
+        var myChart = echarts.init(dom, "red", {
+            renderer: 'canvas',
+            useDirtyRect: false
+        });
+        var app = {};
+        var option;
+        ////仅为了对齐时间
+        Array.prototype.addStartEnd = function (start, end) {
+            let arr = this
+            arr = start.concat(arr)
+            end.forEach((item) => {
+                arr.push(item)
+            })
+            return arr
+        }
+        let currentDay = new Date()
+        currentDay = currentDay.getFullYear() + "-" + (currentDay.getMonth() + 1) + "-" + currentDay.getDate()
+        let justForAlignmentTime = []
+        for (var i = 0; i < MM制造业周期指标.length; i++) { justForAlignmentTime[i] = Array.from(MM制造业周期指标[i]) }
+        justForAlignmentTime = justForAlignmentTime.addStartEnd([], []).map(item => {
+            item[1] = ""
+            return item
+        }).addStartEnd([["2000-01-01", ""]], [[currentDay, ""]])
+        ////仅为了对齐时间  数组的数组
+
+        option = {
+            title: {},
+            tooltip: {
+                trigger: 'axis',
+                show: true,
+                position: ['4.5%', '10%'],
+                order: 'seriesDesc',
+                axisPointer: {
+                    type: 'cross',
+                    show: true
+                },
+                formatter: function (params, ticket, callback) {
+                    return null;
+                }
+            },
+            legend: {},
+            axisPointer: {
+                link: [{
+                    xAxisIndex: 'all'
+                }],
+                lineStyle: {
+                    color: "black"
+                }
+            },
+            dataZoom: [{
+                show: true,
+                realtime: true,
+                start: 0,
+                end: 100,
+                xAxisIndex: [0, 1, 2, 3, 4],
+                bottom: -9
+            },
+            {
+                type: 'inside',
+                realtime: true,
+                start: 0,
+                end: 100,
+                xAxisIndex: [0, 1, 2, 3, 4],
+            }
+            ],
+
+            grid: [
+                {
+                    left: 60,
+                    right: 80,
+                    top: "0%",
+                    height: '30%',
+                    show: true,
+                    backgroundColor: '#e8e8e8',
+
+                },
+                {
+                    left: 60,
+                    right: 80,
+                    top: "30%",
+                    height: '17%',
+                    show: true,
+                    backgroundColor: '#e8e8e8',
+                },
+
+                {
+                    left: 60,
+                    right: 80,
+                    top: "47%",
+                    height: '50%',
+                    show: true,
+                    backgroundColor: '#e8e8e8',
+                },
+
+                {
+                    left: 60,
+                    right: 80,
+                    top: "47%",
+                    height: '25%',
+                    show: true,
+                    backgroundColor: '#e8e8e8',
+                },
+                {
+                    left: 60,
+                    right: 80,
+                    top: "72%",
+                    height: '25%',
+                    show: true,
+                    backgroundColor: '#e8e8e8',
+                },
+
+
+            ],
+
+            xAxis: [
+
+                {
+                    gridIndex: 0, //hs
+                    type: "time",
+                    splitNumber: 30,
+                    splitLine: {
+                        show: true,
+                        lineStyle: {
+                            color: ['#aaa']
+                        }
+                    },
+                    axisLabel: {
+                        fontSize: 10,
+                        formatter: "{yyyy}",
+                        padding: [0, -50, 0, 0],
+                    },
+                    axisPointer: {
+                        show: true, //是否抓取
+
+                        label: {
+                            show: true//抓取显示时间
+                        }
+                    },
+                },
+
+                {
+                    gridIndex: 1,
+                    type: "time",
+                    splitNumber: 30,
+                    splitLine: {
+                        show: true,
+                        lineStyle: {
+                            color: ['#aaa']
+                        }
+                    },
+                    axisLabel: {
+                        show: false
+                    },
+                    axisPointer: {
+                        show: true,
+                        label: {
+                            show: false
+                        }
+                    },
+                },
+
+                {
+                    gridIndex: 2, //sp500
+                    type: "time",
+                    splitNumber: 30,
+                    splitLine: {
+                        show: true,
+                        lineStyle: {
+                            color: ['#aaa']
+                        }
+                    },
+                    axisLabel: {
+                        show: false
+                    },
+                    axisPointer: {
+                        type: "none",
+                        show: true,
+                        label: {
+                            show: false
+                        }
+                    },
+                },
+
+                {
+                    gridIndex: 3,
+                    type: "time",
+                    axisLabel: {
+                        show: false
+                    },
+                    axisPointer: {
+                        show: true,
+                        label: {
+                            show: false
+                        }
+                    },
+                },
+                {
+                    gridIndex: 4,
+                    type: "time",
+                    axisLabel: {//底部时间  sp
+                        show: false
+                    },
+                    axisPointer: {
+                        show: true, //是否抓取
+                        label: {
+                            show: false//抓取显示时间
+                        }
+                    },
+                },
+            ],
+
+            yAxis: [
+                //默认
+                {
+                    gridIndex: 0,
+                    type: 'value',
+                    splitLine: {
+                        show: false
+                    },
+                    min: 7000
+
+                },
+                {
+                    gridIndex: 1,
+                    type: 'value',
+                    splitLine: {
+                        show: false
+                    },
+                    axisLabel: {
+                        formatter: (value, index) => {
+                            if (value > 20 || value < -10) return ""
+                            else return value
+                        }
+                    },
+                    position: "right",
+                    //inverse: true,
+                    max: 30,
+                    min: -25
+
+                },
+                {
+                    gridIndex: 2,
+                    type: 'value',
+                    splitLine: {
+                        show: false
+                    },
+
+                },
+                {
+                    gridIndex: 3,
+                    type: 'value',
+                    splitLine: {
+                        show: false
+                    },
+                    max: 20,
+                    min: -35,
+                    position: "right",
+
+                },
+                {
+                    gridIndex: 4,
+                    type: 'value',
+                    splitLine: {
+                        show: false
+                    },
+                    position: "right",
+                },
+
+                //对面 5
+                {
+                    gridIndex: 0,
+                    type: 'value',
+                    splitLine: {
+                        show: false
+                    },
+                    min: -50,
+                    position: "right"
+
+                },
+
+
+            ],
+
+            series: [
+                {
+                    name: '恒生指数',
+                    type: 'line',
+                    lineStyle: {
+                        width: 0,
+                    },
+                    itemStyle: {
+                        normal: {
+                            areaStyle: {
+                                color: "#57aacb",
+                            },
+                        },
+                        emphasis: {
+                            areaStyle: {
+                                color: "#57aacb",
+                            },
+                        },
+                    },
+                    showSymbol: false,
+                    xAxisIndex: 0,
+                    yAxisIndex: 0,
+                    data: 恒生指数week
+                },
+
+                {
+                    name: "美元指数同比",
+                    type: "line",
+                    xAxisIndex: 1,
+                    yAxisIndex: 1,
+                    showSymbol: false,
+                    smooth: true,
+                    lineStyle: {
+                        width: 1,
+                        color: "#22aa62",
+
+                    },
+                    data: 美元指数同比
+                },
+     
+
+
+                {
+                    name: '标普500',
+                    type: 'line',
+                    lineStyle: {
+                        width: 0,
+                    },
+                    itemStyle: {
+                        normal: {
+                            areaStyle: {
+                                color: "#57aacb",
+                            },
+                        },
+                        emphasis: {
+                            areaStyle: {
+                                color: "#57aacb",
+                            },
+                        },
+                    },
+                    showSymbol: false,
+                    xAxisIndex: 2,
+                    yAxisIndex: 2,
+                    data: 标普500week,
+
+                },
+
+
+                {
+                    name: 'MM制造业周期', //全球製造业、零售、运输、贸易相关数据
+                    type: 'line',
+                    xAxisIndex: 3,
+                    yAxisIndex: 3,
+                    showSymbol: false,
+                    smooth: true,
+                    lineStyle: {
+                        width: 1.3,
+                        color: "#ff814f"
+
+                    },
+                    data: MM制造业周期指标.map(v => { v[1] = parseFloat(v[1]) * 10; return v })
+                },
+
+                {
+                    name: 'MM美股基本面', //柯博文重卡  企业税后获利  信用风险利差企业债-10年国债9f39b3
+                    type: 'line',
+                    xAxisIndex: 3,
+                    yAxisIndex: 3,
+                    showSymbol: false,
+                    smooth: true,
+                    lineStyle: {
+                        width: 1.5,
+                        color: "#a45db2"
+
+                    },
+                    data: MM美股基本指数
+                },
+
+
+                {
+                    name: 'Y10',
+                    type: 'line',
+                    xAxisIndex: 4,
+                    yAxisIndex: 4,
+                    showSymbol: false,
+                    smooth: true,
+                    lineStyle: {
+                        width: 1,
+                        color: "yellow"
+                    },
+                    data: Y10.filter((item) => {
+                        return parseFloat(item[0].substring(0, 4)) >= 2000;
+                    })
+                },
+                {
+                    name: 'Y2',
+                    type: 'line',
+                    xAxisIndex: 4,
+                    yAxisIndex: 4,
+                    showSymbol: false,
+                    smooth: true,
+                    lineStyle: {
+                        width: 1,
+                        color: "#a6ff00"
+                    },
+                    data: Y2.filter((item) => {
+                        return parseFloat(item[0].substring(0, 4)) >= 2000;
+                    })
+                },
+                {
+                    name: 'Rate',
+                    type: 'line',
+                    xAxisIndex: 4,
+                    yAxisIndex: 4,
+                    showSymbol: false,
+                    smooth: true,
+                    lineStyle: {
+                        width: 1.3,
+                        color: "black"
+                    },
+                    data: Rate.filter((item) => {
+                        return parseFloat(item[0].substring(0, 4)) >= 2000;
+                    }).map((item) => {
+                        item[0] = formatDate("macromicro", item[0])
+                        return item
+                    })
+                },
+                {
+                    name: 'Assets',
+                    type: 'line',
+                    xAxisIndex: 4,
+                    yAxisIndex: 4,
+                    showSymbol: false,
+                    smooth: true,
+                    lineStyle: {
+                        width: 1.3,
+                        color: "#d23f37"
+                    },
+                    data: Assets.filter((item) => {
+                        return parseFloat(item[0].substring(0, 4)) >= 2000;
+                    }).map((item) => {
+                        item[0] = formatDate("macromicro", item[0])
+                        item[1] = item[1] ? item[1] - 0.7 : item[1]
+                        return item
+                    })
+
+                },
+
+
+                //对面
+                {
+                    name: '恒指同比',
+                    type: 'line',
+                    xAxisIndex: 0,
+                    yAxisIndex: 5,
+                    showSymbol: false,
+                    smooth: true,
+                    lineStyle: {
+                        width: 1.3,
+                        //color: "red"
+                    },
+                    itemStyle: {
+                        normal: {
+                            color: {
+                                type: "linear",
+                                x: 0,
+                                y: 0,
+                                x2: 0,
+                                y2: 1,
+                                colorStops: [
+                                    {
+                                        offset: 0.45, //大 下
+                                        color: "red",
+                                    },
+                                    {
+                                        offset: 0.6,
+                                        color: "orange",
+                                    },
+
+                                    {
+                                        offset: 0.8, //小 上
+                                        color: "green",
+                                    },
+                                ],
+                                globalCoord: true,
+                            },
+                        },
+                    },
+                    markLine: {
+                        symbol: ["none", "none"],
+                        data: [
+                            {
+                                lineStyle: {
+                                    width: 1,
+                                    color: "#ff535c",
+                                },
+                                label: {
+                                    position: "insideStartTop",
+                                    formatter: "28高估",
+                                    fontSize: "8",
+                                    color: "#ff535c",
+                                },
+                                yAxis: 28,
+                                //x: "5%", //固定起点的 x 像素位置
+                            },
+                            {
+                                lineStyle: {
+                                    width: 1,
+                                    color: "green",
+                                },
+                                label: {
+                                    position: "insideStartBottom",
+                                    formatter: "-20低估",
+                                    fontSize: "8",
+                                    color: "green",
+                                },
+                                yAxis: -20,
+                                // x: "5%", //固定起点的 x 像素位置
+                            },
+                            {
+                                lineStyle: {
+                                    width: 1,
+                                    color: "green",
+                                },
+                                label: {
+                                    position: "insideStartBottom",
+                                    formatter: "-30低估",
+                                    fontSize: "8",
+                                    color: "green",
+                                },
+                                yAxis: -30,
+                                // x: "5%", //固定起点的 x 像素位置
+                            },
+                        ],
+                    },
+                    data: 恒生指数week同比.filter((item) => {
+                        return parseFloat(item[0].substring(0, 4)) >= 2000;
+                    })
+                },
+
+                {
+                    name: 'pmi',
+                    type: 'line',
+                    // xAxisIndex: 0,
+                    // yAxisIndex: 5,
+                    xAxisIndex: 1,
+                    yAxisIndex: 1,
+                    showSymbol: false,
+                    smooth: true,
+                    lineStyle: {
+                        width: 1,
+                        color: "#f16f6f"
+                    },
+                    markLine: {
+                        symbol: ["none", "none"],
+                        data: [
+
+                            {
+                                lineStyle: {
+                                    width: 0.5,
+                                    color: "gray",
+                                },
+                                label: {
+                                    formatter: "上穿10,15",
+                                    color: "#ff535c",
+                                    fontSize: 8,
+                                    position: "insideStartTop",
+                                },
+                                yAxis: 15, // 标线值
+                            },
+
+                            {
+                                lineStyle: {
+                                    width: 0.5,
+                                    color: "gray",
+                                },
+                                label: {
+                                    formatter: "",
+                                    color: "#ff535c",
+                                    fontSize: 8,
+                                    position: "insideStartTop",
+                                },
+                                yAxis: 10, // 标线值
+                            },
+
+                            {
+                                lineStyle: {
+                                    width: 0.5,
+                                    color: "gray",
+                                },
+                                label: {
+                                    formatter: "",
+                                    color: "green",
+                                    fontSize: 8,
+                                    position: "insideStartBottom",
+                                },
+                                yAxis: -7, // 标线值
+                            },
+
+                            {
+                                lineStyle: {
+                                    width: 0.5,
+                                    color: "gray",
+                                },
+                                label: {
+                                    formatter: "下穿-7,-10",
+                                    color: "green",
+                                    fontSize: 8,
+                                    position: "insideStartBottom",
+                                },
+                                yAxis: -10, // 标线值
+                            }
+                        ],
+                    },
+                    data: cn_pmi_平均.filter(item => {
+                        return parseFloat(item[0].substring(0, 4)) >= 2000
+                    }).map(v => {
+                        v[1] = parseFloat(v[1]) * 10
+                        return v
+                    })
+                },
+
+
+
+
+                ///以下仅为了对齐时间
+                {
+                    name: '',
+                    type: 'line',
+                    xAxisIndex: 0,
+                    yAxisIndex: 0,
+                    tooltip: false,
+                    data: justForAlignmentTime,
+                    showSymbol: false,
+                    lineStyle: {
+                        width: 0,
+                        color: "black"
+                    },
+                },
+                {
+                    name: '',
+                    type: 'line',
+                    xAxisIndex: 1,
+                    yAxisIndex: 1,
+                    tooltip: false,
+                    data: justForAlignmentTime,
+                    showSymbol: false,
+                    lineStyle: {
+                        width: 0,
+                        color: "black"
+                    },
+                },
+                {
+                    name: '',
+                    type: 'line',
+                    xAxisIndex: 2,
+                    yAxisIndex: 2,
+                    tooltip: false,
+                    data: justForAlignmentTime,
+                    showSymbol: false,
+                    lineStyle: {
+                        width: 0,
+                        color: "black"
+                    },
+                },
+                {
+                    name: '',
+                    type: 'line',
+                    xAxisIndex: 3,
+                    yAxisIndex: 3,
+                    tooltip: false,
+                    data: justForAlignmentTime,
+                    showSymbol: false,
+                    lineStyle: {
+                        width: 0,
+                        color: "black"
+                    },
+                },
+                {
+                    name: '',
+                    type: 'line',
+                    xAxisIndex: 4,
+                    yAxisIndex: 4,
+                    tooltip: false,
+                    data: justForAlignmentTime,
+                    showSymbol: false,
+                    lineStyle: {
+                        width: 0,
+                        color: "black"
+                    },
+                },
+            ]
+        };
+
+        if (option && typeof option === 'object') {
+            myChart.setOption(option);
+        }
+        window.addEventListener('resize', myChart.resize)
+    </script>
+</body>
+
+</html>
