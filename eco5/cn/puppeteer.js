@@ -1,4 +1,4 @@
-const puppeteer = require('puppeteer-extra') //https://www.npmjs.com/package/puppeteer-extra
+const puppeteer = require('puppeteer-extra') ////防止被检测方式2：https://www.npmjs.com/package/puppeteer-extra
 const StealthPlugin = require('puppeteer-extra-plugin-stealth')
 puppeteer.use(StealthPlugin())
 
@@ -70,6 +70,263 @@ const path = require('path');
     let task_macromicro = async (datasInfo, pageUrl, apiUrl) => {
         const page = await browser.newPage();
         await page.setRequestInterception(true)
+
+        //防止被检测方式1：登陆网站后 通过editthiscookie插件复制cookie 
+        // let macromicro_cookie = [
+        //     {
+        //         "domain": ".macromicro.me",
+        //         "expirationDate": 1730169700.281683,
+        //         "hostOnly": false,
+        //         "httpOnly": false,
+        //         "name": "_ga",
+        //         "path": "/",
+        //         "sameSite": "unspecified",
+        //         "secure": false,
+        //         "session": false,
+        //         "storeId": "0",
+        //         "value": "GA1.2.835986011.1666600353",
+        //         "id": 1
+        //     },
+        //     {
+        //         "domain": ".macromicro.me",
+        //         "expirationDate": 1730169698.614691,
+        //         "hostOnly": false,
+        //         "httpOnly": false,
+        //         "name": "_ga_4CS94JJY2M",
+        //         "path": "/",
+        //         "sameSite": "unspecified",
+        //         "secure": false,
+        //         "session": false,
+        //         "storeId": "0",
+        //         "value": "GS1.1.1695609698.70.0.1695609698.0.0.0",
+        //         "id": 2
+        //     },
+        //     {
+        //         "domain": ".macromicro.me",
+        //         "expirationDate": 1695609760,
+        //         "hostOnly": false,
+        //         "httpOnly": false,
+        //         "name": "_gat_gtag_UA_66285376_3",
+        //         "path": "/",
+        //         "sameSite": "unspecified",
+        //         "secure": false,
+        //         "session": false,
+        //         "storeId": "0",
+        //         "value": "1",
+        //         "id": 3
+        //     },
+        //     {
+        //         "domain": ".macromicro.me",
+        //         "expirationDate": 1695696100,
+        //         "hostOnly": false,
+        //         "httpOnly": false,
+        //         "name": "_gid",
+        //         "path": "/",
+        //         "sameSite": "unspecified",
+        //         "secure": false,
+        //         "session": false,
+        //         "storeId": "0",
+        //         "value": "GA1.2.1407857323.1695609700",
+        //         "id": 4
+        //     },
+        //     {
+        //         "domain": ".macromicro.me",
+        //         "expirationDate": 1695611500,
+        //         "hostOnly": false,
+        //         "httpOnly": false,
+        //         "name": "_hjAbsoluteSessionInProgress",
+        //         "path": "/",
+        //         "sameSite": "no_restriction",
+        //         "secure": true,
+        //         "session": false,
+        //         "storeId": "0",
+        //         "value": "1",
+        //         "id": 5
+        //     },
+        //     {
+        //         "domain": ".macromicro.me",
+        //         "expirationDate": 1695609820,
+        //         "hostOnly": false,
+        //         "httpOnly": false,
+        //         "name": "_hjIncludedInSessionSample_1543609",
+        //         "path": "/",
+        //         "sameSite": "no_restriction",
+        //         "secure": true,
+        //         "session": false,
+        //         "storeId": "0",
+        //         "value": "0",
+        //         "id": 6
+        //     },
+        //     {
+        //         "domain": ".macromicro.me",
+        //         "expirationDate": 1695611500,
+        //         "hostOnly": false,
+        //         "httpOnly": false,
+        //         "name": "_hjSession_1543609",
+        //         "path": "/",
+        //         "sameSite": "no_restriction",
+        //         "secure": true,
+        //         "session": false,
+        //         "storeId": "0",
+        //         "value": "eyJpZCI6ImJmNDRjZTA1LTM3YzQtNGMwOC05MWJmLTVmZTM3MjJkYWYyOSIsImNyZWF0ZWQiOjE2OTU2MDk3MDAwNjQsImluU2FtcGxlIjpmYWxzZX0=",
+        //         "id": 7
+        //     },
+        //     {
+        //         "domain": ".macromicro.me",
+        //         "expirationDate": 1727145700,
+        //         "hostOnly": false,
+        //         "httpOnly": false,
+        //         "name": "_hjSessionUser_1543609",
+        //         "path": "/",
+        //         "sameSite": "no_restriction",
+        //         "secure": true,
+        //         "session": false,
+        //         "storeId": "0",
+        //         "value": "eyJpZCI6IjZlNjQ3YzI2LTZmNmMtNTZiZS05YzUyLTYyMDFmYjc2M2QzNiIsImNyZWF0ZWQiOjE2NjY2MDAzNTUyMjcsImV4aXN0aW5nIjp0cnVlfQ==",
+        //         "id": 8
+        //     },
+        //     {
+        //         "domain": ".macromicro.me",
+        //         "expirationDate": 1727145699.9213,
+        //         "hostOnly": false,
+        //         "httpOnly": true,
+        //         "name": "cf_clearance",
+        //         "path": "/",
+        //         "sameSite": "no_restriction",
+        //         "secure": true,
+        //         "session": false,
+        //         "storeId": "0",
+        //         "value": "UL0dG6S9_FndBlv.mnAEum8FTXOwpDQcBz4vkoDthRE-1695609699-0-1-faf38a57.54c15689.adf2d5b7-0.2.1695609699",
+        //         "id": 9
+        //     },
+        //     {
+        //         "domain": ".sc.macromicro.me",
+        //         "expirationDate": 1720771651.344802,
+        //         "hostOnly": false,
+        //         "httpOnly": false,
+        //         "name": "__lt__cid",
+        //         "path": "/",
+        //         "sameSite": "unspecified",
+        //         "secure": false,
+        //         "session": false,
+        //         "storeId": "0",
+        //         "value": "280e5225-6c4f-43c0-bd34-5d36c49c7ca1",
+        //         "id": 10
+        //     },
+        //     {
+        //         "domain": ".sc.macromicro.me",
+        //         "expirationDate": 1724894990.581712,
+        //         "hostOnly": false,
+        //         "httpOnly": true,
+        //         "name": "bvt",
+        //         "path": "/",
+        //         "sameSite": "lax",
+        //         "secure": true,
+        //         "session": false,
+        //         "storeId": "0",
+        //         "value": "0",
+        //         "id": 11
+        //     },
+        //     {
+        //         "domain": ".sc.macromicro.me",
+        //         "expirationDate": 1696214495.317304,
+        //         "hostOnly": false,
+        //         "httpOnly": true,
+        //         "name": "mmt",
+        //         "path": "/",
+        //         "sameSite": "lax",
+        //         "secure": true,
+        //         "session": false,
+        //         "storeId": "0",
+        //         "value": "269572%7C102aa7fe2c6a8f49825",
+        //         "id": 12
+        //     },
+        //     {
+        //         "domain": ".sc.macromicro.me",
+        //         "expirationDate": 1710814906.325083,
+        //         "hostOnly": false,
+        //         "httpOnly": true,
+        //         "name": "mmu",
+        //         "path": "/",
+        //         "sameSite": "lax",
+        //         "secure": true,
+        //         "session": false,
+        //         "storeId": "0",
+        //         "value": "bbf338252b1f344f257335be5418fca7",
+        //         "id": 13
+        //     },
+        //     {
+        //         "domain": ".sc.macromicro.me",
+        //         "expirationDate": 1695638495.317157,
+        //         "hostOnly": false,
+        //         "httpOnly": true,
+        //         "name": "PHPSESSID",
+        //         "path": "/",
+        //         "sameSite": "no_restriction",
+        //         "secure": true,
+        //         "session": false,
+        //         "storeId": "0",
+        //         "value": "7n75vvemr0tesd0rlif1nshlpe",
+        //         "id": 14
+        //     },
+        //     {
+        //         "domain": "sc.macromicro.me",
+        //         "hostOnly": true,
+        //         "httpOnly": false,
+        //         "name": "app_ui_newbie_btn",
+        //         "path": "/",
+        //         "sameSite": "unspecified",
+        //         "secure": false,
+        //         "session": true,
+        //         "storeId": "0",
+        //         "value": "1",
+        //         "id": 15
+        //     },
+        //     {
+        //         "domain": "sc.macromicro.me",
+        //         "expirationDate": 1695692956,
+        //         "hostOnly": true,
+        //         "httpOnly": false,
+        //         "name": "btn_meo_230907",
+        //         "path": "/",
+        //         "sameSite": "unspecified",
+        //         "secure": false,
+        //         "session": false,
+        //         "storeId": "0",
+        //         "value": "1695260956",
+        //         "id": 16
+        //     },
+        //     {
+        //         "domain": "sc.macromicro.me",
+        //         "hostOnly": true,
+        //         "httpOnly": false,
+        //         "name": "mm_sess_pages",
+        //         "path": "/",
+        //         "sameSite": "unspecified",
+        //         "secure": false,
+        //         "session": true,
+        //         "storeId": "0",
+        //         "value": "1",
+        //         "id": 17
+        //     },
+        //     {
+        //         "domain": "sc.macromicro.me",
+        //         "expirationDate": 1695692949,
+        //         "hostOnly": true,
+        //         "httpOnly": false,
+        //         "name": "mm230919meo",
+        //         "path": "/",
+        //         "sameSite": "unspecified",
+        //         "secure": false,
+        //         "session": false,
+        //         "storeId": "0",
+        //         "value": "1695260950",
+        //         "id": 18
+        //     }
+        // ]
+        // for (let i = 0; i < macromicro_cookie.length; i++) {
+        //     await page.setCookie(macromicro_cookie[i]);
+        // }
 
         page.on('request', (request) => { request.continue() })
         const promise1 = new Promise((resolve, reject) => {
@@ -465,7 +722,7 @@ const path = require('path');
     await task_xueqiu([
         // { "name": "沪深300_xueqiu_day", "symbol": "SH000300", "period": "day" },
         // { "name": "沪深300_xueqiu_month", "symbol": "SH000300", "period": "month" },
-       
+
         { "name": "红利低波_xueqiu_month", "symbol": "CSIH30269", "period": "month" },
     ])
 
@@ -474,7 +731,7 @@ const path = require('path');
     //     { "name": "科技龙头_csi_day", "indexCode": "931524", "period": "day" }, //中小红低 大宗能粮 ppi     业绩性    沪港深通中小  上证商品  
     //     { "name": "科技龙头_csi_day", "indexCode": "931524", "period": "day" }, //         消费白马 cpi                           SHS消费龙头
 
-        
+
     // ])
 
 

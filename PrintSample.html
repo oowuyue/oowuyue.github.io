@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Your page title</title>
+    <style>
+        hr {
+            height: 10px;
+            background-color: rebeccapurple;
+        }
+    </style>
+    <script src="https://cdn.bootcss.com/jquery/3.2.0/jquery.min.js"></script>
+    <script language="javascript" src="https://www.lodop.net/demolist/LodopFuncs.js"></script>
+</head>
+
+<body>
+
+    <!-- 内嵌 -->
+    <object id="LODOP2" classid="clsid:2105C259-1E0C-4534-8141-A753534CB4CA" width=700 height=407
+        style="display: inline-block;">
+        <param name="Caption" value="内嵌显示区域11111111">
+        <param name="Border" value="11">
+        <param name="Color" value="red">
+        <embed id="LODOP_EM2" TYPE="application/x-print-lodop" width=700 height=407 PLUGINSPAGE="install_lodop.exe">
+    </object>
+    <object id="LODOP3" classid="clsid:2105C259-1E0C-4534-8141-A753534CB4CA" width=700 height=407
+        style="display: inline-block;">
+        <param name="Caption" value="内嵌显示区域">
+        <param name="Color" value="#C0C0C0">
+        <embed id="LODOP_EM3" TYPE="application/x-print-lodop" width=700 height=407 PLUGINSPAGE="install_lodop.exe">
+    </object>
+    <div>
+        <input type="button" value="lodop内嵌" onclick="lodopClick()">
+        <a href="javascript:;" onclick="javascript:LODOP3.SET_PRINT_STYLEA('Selected','Content','fffff');">所选内容项</a>或
+        <a href="javascript:;" onclick="javascript:LODOP3.SET_PRINT_STYLEA('Selected','Deleted',true);">删除所选项</a>
+    </div>
+    <script language="javascript" type="text/javascript">
+        var LODOP2;
+        var LODOP3;
+
+        //内嵌
+        function lodopClick() {
+            LODOP2 = getLodop(document.getElementById('LODOP2'), document.getElementById('LODOP_EM2'));
+            LODOP2.PRINT_INITA(0, 0, 760, 321, "打印控件功能演示_Lodop功能_在线编辑获得程序代码");
+            LODOP2.ADD_PRINT_TEXT(10, 50, 175, 30, "先加的内容");
+            LODOP2.SET_SHOW_MODE("PREVIEW_IN_BROWSE", true); //预览界面内嵌到页面内
+            LODOP2.SET_SHOW_MODE("SETUP_ENABLESS", "11111111000000"); //隐藏关闭(叉)按钮
+            LODOP2.SET_SHOW_MODE("HIDE_GROUND_LOCK", true); //隐藏纸钉按钮
+            LODOP2.PREVIEW();
+            LODOP2.DO_ACTION("PREVIEW_PERCENT", 4);
+            LODOP2.DO_ACTION("PREVIEW_ZOOM_OUT", 0);
+
+            LODOP3 = getLodop(document.getElementById('LODOP3'), document.getElementById('LODOP_EM3'));
+            LODOP3.PRINT_INITA(0, 0, 760, 321, "打印控件功能演示_Lodop功能_在线编辑获得程序代码");
+            LODOP3.ADD_PRINT_TEXT(10, 50, 175, 30, "先加的内容");
+            LODOP3.SET_SHOW_MODE("DESIGN_IN_BROWSE", true); //预览界面内嵌到页面内
+            LODOP3.SET_PREVIEW_WINDOW(1, 2, 1, 800, 800, "自定义标题.开始打印");
+            LODOP3.PRINT_DESIGN();
+        }
+    </script>
+    <hr>
+
+    <!-- 导出excel -->
+    <div id="div_table">
+        <table border=1 width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse"
+            bordercolor="#000000">
+            <caption><b>报表统计演示</b></caption>
+            <thead>
+                <tr>
+                    <th width="100%" colspan="5" tindex="1">
+                        当前是第<font tdata="PageNO" format="ChineseNum" color="blue">##</font>页</span>/共<font
+                            tdata="PageCount" format="ChineseNum" color="blue">##</font></span>页，
+                        本页从第<font color="blue" format="00" tdata="Count-SubCount+1">##</font>行到第<font color="blue"
+                            tdata="Count">##</font>行</th>
+                </tr>
+                <tr>
+                    <th width="20%">型号</th>
+                    <th width="26%">数量</th>
+                    <th width="28%" colspan="2">金额</th>
+                    <th width="26%">单价</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td width="20%" tclass="a">A1</td>
+                    <td width="26%">10</td>
+                    <td width="28%" colspan="2"><input value=15.00></td>
+                    <td width="26%">1.5</td>
+                </tr>
+
+                <tr>
+                    <td width="20%" tclass="a">A2</td>
+                    <td width="26%">20.5</td>
+                    <td width="28%" colspan="2"><textarea rows="1" style="border-width: 0px">41.00</textarea></td>
+                    <td width="26%">2.0</td>
+                </tr>
+
+                <tr>
+                    <td width="20%" tclass="a">A3</td>
+                    <td width="26%">10</td>
+                    <td width="28%" colspan="2">20.00</td>
+                    <td width="26%">2.0</td>
+                </tr>
+
+                <tr>
+                    <td width="20%" tclass="a">A4</td>
+                    <td width="26%">30</td>
+                    <td width="28%" colspan="2">30.00</td>
+                    <td width="26%">1.0</td>
+                </tr>
+
+                <tr>
+                    <td width="20%" tclass="a">A5</td>
+                    <td width="26%">25</td>
+                    <td width="28%" colspan="2">50.00</td>
+                    <td width="26%">2.0</td>
+                </tr>
+
+                <tr>
+                    <td width="20%" tclass="a">A6</td>
+                    <td width="26%">20</td>
+                    <td width="28%" colspan="2">20.00</td>
+                    <td width="26%">1.0</td>
+                </tr>
+
+                <tr>
+                    <td width="20%" rowspan="3" tclass="b">Bx</td>
+                    <td width="26%">45</td>
+                    <td width="28%" colspan="2">90.00</td>
+                    <td width="26%">2.0</td>
+                </tr>
+
+                <tr>
+                    <td width="26%">100</td>
+                    <td width="28%" colspan="2">150.00</td>
+                    <td width="26%">1.5</td>
+                </tr>
+
+                <tr>
+                    <td width="26%">10,000</td>
+                    <td width="28%" colspan="2">11,000.00</td>
+                    <td width="26%">11</td>
+                </tr>
+
+                <tr>
+                    <td width="20%" tclass="b">B0</td>
+                    <td width="26%">15</td>
+                    <td width="28%" colspan="2">15.00</td>
+                    <td width="26%">1.0</td>
+                </tr>
+
+                <tr>
+                    <td width="20%" tclass="b">B0</td>
+                    <td width="26%">24</td>
+                    <td width="28%" colspan="2">48.00</td>
+                    <td width="26%">2.0</td>
+                </tr>
+
+                <tr>
+                    <td width="20%" tclass="b">B1</td>
+                    <td width="26%">1</td>
+                    <td width="28%" colspan="2">5.60</td>
+                    <td width="26%">5.6</td>
+                </tr>
+
+                <tr>
+                    <td width="20%" tclass="b">B2</td>
+                    <td width="26%">180</td>
+                    <td width="28%" colspan="2">180.00</td>
+                    <td width="26%">1.0</td>
+                </tr>
+
+                <tr>
+                    <td width="20%" tclass="b">B12</td>
+                    <td width="26%">0</td>
+                    <td width="28%" colspan="2">50.00</td>
+                    <td width="26%">　</td>
+                </tr>
+
+                <tr>
+                    <td width="20%" tclass="b">B13</td>
+                    <td width="26%">30</td>
+                    <td width="28%" colspan="2">300.00</td>
+                    <td width="26%">10.0</td>
+                </tr>
+
+
+                <tr>
+                    <td width="481" colspan="2">本表截止当前行累积金额：
+                    </td>
+                    <td width="657" colspan="3">
+                        <font color="blue" tdata="Sum" format="#,##0.00" tindex="3">######</font>
+                    </td>
+                </tr>
+
+
+                <tr>
+                    <td width="20%">
+                        <font color="blue" tdata="SubCount" format="#">显示行号：本页第######行</font>
+                    </td>
+                    <td width="26%">20</td>
+                    <td width="28%" colspan="2">400.00</td>
+                    <td width="26%">20.0</td>
+                </tr>
+
+                <tr>
+                    <td width="20%">
+                        <font color="blue" tdata="SubCount" format="#">显示行号：本页第######行</font>
+                    </td>
+                    <td width="26%">25</td>
+                    <td width="28%" colspan="2">50.00</td>
+                    <td width="26%">2.0</td>
+                </tr>
+                <tr>
+                    <td width="20%" tclass="b">B17</td>
+                    <td width="26%">90</td>
+                    <td width="28%" colspan="2">90.00</td>
+                    <td width="26%">1.0</td>
+                </tr>
+
+                <tr>
+                    <td width="20%" tclass="b">B18</td>
+                    <td width="26%">0</td>
+                    <td width="28%" colspan="2">24.00</td>
+
+                </tr>
+
+                <tr>
+                    <td width="20%" tclass="b">B19</td>
+                    <td width="26%">33</td>
+                    <td width="28%" colspan="2">66.00</td>
+                    <td width="26%">2.0</td>
+                </tr>
+
+                <tr>
+                    <td width="20%" tclass="b">B20</td>
+                    <td width="26%">100</td>
+                    <td width="28%" colspan="2">560.00</td>
+                    <td width="26%">5.6</td>
+                </tr>
+
+                <tr>
+                    <td width="20%" tclass="b">B21</td>
+                    <td width="26%">120</td>
+                    <td width="28%" colspan="2">120.00</td>
+                    <td width="26%">1.0</td>
+                </tr>
+
+                <tr>
+                    <td width="20%" tclass="b">B22</td>
+                    <td width="26%">150</td>
+                    <td width="28%" colspan="2">150.00</td>
+                    <td width="26%">1.0</td>
+                </tr>
+
+                <tr>
+                    <td width="20%" tclass="c">C23</td>
+                    <td width="26%">70</td>
+                    <td width="28%" colspan="2">70.00</td>
+                    <td width="26%">1.0</td>
+                </tr>
+
+                <tr>
+                    <td width="20%" tclass="c">C24</td>
+                    <td width="26%">800</td>
+                    <td width="28%" colspan="2">80.00</td>
+                    <td width="26%">0.1</td>
+                </tr>
+
+                <tr>
+                    <td width="374" colspan="2">截止表尾累积金额
+                    </td>
+                    <td width="202">
+                        <font color="blue" tdata="Sum" format="#,##0.00" tindex="3">######</font>
+                    </td>
+                    <td width="363" colspan="2">
+                        <font color="blue" tdata="Sum" format="UpperMoney" tindex="3">######</font>
+                    </td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th width="20%" align="left">
+                        本页本列行数:<font tdata="SubCount" format="#" color="blue">###</font>
+                    </th>
+                    <th align="left" width="26%" tdata="SubSum" format="#.##">
+                        本页数量小计：<font color="blue">######</font>
+                    </th>
+                    <th width="14%" align="right">本页金额小计</th>
+                    <th width="19%" tdata="SubSum" format="#,##0.00" align="right">
+                        <font color="blue" id="id01">###元</font>
+                    </th>
+                    <th width="21%" align="left" tdata="SubAverage" format="#.00">
+                        本页均价：<font color="blue">######</font>
+                    </th>
+                </tr>
+                <tr>
+                    <th width="20%" align="left">本页非重复行:<font tdata="SubDistinctCount" format="#" color="blue">##</font>
+                    </th>
+                    <th width="26%" tdata="Sum" format="#.##" align="left">
+                        数量累计：<font color="blue">######</font>
+                    </th>
+                    <th width="14%" align="right">金额累计</th>
+                    <th width="19%" tdata="Sum" format="#,##0.00" align="right">
+                        <font color="blue">￥###</font>
+                    </th>
+                    <th width="21%" tdata="Average" format="#.00" align="left">累计均价：<font color="blue">######</font>
+                    </th>
+                </tr>
+                <tr>
+                    <th width="20%" align="left">全表总的行数:<font color="blue" tdata="AllCount" format="0">###</font>
+                    </th>
+                    <th width="26%" tdata="AllSum" format="#.##" align="left">
+                        全表数量总计：<font color="blue">######</font>
+                    </th>
+                    <th width="14%" align="right">全表金额总计</th>
+                    <th width="19%" tdata="AllSum" format="#,##0.00" align="right">
+                        <font color="blue" id="id02">￥###</font>
+                    </th>
+                    <th width="21%" tdata="AllAverage" format="#.00" align="left">全表均价：<font color="blue">######</font>
+                    </th>
+                </tr>
+                <tr>
+                    <th width="22%" tdata="SubCount" format="0" align="left">
+                        本页A型：<font color="blue" tclass="a">##</font>行<br>
+                        本页B型：<font color="blue" tclass="b" tindex="1">##</font>行
+                    </th>
+                    <th width="22%" align="left">
+                        本页数量最大值：<font color="blue">
+                            <span tdata="SubMax">######</span>
+                        </font><br>
+                        本页数量最小值：<font color="blue">
+                            <span tdata="SubMin">######</span>
+                        </font><br>
+                    </th>
+                    <th width="22%" align="left" colspan="3">
+                        用公式 <font color="#009999">(id01/id02)*100</font> 计算本页金额占比:
+                        <font color="blue" tdata="(id01/id02)*100" format="#.00">#####%<br>
+                        </font>（这俩id对应"金额小计"和"金额总计"）
+                    </th>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+
+    <input type="button" id="save_button" value="save file" onclick="SaveAsFile()">
+    <input type="button" id="stat_button" value="stat file" onclick="StatAsFile()">
+    <script language="javascript" type="text/javascript">
+        function SaveAsFile() {
+            LODOP = getLodop();
+            for (let index = 0; index < 2; index++) {
+                LODOP.PRINT_INIT("");
+                LODOP.ADD_PRINT_TABLE(100, 20, 500, 80, document.getElementById("div_table").innerHTML);
+                LODOP.SET_SAVE_MODE("Orientation", 2); //Excel文件的页面设置：横向打印   1-纵向,2-横向;
+                LODOP.SET_SAVE_MODE("PaperSize", 9); //Excel文件的页面设置：纸张大小   9-对应A4
+                LODOP.SET_SAVE_MODE("Zoom", 50); //Excel文件的页面设置：缩放比例
+                // LODOP.SET_SAVE_MODE("CenterHorizontally",true);//Excel文件的页面设置：页面水平居中
+                // LODOP.SET_SAVE_MODE("CenterVertically",true); //Excel文件的页面设置：页面垂直居中
+                // LODOP.SET_SAVE_MODE("QUICK_SAVE",true);//快速生成（无表格样式,数据量较大时或许用到） 
+                LODOP.SAVE_TO_FILE("LS.xls")
+
+            }
+
+        };
+        function StatAsFile() {
+            LODOP = getLodop();
+            LODOP.PRINT_INIT("打印控件功能演示_Lodop功能_打印表格");
+            LODOP.ADD_PRINT_TABLE(100, 1, "99.8%", 250, document.getElementById("div_table").innerHTML);
+            LODOP.PREVIEW();
+        };	
+    </script>
+    <hr>
+
+    <!--设计 维护 预览 打印  html 图片 纯文本 -->
+    <div id="h5_id">
+        <img src=" http://www.w3school.com.cn/svg/rect1.svg">
+    </div>
+    <div id="textarea_id">
+        <textarea rows="5" cols="25">
+            在w3school，你可以找到你所需要的所有的网站建设教程。
+        </textarea>
+    </div>
+    <iframe src="http://www.c-lodop.com/demolist/PrintSample3.html" width="800" height="200"></iframe>
+
+    <div>
+        <input type="button" value="设计 预览 维护测试" onclick="mytest()">
+        <input type="button" value="获取值" onclick="getMyValue()">
+    </div>
+
+    <script language="javascript" type="text/javascript">
+        var LODOP;
+        function mytest() {
+            LODOP = getLodop();
+            LODOP.PRINT_INIT("任务名");
+            LODOP.SET_PRINT_PAGESIZE(2, "217mm", "306mm", "");
+
+            //alert(LODOP.SELECT_PRINTER());
+            // if (LODOP.SET_PRINTER_INDEXA("Doro PDF Writer")) {
+            //     alert("ok")
+            // } else {
+            //     alert("false");
+            // }
+
+            //LODOP.ADD_PRINT_SETUP_BKIMG("<img border='0' src='https://www.baidu.com/img/bd_logo1.png'>");
+            //LODOP.SET_SHOW_MODE("BKIMG_IN_PREVIEW", 1);
+
+            //document.getElementById("h5").innerHTML document.documentElement.innerHTML   URL:http://www.baidu.com
+            //LODOP.ADD_PRINT_HTM(10, 10, "100%", "100%", document.getElementById("textarea_id").innerHTML);
+            //LODOP.SET_PRINT_STYLEA(0, "HtmWaitMilSecs", 3000) //设置上一项延迟超文本
+
+            //LODOP.ADD_PRINT_HTM(500,450,300,100,"超文本页号：<span tdata='pageNO-2'>第##页</span>/<span tdata='pageCount-2'>共##页</span>");
+            //LODOP.SET_PRINT_STYLEA(0,"ItemType",1);
+            //LODOP.SET_PRINT_STYLEA(0,"PageUnIndex","1,last");//前两页不显示该页号
+
+
+            LODOP.ADD_PRINT_IMAGE(30, 150, 400, 400, "<img border='0' src='http://img1.z3-gz.com/group1/M00/00/36/rBKDZVvNN1mAbgbfAAQeeAWawn4164.jpg' />");
+            //LODOP.SET_PRINT_STYLEA(0, "ItemType", 1); //使用页眉页脚，0代表前一个打印内容
+
+            LODOP.ADD_PRINT_TEXT(215, 15, 222, 100, "qwqwqw11");
+            LODOP.SET_PRINT_STYLEA(0, "FontName", "微软雅黑");
+            LODOP.SET_PRINT_STYLEA(0, "FontSize", "15");
+
+            //LODOP.ADD_PRINT_BARCODEA("ttt",173, 244, 235, 172, "EAN13", "1234567890123");   
+            //LODOP.SET_PRINT_STYLEA(0,"FontName","隶书");
+
+            //LODOP.SET_PRINT_STYLEA("ALL", "ShowBarText", false);//内嵌时候
+            //LODOP.SET_PRINT_STYLEA('All', 'Deleted', true);//内嵌时候
+
+            //LODOP.SET_SHOW_MODE("HIDE_PBUTTIN_PREVIEW", 1);
+            //LODOP.SET_SHOW_MODE("TEXT_SHOW_BORDER", 0); //设置字符编辑框默认为single   
+
+            //LODOP.SET_PRINT_MODE("CONTROL_PRINTER:Microsoft XPS Document Writer", "RESUME");
+            //LODOP.SET_PRINT_MODE("PROGRAM_ROOTDIR", "F:/testroot");
+            //alert( LODOP.SET_PRINT_MODE("PRINT_NOCOLLATE", 1));
+
+
+            //LODOP.SET_PRINT_MODE("CATCH_PRINT_STATUS", true);
+            if (LODOP.CVERSION) { //c-lodop
+                LODOP.On_Return = function (TaskID, Value) {
+                    //console.log(TaskID + "==" + Value);
+                };
+                var TaskID = LODOP.PRINT();
+            } else //lodop
+            {
+                var Value = LODOP.PRINT();
+                //LODOP.PREVIEW();
+                //LODOP.PRINT();
+                //LODOP.PRINTA();
+                //LODOP.PRINT_DESIGN();
+                //LODOP.PRINT_SETUP();
+                //LODOP.GET_VALUE();
+            }
+        }
+
+        function getMyValue() {// 设计或预览后获取参考样例22 建议lodop内嵌使用  clodop有些值不支持 
+
+            if (LODOP.CVERSION) {//clodop
+                LODOP.altMessageNoReadFile = "NoReadFile"
+                LODOP.On_Return = function (TaskID, Value) {//clodop异步回调获取返回值 
+                    var stResult = Value;
+                    console.log(stResult);
+                }
+                LODOP.GET_VALUE("ItemWidth", "0"); //PREVIEW PRINT_DESIGN PRINT SAVE_TO_FILE GET_FILE_TEXT
+            } else {//lodop
+                var stResult = LODOP.GET_VALUE("ItemWidth", "0"); //lodop同步获取返回值
+                console.log(stResult);
+            }
+
+        };
+
+    </script>
+    <hr>
+
+    <!-- 样例45 打印成功-->
+    <input type="button" value="test打印成功" onclick="clodopPrintLoop(0)">
+    <script language="javascript" type="text/javascript">
+        //简单方式判断判断任务成功
+        function simpleRealut() {
+            LODOP = getLodop();//获取LODOP
+            if (LODOP.CVERSION) {
+                LODOP.On_Return_Remain = true;
+                LODOP.On_Return = function (TaskID, Value) {
+                    console.log(TaskID, Value) // value = true  简单方式判断插件成功生成任务就认定已经打印成功
+                }
+                for (let index = 0; index < 3; index++) {
+                    LODOP.PRINT_INITA(1, 1, 770, 660, "测试预览功能");
+                    LODOP.ADD_PRINT_TEXT(10, 60, 300, 200, "这是测试的纯文本" + index);
+                    LODOP.PRINT();
+                }
+            }
+            else {
+                for (let index = 0; index < 3; index++) {
+                    LODOP.PRINT_INITA(1, 1, 770, 660, "测试预览功能");
+                    LODOP.ADD_PRINT_TEXT(10, 60, 300, 200, "这是测试的纯文本" + index);
+                    let Value = LODOP.PRINT();
+                    console.log(Value)
+                }
+            }
+        }
+
+        //通过查看打印任务是否还处在队列中判断打印成功失败 clodop异步回调
+        var PRINT_TaskID = null             //PRINT任务
+        var P_ID = null                     //PRINT任务异步返回打印任务P_ID 即JOB代码（打印机序号和JOB序号组成）
+
+        var GET_VALUE_EXIST_TaskID = null   //GET_VALUE("PRINT_STATUS_EXIST", P_ID)任务
+        var P_ID_EXIST = null               //GET_VALUE任务异步返回打印任务P_ID的是否还在队列 即获得该JOB是否还处在队列中P_ID_EXIST
+        //var GET_VALUE_EXIST_Task_Count = 0  //GET_VALUE轮询次数 轮询3次P_ID是否还在队列,超过3次视为失败
+
+        var GET_VALUE_TEXT_TaskID = null    //LODOP.GET_VALUE("PRINT_STATUS_TEXT", P_ID)任务
+        var P_ID_TEXT = null                //GET_VALUE任务异步返回打印任务P_ID的打印状态描述 即获得该JOB的打印状态描述P_ID_TEXT文本描述
+
+        var GET_VALUE_ID_TaskID = null      //LODOP.GET_VALUE("PRINT_STATUS_ID", P_ID)任务
+        var P_ID_ID = null                  //GET_VALUE任务异步返回打印任务P_ID的打印状态代码 即获得该JOB的打印状态代码P_ID_ID编码描述  可用getStatuMessage(P_ID_ID)解析成文本
+        function clodopPrintLoop(index) {   //打印函数
+            LODOP = getLodop()
+            LODOP.PRINT_INIT("打印控件功能演示_Lodop功能_获得打印状态")
+            LODOP.SET_PRINTER_INDEX("Lenovo M7400 Printer")
+            LODOP.SET_PRINT_MODE("CATCH_PRINT_STATUS", true)
+            LODOP.On_Return_Remain = true
+            LODOP.On_Return = function (TaskID, Value) {
+                if (TaskID == PRINT_TaskID) {
+                    P_ID = Value                                                         //1:简单方式判断插件成功生成任务就认定已经打印成功 不用再GET_VALUE("PRINT_STATUS_EXIST", P_ID)
+                    console.log(TaskID + "-PRINT()异步返回值打印任务P_ID:" + Value)
+                    GET_VALUE_EXIST_TaskID = LODOP.GET_VALUE("PRINT_STATUS_EXIST", P_ID) //2:判断打印任务P_ID不在队列 即“JOB不在队列”就足可认定已经打印成功
+                    GET_VALUE_EXIST_Task_Count++                                         //3:PRINT_STATUS_EXIST换成PRINT_STATUS_OK获得该JOB是否已经打印成功需打印机支持 建议1,2方式
+                }
+                if (TaskID == GET_VALUE_EXIST_TaskID) {
+                    P_ID_EXIST = Value
+                    if (P_ID_EXIST == 0) {//P_ID不在队列里视为成功0 setTimeout(clodopPrintLoop(index+1),200) 开启下个任务
+                        if (index < 5) {//打印5个打印任务
+                            console.log(TaskID + "-GET_VALUE(PRINT_STATUS_EXIST," + P_ID + ")异步返回值0, 打印任务" + P_ID + "已不再队列里视为成功, 开启下个PRINT任务" + (index + 1))
+                            setTimeout("clodopPrintLoop(" + (index + 1) + ")", 200)
+                        }
+                        else console.log(TaskID + "-GET_VALUE(PRINT_STATUS_EXIST," + P_ID + ")异步返回值0, 打印任务" + P_ID + "已不再队列里视为成功 所有任务已成功")
+                        GET_VALUE_EXIST_Task_Count = 0
+                    }
+                    else {//P_ID还在队列里可以视为失败或轮询多次P_ID的状态
+                        if (GET_VALUE_EXIST_Task_Count < 3) {//轮询3次P_ID的状态,超过3次视为失败. if(true)打印机脱机手动删除队列任务模拟测试
+                            console.log(TaskID + "-GET_VALUE(PRINT_STATUS_EXIST," + P_ID + ")异步返回值1, 打印任务" + P_ID + "还在队列里, 开启GET_VALUE任务轮询" + P_ID + "状态")
+                            GET_VALUE_EXIST_TaskID = LODOP.GET_VALUE("PRINT_STATUS_EXIST", P_ID)
+                            GET_VALUE_EXIST_Task_Count++
+                        }
+                        else {
+                            console.log(TaskID + "-GET_VALUE(PRINT_STATUS_EXIST," + P_ID + ")异步返回值1, 打印任务" + P_ID + "还在队列里, GET_VALUE_EXIST_Task_Count=" + GET_VALUE_EXIST_Task_Count + ",长时间未成功检查下打印机")
+                            GET_VALUE_EXIST_Task_Count = 0
+                            //失败后尝试获取 PRINT_STATUS_TEXT打印状态描述 和  PRINT_STATUS_ID打印状态代码 分析问题 不同打印机会有不同不是精确的
+                            GET_VALUE_TEXT_TaskID = LODOP.GET_VALUE("PRINT_STATUS_TEXT", P_ID)
+                            GET_VALUE_ID_TaskID = LODOP.GET_VALUE("PRINT_STATUS_ID", P_ID)     //128(打印结束)或其他的如20（“正在打印16”和“正在删除4”之和）不同打印机会有不同不是精确的  
+                        }
+                    }
+                }
+                if (TaskID == GET_VALUE_TEXT_TaskID) {
+                    P_ID_TEXT = Value
+                    console.log(TaskID + "-GET_VALUE(PRINT_STATUS_TEXT," + P_ID + ")异步返回值, 打印任务" + P_ID + "的打印状态描述:" + P_ID_TEXT)
+                }
+                if (TaskID == GET_VALUE_ID_TaskID) {
+                    P_ID_ID = Value
+                    console.log(TaskID + "-GET_VALUE(PRINT_STATUS_ID," + P_ID + ")异步返回值, 打印任务" + P_ID + "的打印状态代码:" + P_ID_ID 
+                    + " getStatuMessage(" + P_ID_ID + ")解析:" + getStatuMessage(P_ID_ID))
+                }
+            }
+            LODOP.ADD_PRINT_TEXT(10, 60, 300, 200, "纯文本任务" + index)
+            PRINT_TaskID = LODOP.PRINT()
+        }
+        function getStatuMessage(statusID) {
+            var messages = "";
+            if (statusID & 1) messages += "已暂停 -";
+            if (statusID & 2) messages += "错误 -";
+            if (statusID & 4) messages += "正删除 -";
+            if (statusID & 8) messages += "进入队列 -";
+            if (statusID & 16) messages += "正在打印 -";
+            if (statusID & 32) messages += "脱机 -";
+            if (statusID & 64) messages += "缺纸 -";
+            if (statusID & 128) messages += "打印结束 -";
+            if (statusID & 256) messages += "已删除 -";
+            if (statusID & 512) messages += "堵了 -";
+            if (statusID & 1024) messages += "用户介入 -";
+            if (statusID & 2048) messages += "正在重新启动 -";
+            return messages;
+        }
+
+        //通过查看打印任务是否还处在队列中判断打印成功失败 lodop同步方式
+        function lodopPrintLoop(index) {
+            LODOP = getLodop()
+            LODOP.PRINT_INIT("打印控件功能演示_Lodop功能_获得打印状态")
+            LODOP.SET_PRINTER_INDEX("Lenovo M7400 Printer")
+            LODOP.SET_PRINT_MODE("CATCH_PRINT_STATUS", true)
+
+            LODOP.ADD_PRINT_TEXT(10, 60, 300, 200, "纯文本任务" + index)
+            P_ID = LODOP.PRINT()
+            P_ID_EXIST = LODOP.GET_VALUE("PRINT_STATUS_EXIST", P_ID)
+
+            if (P_ID_EXIST == 0) {//P_ID不在队列里视为成功  即JOB代码（打印机序号和JOB序号组成）
+                if (index < 5) {//打印5个打印任务
+                    console.log("GET_VALUE()同步返回值0, 打印任务" + P_ID + "已不再队列里视为成功, 开启下个PRINT任务" + (index + 1))
+                    setTimeout("lodopPrintLoop(" + (index + 1) + ")", 200)
+                }
+                else console.log("GET_VALUE()同步返回值0, 打印任务" + P_ID + "已不再队列里视为成功 所有任务已成功")
+            }
+            else {//P_ID还在队列里视为成功轮询P_ID的状态
+                while (GET_VALUE_Task_Count < 3) {//轮询3次P_ID的状态,超过3次视为失败. if(true)打印机脱机手动删除队列任务模拟测试
+                    console.log("GET_VALUE()同步返回值1, 打印任务" + P_ID + "还在队列里, 开启GET_VALUE任务轮询" + P_ID + "状态")
+                    P_ID_EXIST = LODOP.GET_VALUE("PRINT_STATUS_EXIST", P_ID)
+                    if (P_ID_EXIST == 0) break
+                    GET_VALUE_Task_Count++
+                }
+                if (GET_VALUE_Task_Count >= 3 && P_ID_EXIST == 1)
+                    console.log(TaskID + "-GET_VALUE()异步返回值1, 打印任务" + P_ID + "还在队列里," + GET_VALUE_Task_Count + ">3 长时间未成功检查下打印机")
+            }
+        }
+
+
+    </script>
+    <hr>
+
+
+    <!--样例35  50 模板 -->
+    <input type="button" value="样例35,打印设计后直接返回明文模板" onclick="DesignPage()">
+    <br>
+    <input type="button" value="样例50,设计后通过GET_VALUE返回模板" onclick="getProgram()">
+    <select name="ProgramMode" id="ProgramMode">
+        <option value="ProgramCodes"> 样例50返回明文模板;GET_VALUE(ProgramCodes)</option>
+        <option value="ProgramData"> 样例50返回密文模板;GET_VALUE(ProgramData)</option>
+    </select>
+    <br>
+    <input type="button" value="加载模板" onclick="MyPrint()">
+    <script language="javascript" type="text/javascript">
+        var template
+        var isMingWen = true
+
+        //样例35   打印设计直接返回明文
+        function DesignPage() {
+            LODOP = getLodop();
+            LODOP.PRINT_INIT("打印控件功能演示_Lodop功能_获得程序代码");
+            LODOP.ADD_PRINT_SETUP_BKIMG("<img border='0' src='https://www.baidu.com/img/bd_logo1.png'>");
+            LODOP.SET_SHOW_MODE("BKIMG_IN_PREVIEW", 1);
+            LODOP.SET_PRINT_PAGESIZE(1, "227mm", "336mm", "");
+
+            LODOP.ADD_PRINT_TEXTA("jj_xm", 83, 78, 75, 20, "寄件人姓名"); //通过类名
+
+            LODOP.ADD_PRINT_TEXT(256, 61, 324, 30, "演示发货地址信息");   //通过变量名
+            LODOP.SET_PRINT_MODE("PROGRAM_CONTENT_BYVAR", true); //生成程序时，内容参数有变量用变量，无变量用具体值
+            LODOP.SET_PRINT_STYLEA(0, "ContentVName", "MyData"); //设置内容参数的变量名 为获取模板设置的
+
+            if (LODOP.CVERSION) {
+                CLODOP.On_Return = function (TaskID, Value) {
+                    template = Value;
+                    console.log(template)
+                    isMingWen = true
+                }
+                LODOP.PRINT_DESIGN();
+            } else {
+                template = LODOP.PRINT_DESIGN();
+                console.log(template)
+                isMingWen = true
+            }
+        }
+
+        //样例50   ProgramCodes明文, ProgramData密文, 设计后通过getvalue获取模板  
+        function getProgram() {
+            var mode = document.getElementById("ProgramMode").value
+            LODOP = getLodop();
+            if (LODOP.CVERSION) {
+                CLODOP.On_Return = function (TaskID, Value) {
+                    template = Value;
+                    console.log(mode + "= ", template)
+                    isMingWen = mode == "ProgramCodes" ? true : false
+                }
+                // 0-全部代码（默认），1-排除初始化语句，2-排除纸张设置，4-排除变量赋值语句，8-排除背景图语句。可相加
+                LODOP.GET_VALUE(mode, 1)
+            } else {
+                template = LODOP.GET_VALUE(mode, 1)
+                console.log(mode + "= ", template)
+                isMingWen = mode == "ProgramCodes" ? true : false
+            }
+        }
+
+        /*
+            JS语句明文模板赋值  具体参考样例35
+                //指定变量名赋值 
+                MyData=document.getElementById('data01').value;	
+                eval(document.getElementById('S1').value); 	
+ 
+                //指定打印项类名赋值 
+                eval(document.getElementById('S1').value);
+                LODOP.SET_PRINT_STYLEA("itemName","CONTENT", "张三"); 
+ 
+            密文文档式模板赋值 具体参考样例50
+                //指定打印项类名赋值
+                LODOP.ADD_PRINT_DATA("ProgramData",document.getElementById('S1').value); //装载模板
+                LODOP.SET_PRINT_STYLEA("itemName","CONTENT","张三");//通过类名设置模板里面的打印项数据
+ 
+        */
+        function MyPrint() {
+            LODOP = getLodop();
+            if (!confirm("下面的演示会产生大量的实际打印操作，确定继续吗？")) return
+            var i = 1
+            while (i < 3) {
+                LODOP.PRINT_INIT("任务" + i)
+                if (isMingWen == true) {//明文js模板 样例35
+                    for (j = 1; j <= 5; j++) {
+                        var MyData = "任务" + i + ",分页" + j
+                        eval(template)
+                        //LODOP.ADD_PRINT_TEXT(256,61,324,30,MyData)   // 一个任务里面打印项id从0计数 类似css里的id 唯一
+                        LODOP.NEWPAGE()                                //ADD_PRINT_DATA 和 NEWPAGE 不兼容
+                    }
+                }
+                else {//密文模板 样例50
+                    LODOP.ADD_PRINT_DATA("ProgramData", template)  //装载模板
+                    //LODOP.ADD_PRINT_TEXTA("jj_xm", 83, 78, 75, 20, "寄件人姓名") 类名赋值
+                    LODOP.SET_PRINT_STYLEA("jj_xm", "CONTENT", "任务" + i); // 一个任务里面打印项类名可以一样 类似css里的class
+                    //LODOP.NEWPAGE()                                //ADD_PRINT_DATA 和 NEWPAGE 不兼容
+                }
+                i++
+                LODOP.PRINT()
+            }
+        }
+
+    </script>
+    <hr>
+
+
+    <!--参考样例17 com端口 -->
+    <input type="button" value="write1" onclick="write1()">
+    <input type="button" value="read" onclick="read()">
+    <input type="button" value="write200read" onclick="write200read()">
+    <script language="javascript" type="text/javascript">//clodop回调
+        //https://www.liangzl.com/get-article-detail-137485.html
+        //https://blog.csdn.net/weixin_41695564/article/details/82355464
+        //https://www.jianshu.com/p/00e6c07fffaa
+        function write1() {
+            LODOP = getLodop();
+            LODOP.On_Return = function (TaskID, Value) {
+                console.log(TaskID, Value);
+            };
+            LODOP.WRITE_PORT_DATA("COM1", 'mode com1:2400,n,8,1,2000,1000'); //设置并打开
+            var i = 1;
+            while (i < 2) { //写数据
+                LODOP.WRITE_PORT_DATA("COM4", String.fromCharCode(27) + ',' + String.fromCharCode(112) + ',' + String.fromCharCode(0) + ',' + String.fromCharCode(128) + ',' + String.fromCharCode(128));
+                i++;
+            }
+        }
+        function read() {
+            LODOP = getLodop();
+            LODOP.On_Return_Remain = true;
+            LODOP.On_Return = function (TaskID, Value) {
+                console.log(TaskID, Value);
+                if (Value == '') {
+                    LODOP.READ_PORT_DATA("COM1"); //轮询直到有数据
+                } else {
+                    console.log("ok", TaskID, Value);
+                }
+            };
+            LODOP.READ_PORT_DATA("COM1");
+        }
+        function write200read() { //先写200ms后再读
+            LODOP = getLodop();
+            LODOP.On_Return = function (TaskID, Value) {
+                console.log(TaskID, Value);
+            };
+            LODOP.READ_PORT_DATA("COM1" + String.fromCharCode(10) +
+                "mode com1:2400,n,8,1,2000,1000\nSleep:200\nIamGoodMan");
+        }
+
+        function toHex(s) {
+            // utf8 to latin1
+            var s = unescape(encodeURIComponent(s))
+            var h = ''
+            for (var i = 0; i < s.length; i++) {
+                h += s.charCodeAt(i).toString(16)
+            }
+            return h
+        }
+
+        function fromHex(h) {
+            var s = ''
+            for (var i = 0; i < h.length; i += 2) {
+                s += String.fromCharCode(parseInt(h.substr(i, 2), 16))
+            }
+            return decodeURIComponent(escape(s))
+        }
+    </script>
+
+
+
+    <!--套打 单位 -->
+    <input type="button" value="taodadanwei" onclick="write1()">
+    <script type="text/javascript">
+        /**
+        * 获取DPI
+        * @returns {Array}
+        */
+        function conversion_getDPI() {
+            var arrDPI = new Array;
+            if (window.screen.deviceXDPI) {
+                arrDPI[0] = window.screen.deviceXDPI;
+                arrDPI[1] = window.screen.deviceYDPI;
+            } else {
+                var tmpNode = document.createElement("DIV");
+                tmpNode.style.cssText = "width:1in;height:1in;position:absolute;left:0px;top:0px;z-index:99;visibility:hidden";
+                document.body.appendChild(tmpNode);
+                arrDPI[0] = parseInt(tmpNode.offsetWidth);
+                arrDPI[1] = parseInt(tmpNode.offsetHeight);
+                tmpNode.parentNode.removeChild(tmpNode);
+            }
+            return arrDPI;
+        };
+        /**
+        * px转换为mm
+        * @param value
+        * @returns {number}
+        */
+        function pxConversionMm(value) {
+            var inch = value / this.conversion_getDPI()[0];
+            var c_value = inch * 25.4; //1英寸＝25.4毫米
+            //console.log(c_value);
+            return c_value;
+        };
+
+        function taoda() {
+            LODOP.PRINT_INITA(0, 0, "210mm", "297mm", "纸张尺寸");
+            LODOP.SET_PRINT_PAGESIZE(1, 2100, 2970, "纸张尺寸");
+            LODOP.SET_PRINT_MODE("PRINT_NOCOLLATE", 1);
+            LODOP.ADD_PRINT_SETUP_BKIMG("C:\\Users\\wuyue\\Desktop\\扫描纸张图片.jpg");
+            LODOP.SET_SHOW_MODE("BKIMG_LEFT", 0);
+            LODOP.SET_SHOW_MODE("BKIMG_TOP", 0);
+            LODOP.SET_SHOW_MODE("BKIMG_WIDTH", "210mm");//纸张尺寸
+            LODOP.SET_SHOW_MODE("BKIMG_HEIGHT", "297mm");
+
+            LODOP.SET_SHOW_MODE("BKIMG_IN_PREVIEW", 1);
+            LODOP.SET_SHOW_MODE("BKIMG_PRINT", 0);
+            LODOP.ADD_PRINT_TEXT(353, 438, 160, 20, "文本");
+        }
+    </script>
+
+
+
+    <!--测试用 -->
+    <iframe id="lodopFrame" width=100% height=100%></iframe>
+    <input type="button" value="test1" onclick="test1()">
+    <input type="button" value="test2" onclick="test2()">
+    <script language="javascript" type="text/javascript">
+        function test1(index) {
+            let LODOP = getLodop()
+            LODOP.PRINT_INIT("文件" + index)
+            LODOP.SET_PRINTER_INDEX("Bullzip PDF Printer")
+            LODOP.ADD_PRINT_TEXT(50, 231, 260, 39, "任务" + arr[index] + ":page-1")
+            LODOP.ADD_PRINT_IMAGE(30, 150, 400, 400, "<img border='0' src='http://www.c-lodop.com/demolist/PrintSample8.jpg' />")
+            LODOP.NEWPAGE()
+            LODOP.ADD_PRINT_TEXT(50, 231, 260, 39, "任务" + arr[index] + ":page-2")
+            LODOP.SET_PRINT_MODE("PRINT_START_PAGE", 1);
+            LODOP.SET_PRINT_MODE("PRINT_END_PAGE", 1);
+
+            LODOP.PREVIEW();//_blank
+        }
+
+        function test2(index) {
+            let LODOP = getLodop()
+            LODOP.PRINT_INIT()
+            LODOP.ADD_PRINT_TEXT(50, 231, 260, 39, "任务")
+            LODOP.SET_PRINT_MODE("AUTO_CLOSE_PREWINDOW", 1);
+            if (LODOP.CVERSION) {//clodop
+                LODOP.On_Return = function (TaskID, Value) {//clodop异步回调获取返回值 
+                    var stResult = Value;//返回true认为成功
+                    console.log(TaskID, "==", Value);
+                }
+                LODOP.PREVIEW(); //PREVIEW预览  PRINT_DESIGN设计  PRINT直接打印   SAVE_TO_FIL  GET_FILE_TEXT  GET_VALUE
+            } else {//lodop
+                var stResult = LODOP.PREVIEW(); //lodop同步获取返回值
+                console.log(stResult);
+            }
+        }
+    </script>
+
+
+
+</body>
+
+</html>

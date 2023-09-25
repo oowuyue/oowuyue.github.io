@@ -1,0 +1,504 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<script src="CLodopfuncs.js"></script>
+<title>Welcome Active-Online Print</title>
+</head>
+
+<body onload="demoSetClodopJS(document.getElementById('Select01').value)" style="background:#ebf4fb">
+<center>
+<h2>C-Lodop的<font color="#009999">客户端桥(Client-Bridge)</font></h2><hr>
+</center>
+
+<script>
+        function demoSetClodopJS(strSrc){
+                 var oscript=demoCreateCLodopJSscript(strSrc);
+                 oscript.onload =oscript.onreadystatechange= function() {
+                         if ((!oscript.readyState|| /loaded|complete/.test(oscript.readyState)))
+                         demoCreateBridgeSelectList();
+                 };
+        }
+        function demoCreateCLodopJSscript(strSrc){
+                 var ScriptSS=document.getElementsByTagName("script");
+                 for(var i in ScriptSS){
+                           if (ScriptSS[i] && ScriptSS[i].src && (ScriptSS[i].src.indexOf("CLodopfuncs.js")>=0)) {
+                                if (ScriptSS[i].parentNode) ScriptSS[i].parentNode.removeChild( ScriptSS[i] );
+                           }
+                 }
+                 var oscript=document.createElement("script");
+                 if (strSrc.indexOf("src=")>=0) {strSrc=strSrc.match(/=[\',\"][^\',^\"].*(?=[\',\"])/i);strSrc=strSrc[0].slice(2);}
+                 oscript.src=strSrc;
+                 var head = document.head || document.getElementsByTagName("head")[0] || document.documentElement;
+                 head.insertBefore(oscript,head.firstChild);
+                 return oscript;
+        }
+        function demoCreateBridgeSelectList(){
+                var oResultSelect=document.getElementById('Select02');
+                while(oResultSelect.childNodes.length>0){
+                       var children = oResultSelect.childNodes;
+                       for(var i=0;i<children.length;i++)
+                       oResultSelect.removeChild(children[i]);
+                }
+                var strBridgesNameList=CLODOP.Get_AOBridge_List("name");
+                var strBridgessIDList=CLODOP.Get_AOBridge_List("id");
+                var NameOptions=new Array();
+                var IDOptions=new Array();
+                NameOptions=strBridgesNameList.split("\n");
+                IDOptions=strBridgessIDList.split("\n");
+                for (var i in IDOptions){
+                        var option=document.createElement('option');
+                        option.innerHTML=NameOptions[i];
+                        option.value=IDOptions[i]+";"+NameOptions[i];
+                        oResultSelect.appendChild(option);
+                }
+                demoCreateBridgeSubPrinterSelectList();
+        }
+        function demoCreateBridgeSubPrinterSelectList(){
+                var iBridgeIndex=document.getElementById("Select02").value;
+                var oResultSelect=document.getElementById('Select03');
+                while(oResultSelect.childNodes.length>0){
+                        var children = oResultSelect.childNodes;
+                        for(var i=0;i<children.length;i++)
+                        oResultSelect.removeChild(children[i]);
+                };
+                var strPrintersNameList=CLODOP.Get_AOBridge_SubPrinters_List(iBridgeIndex,"name");
+                var strPrintersIDList=CLODOP.Get_AOBridge_SubPrinters_List(iBridgeIndex,"id");
+                var NameOptions=new Array();
+                var IDOptions=new Array();
+                NameOptions=strPrintersNameList.split("\n");
+                IDOptions=strPrintersIDList.split("\n");
+                for (var i in NameOptions){
+                        var option=document.createElement('option');
+                        option.innerHTML=NameOptions[i];
+                        option.value=IDOptions[i];
+                        oResultSelect.appendChild(option);
+                }
+                demoCreateBridgeSubPrinterPageSizeSelectList();
+        }
+        function demoCreateBridgeSubPrinterPageSizeSelectList(){
+                var iBridgeIndex=document.getElementById("Select02").value;
+                var iSubPrinterIndex=document.getElementById("Select03").value;
+                var oResultSelect=document.getElementById('Select04');
+                while(oResultSelect.childNodes.length>0){
+                        var children = oResultSelect.childNodes;
+                        for(var i=0;i<children.length;i++)
+                        oResultSelect.removeChild(children[i]);
+                }
+                var strSubPrinterPageSizeList=CLODOP.Get_AOBridge_SubPrinters_PageSize_List(iBridgeIndex,iSubPrinterIndex);
+                var Options=new Array();
+                Options=strSubPrinterPageSizeList.split("\n");
+                for (var i in Options){
+                    var option=document.createElement('option');
+                    option.innerHTML=Options[i];
+                    option.value=Options[i];
+                    oResultSelect.appendChild(option);
+                }
+
+        }
+        function demoPreview(){
+                LODOP.PRINT_INIT("测试端桥AO预览打印");
+                LODOP.ADD_PRINT_TEXT(10,10,300,200,"这是纯文本行");
+                LODOP.ADD_PRINT_HTM(30,10,"100%","80%","超文本横线:<hr>下面是二维码:");
+                LODOP.ADD_PRINT_BARCODE(85,10,79,69,"QRCode","123456789012");
+                LODOP.PREVIEW(true);
+        }
+        function demoCreateKeyState(){
+          var strBridgeIDandName=document.getElementById("Select02").value;
+          var iSubPrinterIndex=document.getElementById("Select03").value;
+          var strKeyState='LODOP.SET_BRIDGE_INDEX("'+strBridgeIDandName+','+iSubPrinterIndex+'");';
+          document.getElementById("KeyS").value=strKeyState;
+        }
+</script>
+
+<span style="font-size:14px">
+<h3>&nbsp;使用说明：</h3>
+&nbsp;&nbsp;把一个C-Lodop(扩展版)程序安装在客户端普通PC上，启用其端桥功能，并设置其指向广域网另一个C-Lodop扮演的AO打印服务，这样就在AO打印服务<br><br>
+&nbsp;&nbsp;和普通打印机之间建立了一个对话桥梁，从而代替<a href="http://www.c-lodop.com/aoprint.html" target="_blank">专用AO打印机</a>，
+这就是<font color="#0000FF">端桥AO打印</font>。此时指定语句要用<font color="#0000FF">SET_BRIDGE_INDEX</font>，其参数有两部分组成，<br><br>
+&nbsp;&nbsp;<b>端桥识别信息+(端桥下)打印机识别信息</b>，和<a href="/c_aoprint" target="_blank">标准AO打印</a>参数类似的是，端桥识别信息是其编号和标识名用分号组合，两部分用逗号分隔，语句格式如下:<br><br>
+&nbsp;&nbsp;<font color="#0000FF">LODOP.SET_BRIDGE_INDEX("<font color="#A00040">端桥编号;端桥标识名</font>&nbsp;<font color="#FF0000">,&nbsp;打印机名或序号</font>");</font><br><br>
+
+&nbsp;&nbsp;下面演示端桥打印常见五步骤：<br><br>
+&nbsp;&nbsp;第一步选择云主机:<select id="Select01" size="1" onchange="demoSetClodopJS(document.getElementById('Select01').value)">
+  <option value="http://121.196.197.102:8000/CLodopfuncs.js?AOListCount=100">按IP地址：http://121.196.197.102:8000/CLodopfuncs.js?AOListCount=100</option>
+  <option value="http://121.196.197.102:8000/CLodopfuncs.js?AOListCount=1">按IP地址：http://121.196.197.102:8000/CLodopfuncs.js?AOListCount=1</option>
+  <option value="http://localhost:8000/CLodopfuncs.js">本机方式1：http://localhost:8000/CLodopfuncs.js</option>
+  <option value="http://127.0.0.1:8000/CLodopfuncs.js">本机方式2：http://127.0.0.1:8000/CLodopfuncs.js</option>
+</select><br><br>
+
+&nbsp;&nbsp;第二步选择端桥(编号及标识名):<select id="Select02" size="1" onchange="demoCreateBridgeSubPrinterSelectList()"></select><br>
+&nbsp;&nbsp;<i>（编号及标识名是在"AO客户端桥设置"中录入的，如看不到该端桥，请<a href="javascript:location.reload(true);">刷新一下</a>本页面，每个端桥上线大约10秒）</i><br><br>
+&nbsp;&nbsp;第三步选择(端桥下)普通打印机:<select id="Select03" size="1" onchange="demoCreateBridgeSubPrinterPageSizeSelectList()"></select><br>
+&nbsp;&nbsp;<i>（这里和本地打印类似，一个端桥下面可有多个打印机）</i><br><br>
+
+&nbsp;&nbsp;第四步选择(端桥下)普通打印机的纸张类型:<select id="Select04" size="1"></select><br><br>
+
+&nbsp;&nbsp;第五步点<a href="javascript:;" onclick="javascript:eval(document.getElementById('text01').value);">打印</a>执行如下语句看看效果：<br><br>
+&nbsp;&nbsp;<textarea rows="14" id="text01" cols="100">
+  var strBridgeIDandName=document.getElementById("Select02").value;
+  var iSubPrinterIndex=document.getElementById("Select03").value;
+  var strPageSizeName=document.getElementById("Select04").value;
+
+  LODOP.PRINT_INIT("测试端桥AO打印");
+  LODOP.SET_BRIDGE_INDEX(strBridgeIDandName+','+iSubPrinterIndex);
+  LODOP.SET_PRINT_PAGESIZE(0,0,0,strPageSizeName);
+  LODOP.ADD_PRINT_TEXT(10,10,300,200,"这是纯文本行");
+  LODOP.ADD_PRINT_HTM(30,10,"100%","80%","超文本横线:<hr>下面是二维码:");
+  LODOP.ADD_PRINT_BARCODE(85,10,79,69,"QRCode","123456789012");
+  LODOP.On_Return=function(TaskID,Value){ alert("打印结果:"+Value); };
+  LODOP.PRINT();
+
+</textarea><br><br>
+&nbsp;&nbsp;打印之后点<a href="javascript:;" onclick="javascript:demoCreateKeyState();">获取SET_BRIDGE_INDEX真实参数语句</a>再理解一下(或拷出来测试)：<br>
+&nbsp;&nbsp;<textarea rows="2" id="KeyS" cols="100"></textarea><br><br>
+&nbsp;&nbsp;以上识别信息是借助C-Lodop扩展版特有函数<font color="#0000FF">Get_AOBridge_List</font>和<font color="#0000FF">Get_AOBridge_SubPrinters_List</font>从主JS文件里摘取的，<br><br>
+&nbsp;&nbsp;因在线打印机可能很多，为避免拖累速度，主JS文件(CLodopfuncs.js)里默认仅含20个(可用AOListCount自定)打印机信息，<br><br>
+&nbsp;&nbsp;故在实际应用中一般都是对SET_BRIDGE_INDEX参数赋具体值，赋值前若想获取相关信息，请参考<a href="/c_aoprintget" target="_blank">AO打印服务更多演示</a>。<br><br>
+&nbsp;&nbsp;另外若调用<a href="javascript:;" onclick="javascript:demoPreview();">LODOP.PREVIEW(true)</a>语句在预览打印对话框里选端桥时，会输出到端桥下的默认打印机。<br><br>
+&nbsp;&nbsp;特注：官方在广域网上有个永久例子<a href="http://demo.c-lodop.com:8000/c_aobridge" target="_blank">http://demo.c-lodop.com:8000</a>不妨远程链接实战一下.
+<hr><br>
+&nbsp;&nbsp;C-Lodop更多功能请参阅<a href="/" target="_blank">通用使用说明</a>，
+安装程序可通过<a href="/c_update" target="_blank">本站下载</a>或从<a href="http://www.c-lodop.com/download.html" target="_blank">官网www.c-lodop.com下载</a>最新版。
+<br><br><br>
+</span><br>
+</body>
+</html>
+
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<script src="CLodopfuncs.js"></script>
+<title>Welcome Active-Online Print</title>
+</head>
+
+<body onload="demoSetClodopJS(document.getElementById('Select01').value)" style="background:#ebf4fb">
+<center>
+<h2>C-Lodop的<font color="#009999">客户端桥(Client-Bridge)</font></h2><hr>
+</center>
+
+<script>
+        function demoSetClodopJS(strSrc){
+                 var oscript=demoCreateCLodopJSscript(strSrc);
+                 oscript.onload =oscript.onreadystatechange= function() {
+                         if ((!oscript.readyState|| /loaded|complete/.test(oscript.readyState)))
+                         demoCreateBridgeSelectList();
+                 };
+        }
+        function demoCreateCLodopJSscript(strSrc){
+                 var ScriptSS=document.getElementsByTagName("script");
+                 for(var i in ScriptSS){
+                           if (ScriptSS[i] && ScriptSS[i].src && (ScriptSS[i].src.indexOf("CLodopfuncs.js")>=0)) {
+                                if (ScriptSS[i].parentNode) ScriptSS[i].parentNode.removeChild( ScriptSS[i] );
+                           }
+                 }
+                 var oscript=document.createElement("script");
+                 if (strSrc.indexOf("src=")>=0) {strSrc=strSrc.match(/=[\',\"][^\',^\"].*(?=[\',\"])/i);strSrc=strSrc[0].slice(2);}
+                 oscript.src=strSrc;
+                 var head = document.head || document.getElementsByTagName("head")[0] || document.documentElement;
+                 head.insertBefore(oscript,head.firstChild);
+                 return oscript;
+        }
+        function demoCreateBridgeSelectList(){
+                var oResultSelect=document.getElementById('Select02');
+                while(oResultSelect.childNodes.length>0){
+                       var children = oResultSelect.childNodes;
+                       for(var i=0;i<children.length;i++)
+                       oResultSelect.removeChild(children[i]);
+                }
+                var strBridgesNameList=CLODOP.Get_AOBridge_List("name");
+                var strBridgessIDList=CLODOP.Get_AOBridge_List("id");
+                var NameOptions=new Array();
+                var IDOptions=new Array();
+                NameOptions=strBridgesNameList.split("\n");
+                IDOptions=strBridgessIDList.split("\n");
+                for (var i in IDOptions){
+                        var option=document.createElement('option');
+                        option.innerHTML=NameOptions[i];
+                        option.value=IDOptions[i]+";"+NameOptions[i];
+                        oResultSelect.appendChild(option);
+                }
+                demoCreateBridgeSubPrinterSelectList();
+        }
+        function demoCreateBridgeSubPrinterSelectList(){
+                var iBridgeIndex=document.getElementById("Select02").value;
+                var oResultSelect=document.getElementById('Select03');
+                while(oResultSelect.childNodes.length>0){
+                        var children = oResultSelect.childNodes;
+                        for(var i=0;i<children.length;i++)
+                        oResultSelect.removeChild(children[i]);
+                };
+                var strPrintersNameList=CLODOP.Get_AOBridge_SubPrinters_List(iBridgeIndex,"name");
+                var strPrintersIDList=CLODOP.Get_AOBridge_SubPrinters_List(iBridgeIndex,"id");
+                var NameOptions=new Array();
+                var IDOptions=new Array();
+                NameOptions=strPrintersNameList.split("\n");
+                IDOptions=strPrintersIDList.split("\n");
+                for (var i in NameOptions){
+                        var option=document.createElement('option');
+                        option.innerHTML=NameOptions[i];
+                        option.value=IDOptions[i];
+                        oResultSelect.appendChild(option);
+                }
+                demoCreateBridgeSubPrinterPageSizeSelectList();
+        }
+        function demoCreateBridgeSubPrinterPageSizeSelectList(){
+                var iBridgeIndex=document.getElementById("Select02").value;
+                var iSubPrinterIndex=document.getElementById("Select03").value;
+                var oResultSelect=document.getElementById('Select04');
+                while(oResultSelect.childNodes.length>0){
+                        var children = oResultSelect.childNodes;
+                        for(var i=0;i<children.length;i++)
+                        oResultSelect.removeChild(children[i]);
+                }
+                var strSubPrinterPageSizeList=CLODOP.Get_AOBridge_SubPrinters_PageSize_List(iBridgeIndex,iSubPrinterIndex);
+                var Options=new Array();
+                Options=strSubPrinterPageSizeList.split("\n");
+                for (var i in Options){
+                    var option=document.createElement('option');
+                    option.innerHTML=Options[i];
+                    option.value=Options[i];
+                    oResultSelect.appendChild(option);
+                }
+
+        }
+        function demoPreview(){
+                LODOP.PRINT_INIT("测试端桥AO预览打印");
+                LODOP.ADD_PRINT_TEXT(10,10,300,200,"这是纯文本行");
+                LODOP.ADD_PRINT_HTM(30,10,"100%","80%","超文本横线:<hr>下面是二维码:");
+                LODOP.ADD_PRINT_BARCODE(85,10,79,69,"QRCode","123456789012");
+                LODOP.PREVIEW(true);
+        }
+        function demoCreateKeyState(){
+          var strBridgeIDandName=document.getElementById("Select02").value;
+          var iSubPrinterIndex=document.getElementById("Select03").value;
+          var strKeyState='LODOP.SET_BRIDGE_INDEX("'+strBridgeIDandName+','+iSubPrinterIndex+'");';
+          document.getElementById("KeyS").value=strKeyState;
+        }
+</script>
+
+<span style="font-size:14px">
+<h3>&nbsp;使用说明：</h3>
+&nbsp;&nbsp;把一个C-Lodop(扩展版)程序安装在客户端普通PC上，启用其端桥功能，并设置其指向广域网另一个C-Lodop扮演的AO打印服务，这样就在AO打印服务<br><br>
+&nbsp;&nbsp;和普通打印机之间建立了一个对话桥梁，从而代替<a href="http://www.c-lodop.com/aoprint.html" target="_blank">专用AO打印机</a>，
+这就是<font color="#0000FF">端桥AO打印</font>。此时指定语句要用<font color="#0000FF">SET_BRIDGE_INDEX</font>，其参数有两部分组成，<br><br>
+&nbsp;&nbsp;<b>端桥识别信息+(端桥下)打印机识别信息</b>，和<a href="/c_aoprint" target="_blank">标准AO打印</a>参数类似的是，端桥识别信息是其编号和标识名用分号组合，两部分用逗号分隔，语句格式如下:<br><br>
+&nbsp;&nbsp;<font color="#0000FF">LODOP.SET_BRIDGE_INDEX("<font color="#A00040">端桥编号;端桥标识名</font>&nbsp;<font color="#FF0000">,&nbsp;打印机名或序号</font>");</font><br><br>
+
+&nbsp;&nbsp;下面演示端桥打印常见五步骤：<br><br>
+&nbsp;&nbsp;第一步选择云主机:<select id="Select01" size="1" onchange="demoSetClodopJS(document.getElementById('Select01').value)">
+  <option value="http://121.196.197.102:8000/CLodopfuncs.js?AOListCount=100">按IP地址：http://121.196.197.102:8000/CLodopfuncs.js?AOListCount=100</option>
+  <option value="http://121.196.197.102:8000/CLodopfuncs.js?AOListCount=1">按IP地址：http://121.196.197.102:8000/CLodopfuncs.js?AOListCount=1</option>
+  <option value="http://localhost:8000/CLodopfuncs.js">本机方式1：http://localhost:8000/CLodopfuncs.js</option>
+  <option value="http://127.0.0.1:8000/CLodopfuncs.js">本机方式2：http://127.0.0.1:8000/CLodopfuncs.js</option>
+</select><br><br>
+
+&nbsp;&nbsp;第二步选择端桥(编号及标识名):<select id="Select02" size="1" onchange="demoCreateBridgeSubPrinterSelectList()"></select><br>
+&nbsp;&nbsp;<i>（编号及标识名是在"AO客户端桥设置"中录入的，如看不到该端桥，请<a href="javascript:location.reload(true);">刷新一下</a>本页面，每个端桥上线大约10秒）</i><br><br>
+&nbsp;&nbsp;第三步选择(端桥下)普通打印机:<select id="Select03" size="1" onchange="demoCreateBridgeSubPrinterPageSizeSelectList()"></select><br>
+&nbsp;&nbsp;<i>（这里和本地打印类似，一个端桥下面可有多个打印机）</i><br><br>
+
+&nbsp;&nbsp;第四步选择(端桥下)普通打印机的纸张类型:<select id="Select04" size="1"></select><br><br>
+
+&nbsp;&nbsp;第五步点<a href="javascript:;" onclick="javascript:eval(document.getElementById('text01').value);">打印</a>执行如下语句看看效果：<br><br>
+&nbsp;&nbsp;<textarea rows="14" id="text01" cols="100">
+  var strBridgeIDandName=document.getElementById("Select02").value;
+  var iSubPrinterIndex=document.getElementById("Select03").value;
+  var strPageSizeName=document.getElementById("Select04").value;
+
+  LODOP.PRINT_INIT("测试端桥AO打印");
+  LODOP.SET_BRIDGE_INDEX(strBridgeIDandName+','+iSubPrinterIndex);
+  LODOP.SET_PRINT_PAGESIZE(0,0,0,strPageSizeName);
+  LODOP.ADD_PRINT_TEXT(10,10,300,200,"这是纯文本行");
+  LODOP.ADD_PRINT_HTM(30,10,"100%","80%","超文本横线:<hr>下面是二维码:");
+  LODOP.ADD_PRINT_BARCODE(85,10,79,69,"QRCode","123456789012");
+  LODOP.On_Return=function(TaskID,Value){ alert("打印结果:"+Value); };
+  LODOP.PRINT();
+
+</textarea><br><br>
+&nbsp;&nbsp;打印之后点<a href="javascript:;" onclick="javascript:demoCreateKeyState();">获取SET_BRIDGE_INDEX真实参数语句</a>再理解一下(或拷出来测试)：<br>
+&nbsp;&nbsp;<textarea rows="2" id="KeyS" cols="100"></textarea><br><br>
+&nbsp;&nbsp;以上识别信息是借助C-Lodop扩展版特有函数<font color="#0000FF">Get_AOBridge_List</font>和<font color="#0000FF">Get_AOBridge_SubPrinters_List</font>从主JS文件里摘取的，<br><br>
+&nbsp;&nbsp;因在线打印机可能很多，为避免拖累速度，主JS文件(CLodopfuncs.js)里默认仅含20个(可用AOListCount自定)打印机信息，<br><br>
+&nbsp;&nbsp;故在实际应用中一般都是对SET_BRIDGE_INDEX参数赋具体值，赋值前若想获取相关信息，请参考<a href="/c_aoprintget" target="_blank">AO打印服务更多演示</a>。<br><br>
+&nbsp;&nbsp;另外若调用<a href="javascript:;" onclick="javascript:demoPreview();">LODOP.PREVIEW(true)</a>语句在预览打印对话框里选端桥时，会输出到端桥下的默认打印机。<br><br>
+&nbsp;&nbsp;特注：官方在广域网上有个永久例子<a href="http://demo.c-lodop.com:8000/c_aobridge" target="_blank">http://demo.c-lodop.com:8000</a>不妨远程链接实战一下.
+<hr><br>
+&nbsp;&nbsp;C-Lodop更多功能请参阅<a href="/" target="_blank">通用使用说明</a>，
+安装程序可通过<a href="/c_update" target="_blank">本站下载</a>或从<a href="http://www.c-lodop.com/download.html" target="_blank">官网www.c-lodop.com下载</a>最新版。
+<br><br><br>
+</span><br>
+</body>
+</html>
+
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<script src="CLodopfuncs.js"></script>
+<title>Welcome Active-Online Print</title>
+</head>
+
+<body onload="demoSetClodopJS(document.getElementById('Select01').value)" style="background:#ebf4fb">
+<center>
+<h2>C-Lodop的<font color="#009999">客户端桥(Client-Bridge)</font></h2><hr>
+</center>
+
+<script>
+        function demoSetClodopJS(strSrc){
+                 var oscript=demoCreateCLodopJSscript(strSrc);
+                 oscript.onload =oscript.onreadystatechange= function() {
+                         if ((!oscript.readyState|| /loaded|complete/.test(oscript.readyState)))
+                         demoCreateBridgeSelectList();
+                 };
+        }
+        function demoCreateCLodopJSscript(strSrc){
+                 var ScriptSS=document.getElementsByTagName("script");
+                 for(var i in ScriptSS){
+                           if (ScriptSS[i] && ScriptSS[i].src && (ScriptSS[i].src.indexOf("CLodopfuncs.js")>=0)) {
+                                if (ScriptSS[i].parentNode) ScriptSS[i].parentNode.removeChild( ScriptSS[i] );
+                           }
+                 }
+                 var oscript=document.createElement("script");
+                 if (strSrc.indexOf("src=")>=0) {strSrc=strSrc.match(/=[\',\"][^\',^\"].*(?=[\',\"])/i);strSrc=strSrc[0].slice(2);}
+                 oscript.src=strSrc;
+                 var head = document.head || document.getElementsByTagName("head")[0] || document.documentElement;
+                 head.insertBefore(oscript,head.firstChild);
+                 return oscript;
+        }
+        function demoCreateBridgeSelectList(){
+                var oResultSelect=document.getElementById('Select02');
+                while(oResultSelect.childNodes.length>0){
+                       var children = oResultSelect.childNodes;
+                       for(var i=0;i<children.length;i++)
+                       oResultSelect.removeChild(children[i]);
+                }
+                var strBridgesNameList=CLODOP.Get_AOBridge_List("name");
+                var strBridgessIDList=CLODOP.Get_AOBridge_List("id");
+                var NameOptions=new Array();
+                var IDOptions=new Array();
+                NameOptions=strBridgesNameList.split("\n");
+                IDOptions=strBridgessIDList.split("\n");
+                for (var i in IDOptions){
+                        var option=document.createElement('option');
+                        option.innerHTML=NameOptions[i];
+                        option.value=IDOptions[i]+";"+NameOptions[i];
+                        oResultSelect.appendChild(option);
+                }
+                demoCreateBridgeSubPrinterSelectList();
+        }
+        function demoCreateBridgeSubPrinterSelectList(){
+                var iBridgeIndex=document.getElementById("Select02").value;
+                var oResultSelect=document.getElementById('Select03');
+                while(oResultSelect.childNodes.length>0){
+                        var children = oResultSelect.childNodes;
+                        for(var i=0;i<children.length;i++)
+                        oResultSelect.removeChild(children[i]);
+                };
+                var strPrintersNameList=CLODOP.Get_AOBridge_SubPrinters_List(iBridgeIndex,"name");
+                var strPrintersIDList=CLODOP.Get_AOBridge_SubPrinters_List(iBridgeIndex,"id");
+                var NameOptions=new Array();
+                var IDOptions=new Array();
+                NameOptions=strPrintersNameList.split("\n");
+                IDOptions=strPrintersIDList.split("\n");
+                for (var i in NameOptions){
+                        var option=document.createElement('option');
+                        option.innerHTML=NameOptions[i];
+                        option.value=IDOptions[i];
+                        oResultSelect.appendChild(option);
+                }
+                demoCreateBridgeSubPrinterPageSizeSelectList();
+        }
+        function demoCreateBridgeSubPrinterPageSizeSelectList(){
+                var iBridgeIndex=document.getElementById("Select02").value;
+                var iSubPrinterIndex=document.getElementById("Select03").value;
+                var oResultSelect=document.getElementById('Select04');
+                while(oResultSelect.childNodes.length>0){
+                        var children = oResultSelect.childNodes;
+                        for(var i=0;i<children.length;i++)
+                        oResultSelect.removeChild(children[i]);
+                }
+                var strSubPrinterPageSizeList=CLODOP.Get_AOBridge_SubPrinters_PageSize_List(iBridgeIndex,iSubPrinterIndex);
+                var Options=new Array();
+                Options=strSubPrinterPageSizeList.split("\n");
+                for (var i in Options){
+                    var option=document.createElement('option');
+                    option.innerHTML=Options[i];
+                    option.value=Options[i];
+                    oResultSelect.appendChild(option);
+                }
+
+        }
+        function demoPreview(){
+                LODOP.PRINT_INIT("测试端桥AO预览打印");
+                LODOP.ADD_PRINT_TEXT(10,10,300,200,"这是纯文本行");
+                LODOP.ADD_PRINT_HTM(30,10,"100%","80%","超文本横线:<hr>下面是二维码:");
+                LODOP.ADD_PRINT_BARCODE(85,10,79,69,"QRCode","123456789012");
+                LODOP.PREVIEW(true);
+        }
+        function demoCreateKeyState(){
+          var strBridgeIDandName=document.getElementById("Select02").value;
+          var iSubPrinterIndex=document.getElementById("Select03").value;
+          var strKeyState='LODOP.SET_BRIDGE_INDEX("'+strBridgeIDandName+','+iSubPrinterIndex+'");';
+          document.getElementById("KeyS").value=strKeyState;
+        }
+</script>
+
+<span style="font-size:14px">
+<h3>&nbsp;使用说明：</h3>
+&nbsp;&nbsp;把一个C-Lodop(扩展版)程序安装在客户端普通PC上，启用其端桥功能，并设置其指向广域网另一个C-Lodop扮演的AO打印服务，这样就在AO打印服务<br><br>
+&nbsp;&nbsp;和普通打印机之间建立了一个对话桥梁，从而代替<a href="http://www.c-lodop.com/aoprint.html" target="_blank">专用AO打印机</a>，
+这就是<font color="#0000FF">端桥AO打印</font>。此时指定语句要用<font color="#0000FF">SET_BRIDGE_INDEX</font>，其参数有两部分组成，<br><br>
+&nbsp;&nbsp;<b>端桥识别信息+(端桥下)打印机识别信息</b>，和<a href="/c_aoprint" target="_blank">标准AO打印</a>参数类似的是，端桥识别信息是其编号和标识名用分号组合，两部分用逗号分隔，语句格式如下:<br><br>
+&nbsp;&nbsp;<font color="#0000FF">LODOP.SET_BRIDGE_INDEX("<font color="#A00040">端桥编号;端桥标识名</font>&nbsp;<font color="#FF0000">,&nbsp;打印机名或序号</font>");</font><br><br>
+
+&nbsp;&nbsp;下面演示端桥打印常见五步骤：<br><br>
+&nbsp;&nbsp;第一步选择云主机:<select id="Select01" size="1" onchange="demoSetClodopJS(document.getElementById('Select01').value)">
+  <option value="http://121.196.197.102:8000/CLodopfuncs.js?AOListCount=100">按IP地址：http://121.196.197.102:8000/CLodopfuncs.js?AOListCount=100</option>
+  <option value="http://121.196.197.102:8000/CLodopfuncs.js?AOListCount=1">按IP地址：http://121.196.197.102:8000/CLodopfuncs.js?AOListCount=1</option>
+  <option value="http://localhost:8000/CLodopfuncs.js">本机方式1：http://localhost:8000/CLodopfuncs.js</option>
+  <option value="http://127.0.0.1:8000/CLodopfuncs.js">本机方式2：http://127.0.0.1:8000/CLodopfuncs.js</option>
+</select><br><br>
+
+&nbsp;&nbsp;第二步选择端桥(编号及标识名):<select id="Select02" size="1" onchange="demoCreateBridgeSubPrinterSelectList()"></select><br>
+&nbsp;&nbsp;<i>（编号及标识名是在"AO客户端桥设置"中录入的，如看不到该端桥，请<a href="javascript:location.reload(true);">刷新一下</a>本页面，每个端桥上线大约10秒）</i><br><br>
+&nbsp;&nbsp;第三步选择(端桥下)普通打印机:<select id="Select03" size="1" onchange="demoCreateBridgeSubPrinterPageSizeSelectList()"></select><br>
+&nbsp;&nbsp;<i>（这里和本地打印类似，一个端桥下面可有多个打印机）</i><br><br>
+
+&nbsp;&nbsp;第四步选择(端桥下)普通打印机的纸张类型:<select id="Select04" size="1"></select><br><br>
+
+&nbsp;&nbsp;第五步点<a href="javascript:;" onclick="javascript:eval(document.getElementById('text01').value);">打印</a>执行如下语句看看效果：<br><br>
+&nbsp;&nbsp;<textarea rows="14" id="text01" cols="100">
+  var strBridgeIDandName=document.getElementById("Select02").value;
+  var iSubPrinterIndex=document.getElementById("Select03").value;
+  var strPageSizeName=document.getElementById("Select04").value;
+
+  LODOP.PRINT_INIT("测试端桥AO打印");
+  LODOP.SET_BRIDGE_INDEX(strBridgeIDandName+','+iSubPrinterIndex);
+  LODOP.SET_PRINT_PAGESIZE(0,0,0,strPageSizeName);
+  LODOP.ADD_PRINT_TEXT(10,10,300,200,"这是纯文本行");
+  LODOP.ADD_PRINT_HTM(30,10,"100%","80%","超文本横线:<hr>下面是二维码:");
+  LODOP.ADD_PRINT_BARCODE(85,10,79,69,"QRCode","123456789012");
+  LODOP.On_Return=function(TaskID,Value){ alert("打印结果:"+Value); };
+  LODOP.PRINT();
+
+</textarea><br><br>
+&nbsp;&nbsp;打印之后点<a href="javascript:;" onclick="javascript:demoCreateKeyState();">获取SET_BRIDGE_INDEX真实参数语句</a>再理解一下(或拷出来测试)：<br>
+&nbsp;&nbsp;<textarea rows="2" id="KeyS" cols="100"></textarea><br><br>
+&nbsp;&nbsp;以上识别信息是借助C-Lodop扩展版特有函数<font color="#0000FF">Get_AOBridge_List</font>和<font color="#0000FF">Get_AOBridge_SubPrinters_List</font>从主JS文件里摘取的，<br><br>
+&nbsp;&nbsp;因在线打印机可能很多，为避免拖累速度，主JS文件(CLodopfuncs.js)里默认仅含20个(可用AOListCount自定)打印机信息，<br><br>
+&nbsp;&nbsp;故在实际应用中一般都是对SET_BRIDGE_INDEX参数赋具体值，赋值前若想获取相关信息，请参考<a href="/c_aoprintget" target="_blank">AO打印服务更多演示</a>。<br><br>
+&nbsp;&nbsp;另外若调用<a href="javascript:;" onclick="javascript:demoPreview();">LODOP.PREVIEW(true)</a>语句在预览打印对话框里选端桥时，会输出到端桥下的默认打印机。<br><br>
+&nbsp;&nbsp;特注：官方在广域网上有个永久例子<a href="http://demo.c-lodop.com:8000/c_aobridge" target="_blank">http://demo.c-lodop.com:8000</a>不妨远程链接实战一下.
+<hr><br>
+&nbsp;&nbsp;C-Lodop更多功能请参阅<a href="/" target="_blank">通用使用说明</a>，
+安装程序可通过<a href="/c_update" target="_blank">本站下载</a>或从<a href="http://www.c-lodop.com/download.html" target="_blank">官网www.c-lodop.com下载</a>最新版。
+<br><br><br>
+</span><br>
+</body>
+</html>
