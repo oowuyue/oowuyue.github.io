@@ -184,20 +184,21 @@ const path = require('path');
 
 
 
-    // await taskPage("恒生指数", "macromicro", "https://sc.macromicro.me/collections/1658/hk-stock-relative/14068/k-loans-and-advances-for-use-in-hong-kong-yoy-vs-hsi", "/charts/data/14068",2)
+    await taskPage("恒生指数", "macromicro", "https://sc.macromicro.me/collections/1658/hk-stock-relative/14068/k-loans-and-advances-for-use-in-hong-kong-yoy-vs-hsi", "/charts/data/14068",2)
 
 
-    // await taskPageArr(["MM美元基本面", "美元指数"], "macromicro", "https://sc.macromicro.me/collections/1767/us-dollar/14948/mm-dxy-expectation-index", "/charts/data/14948", [0, 1])
+    await taskPageArr(["MM美元基本面", "美元指数"], "macromicro", "https://sc.macromicro.me/collections/1767/us-dollar/14948/mm-dxy-expectation-index", "/charts/data/14948", [0, 1])
 
 
-    // await taskPage("MM制造业周期指标", "macromicro", "https://sc.macromicro.me/collections/3261/sector-industrial/47492/mm-manufacturing-cycle-index", "/charts/data/47492")
-    // await taskPage("MM美股基本指数", "macromicro", "https://sc.macromicro.me/collections/34/us-stock-relative/444/us-mm-gspc", "/charts/data/444")
+    await taskPage("MM制造业周期指标", "macromicro", "https://sc.macromicro.me/collections/3261/sector-industrial/47492/mm-manufacturing-cycle-index", "/charts/data/47492")
+    await taskPage("MM美股基本指数", "macromicro", "https://sc.macromicro.me/collections/34/us-stock-relative/444/us-mm-gspc", "/charts/data/444")
 
-    // await taskPageArr(["Y10", "Y2", "Y10_2"], "macromicro", "https://sc.macromicro.me/charts/46/bonds-rate", "/charts/data/46", [0, 1, 2])
-    // await taskFileDownload("Rate-Yield10-Assets", "fred.stlouisfed", "https://fred.stlouisfed.org/graph/?g=XBS2")
 
-    // await taskPage("标普500", "macromicro", "https://sc.macromicro.me/collections/34/us-stock-relative/410/us-sp500-cyclically-adjusted-price-earnings-ratio", "/charts/data/410", 1)
-
-    // taskApi("标普500W", "investing", "https://api.investing.com/api/financialdata/166/historical/chart/?period=MAX&interval=P1M&pointscount=120", "json", save = true)
+   
+    await taskFileDownload("Rate-Yield10-Assets", "fred.stlouisfed", "https://fred.stlouisfed.org/graph/?g=XBS2")
+    await taskPageArr(["Y10", "Y2", "Y10_2"], "macromicro", "https://sc.macromicro.me/charts/46/bonds-rate", "/charts/data/46", [0, 1, 2])
+   
+    await taskPage("标普500", "macromicro", "https://sc.macromicro.me/collections/34/us-stock-relative/410/us-sp500-cyclically-adjusted-price-earnings-ratio", "/charts/data/410", 1)
+   
 
 })()

@@ -183,50 +183,68 @@
             return countArr
         }
 
-        let kdj月周_countDay = countKdj(kdj月周, "month").filter((item) => {
-            return item[1] >= 1
-        })
 
-        let kdj周日_countDay = countKdj(kdj周日, "month").filter((item) => {
-            return item[1] >= 1
-        })
+        let kdj月周_countDay = []
+        if (typeof (kdj月周) != "undefined") {
+            kdj月周_countDay = countKdj(kdj月周, "month").filter((item) => {
+                return item[1] >= 1
+            })
+        }
+
+        let kdj周日_countDay = []
+        if (typeof (kdj周日) != "undefined") {
+            kdj周日_countDay = countKdj(kdj周日, "month").filter((item) => {
+                return item[1] >= 1
+            })
+        }
+
     </script>
     <script type="text/javascript" src="data/基金平衡型.js"></script>
     <script type="text/javascript" src="data/基金股票型.js"></script>
     <script type="text/javascript" src="data/恐贪指数.js"></script>
     <script>
-        let 基金股票型 = 股票型date.map((item, index) => {
-            return [item, parseFloat(股票型data[index])]
-        }).filter((item) => {
-            return !isNaN(item[1])
-        })
-        let 基金平衡型 = 平衡型date.map((item, index) => {
-            return [item, parseFloat(平衡型data[index])]
-        }).filter((item) => {
-            return !isNaN(item[1])
+        //https://legulegu.com/stockdata/fund-position/pos-stock 手动下载
+        //https://api.jiucaishuo.com/v2/kjtl/kjtlconnect  
+
+        恐贪指数 = 恐贪指数.date.map((item, index) => {
+            return [item, parseFloat(恐贪指数.data[index])]
         })
 
+        let 基金持仓$恐贪指数
+        if (typeof (股票型date) != "undefined") {
+            let 基金股票型 = 股票型date.map((item, index) => {
+                return [item, parseFloat(股票型data[index])]
+            }).filter((item) => {
+                return !isNaN(item[1])
+            })
+            let 基金平衡型 = 平衡型date.map((item, index) => {
+                return [item, parseFloat(平衡型data[index])]
+            }).filter((item) => {
+                return !isNaN(item[1])
+            })
 
-        let 基金持仓 = 基金平衡型.map((item, index) => {
-            return [item[0], (item[1] + 基金股票型[index][1]) / 2]
-        })
-        fear = fear.date.map((item, index) => {
-            return [item, parseFloat(fear.data[index])]
-        })
 
+            let 基金持仓 = 基金平衡型.map((item, index) => {
+                return [item[0], (item[1] + 基金股票型[index][1]) / 2]
+            })
 
-        let 基金持仓$fear = 基金持仓.map((item, index) => {
-            let fearItem = fear.find(ele => ele[0] == item[0])
-            if (fearItem)
-                return [item[0], item[1], fearItem[1]]
-            else
-                return [item[0], item[1], NaN]
-        }).filter((item) => {
-            return !isNaN(item[2])
-        }).map((item) => {
-            item[1] = item[1] * 0.35 + item[2] * 0.65
-            return item
-        })
+            基金持仓$恐贪指数 = 基金持仓.map((item, index) => {
+                let fearItem = 恐贪指数.find(ele => ele[0] == item[0])
+                if (fearItem)
+                    return [item[0], item[1], fearItem[1]]
+                else
+                    return [item[0], item[1], NaN]
+            }).filter((item) => {
+                return !isNaN(item[2])
+            }).map((item) => {
+                item[1] = item[1] * 0.35 + item[2] * 0.65
+                return item
+            })
+        }
+        else {
+            基金持仓$恐贪指数 = 恐贪指数
+        }
+
     </script>
     <script type="text/javascript" src="data/雪球行情/沪深300_xueqiu_day.js"></script>
     <script type="text/javascript" src="data/雪球行情/沪深300_xueqiu_month.js"></script>
@@ -321,20 +339,20 @@
         // })
 
 
-        红利低波_xueqiu_month = 红利低波_xueqiu_month.data.item.map((ele) => {
-            return sectorIndexToObj(ele, "month")
-        })
-        红利低波_xueqiu_month = 红利低波_xueqiu_month.map((ele, index, arr) => {
-            return sectorIndexYoY(ele, index, arr, 红利低波_xueqiu_month)
-        })
-        let 红利低波_xueqiu_month_closeYoY = 红利低波_xueqiu_month.map((item) => {
-            let tmp = []
-            tmp[0] = item.date
-            tmp[1] = item.closeYoY ? item.closeYoY * 100 : ""
-            return tmp
-        }).filter(item => {
-            return parseFloat(item[0].substring(0, 4)) >= 2008
-        })
+        // 红利低波_xueqiu_month = 红利低波_xueqiu_month.data.item.map((ele) => {
+        //     return sectorIndexToObj(ele, "month")
+        // })
+        // 红利低波_xueqiu_month = 红利低波_xueqiu_month.map((ele, index, arr) => {
+        //     return sectorIndexYoY(ele, index, arr, 红利低波_xueqiu_month)
+        // })
+        // let 红利低波_xueqiu_month_closeYoY = 红利低波_xueqiu_month.map((item) => {
+        //     let tmp = []
+        //     tmp[0] = item.date
+        //     tmp[1] = item.closeYoY ? item.closeYoY * 100 : ""
+        //     return tmp
+        // }).filter(item => {
+        //     return parseFloat(item[0].substring(0, 4)) >= 2008
+        // })
     </script>
 
     <script type="text/javascript" src="https://fastly.jsdelivr.net/npm/echarts@5.3.2/dist/echarts.min.js"></script>
@@ -1262,7 +1280,7 @@
                         width: 1,
                         color: "#a45db2"
                     },
-                    data: 基金持仓$fear.addStartEnd()
+                    data: 基金持仓$恐贪指数.addStartEnd()
                 },
 
             ]
