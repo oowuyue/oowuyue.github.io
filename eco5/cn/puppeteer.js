@@ -728,7 +728,7 @@ const path = require('path');
     // ])
 
     // await task_csindex([                                                      
-    //     { "name": "科技龙头_csi_day", "indexCode": "931524", "period": "day" }, //大盘白马                 流动性    SHS科技龙头   SHS消费龙头
+    //     { "name": "科技龙头_csi_day", "indexCode": "931524", "period": "day" }, //蓝筹白马                 流动性    SHS科技龙头   SHS消费龙头
     //     { "name": "科技龙头_csi_day", "indexCode": "931524", "period": "day" }, //中小红低 大宗能粮 ppi     业绩性    沪港深通中小  上证商品  
     //     { "name": "科技龙头_csi_day", "indexCode": "931524", "period": "day" }, //         消费白马 cpi                           SHS消费龙头
     // ])
@@ -748,6 +748,7 @@ const path = require('path');
     // await task_value500({ "沪深300同比": { "chartOptionId": 0, "chartSerieId": 3 }, "上证同比": { "chartOptionId": 0, "chartSerieId": 2 }, }, "http://value500.com/SH000001.asp")
 
     // await task_value500({ "M1": { "chartOptionId": 0, "chartSerieId": 0 }, "M1_M2": { "chartOptionId": 0, "chartSerieId": 2 } }, "http://value500.com/M1.asp")
+    // await task_value500({ "社融存量": { "chartOptionId": 1, "chartSerieId": 0 } }, "http://value500.com/srzl.asp")
     // await task_macromicro({ "信贷脉冲": 0, "房价同比": 1, "沪深300Day": 2, }, "https://sc.macromicro.me/collections/31/cn-finance-relative/35559/china-credit-impulse-index", "/charts/data/35559")
 
     // taskPage("恐贪指数", "funddb", "https://api.jiucaishuo.com/v2/kjtl/kjtlconnect", "https://api.jiucaishuo.com/v2/kjtl/kjtlconnect").then((values) => {

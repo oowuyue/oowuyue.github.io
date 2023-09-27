@@ -1318,3 +1318,7 @@ M1_PPI
 白  高1         1急深
 ppi          
 cpi 高2
+
+
+
+Median    Share of Total 
