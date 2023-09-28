@@ -13,7 +13,7 @@ const path = require('path');
     let fileNameDelimiter = ","
     const browser = await puppeteer.launch({ headless: false, });
 
-    function formatDate(site, date) {
+    function formatDate(site, date, period = "month") {
 
         var current_date = new Date();
         var current_y = current_date.getFullYear(),
@@ -46,7 +46,11 @@ const path = require('path');
 
             if ((y + '-' + m) == (current_y + '-' + current_m)) { //当月不处理
                 var t = y + '-' + m + '-' + d;
-            } else {
+            }
+            else if (period == "day") { //日度数据
+                var t = y + '-' + m + '-' + d;
+            }
+            else {
                 var t = y + '-' + m + '-28';
             }
             return t;
@@ -759,6 +763,9 @@ const path = require('path');
     //             date: values.resdata.data.xAxis.categories,
     //             data: values.resdata.data.series[0].data
     //         }
+    //         dataValue = dataValue.date.map((item, index) => {
+    //             return [item, parseFloat(dataValue.data[index])]
+    //         })
     //         let fileStr = `let ${dataName} = ` + JSON.stringify(dataValue, null, 4) + "\r\n"
     //         fs.writeFileSync(`${folder}${dataName}.js`, fileStr);
     //         console.log(`${dataName} JSON data is saved   ${folder}${dataName}.js `)
@@ -767,6 +774,43 @@ const path = require('path');
     //     }
     // })//taskPage
 
+
+    taskPage("恐贪指数upDown", "legulegu", "https://legulegu.com/stockdata/market-style?indexCode=1", "indexCode=1&token").then((values) => {
+        console.log(values)
+        try {
+            let rise3DaysRateArr = []
+            let rise4DaysRateArr = []
+            let rise5DaysRateArr = []
+            let decline3DaysRateArr = []
+            let decline4DaysRateArr = []
+            let decline5DaysRateArr = []
+
+            values.resdata.marketStyleChartResponses.forEach((item) => {
+                let date = formatDate("legulegu", item.tradeDate, "day")
+
+                rise3DaysRateArr.push([date, item.rise3DaysRate])
+                rise4DaysRateArr.push([date, item.rise4DaysRate])
+                rise5DaysRateArr.push([date, item.rise5DaysRate])
+
+                decline3DaysRateArr.push([date, item.decline3DaysRate])
+                decline4DaysRateArr.push([date, item.decline4DaysRate])
+                decline5DaysRateArr.push([date, item.decline5DaysRate])
+            })
+
+            let fileStr = `let rise3DaysRateArr = ` + JSON.stringify(rise3DaysRateArr, null, 4) + "\r\n"
+            fileStr += `let rise4DaysRateArr = ` + JSON.stringify(rise4DaysRateArr, null, 4) + "\r\n"
+            fileStr += `let rise5DaysRateArr = ` + JSON.stringify(rise5DaysRateArr, null, 4) + "\r\n"
+            fileStr += `let decline3DaysRateArr = ` + JSON.stringify(decline3DaysRateArr, null, 4) + "\r\n"
+            fileStr += `let decline4DaysRateArr = ` + JSON.stringify(decline4DaysRateArr, null, 4) + "\r\n"
+            fileStr += `let decline5DaysRateArr = ` + JSON.stringify(decline5DaysRateArr, null, 4) + "\r\n"
+
+            fs.writeFileSync(`${folder}恐贪指数upDown.js`, fileStr);
+            console.log(`恐贪指数upDown JSON data is saved   ${folder}恐贪指数upDown.js `)
+
+        } catch (error) {
+            console.error(error);
+        }
+    })//taskPage
 
 })()
 

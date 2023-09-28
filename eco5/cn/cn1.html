@@ -207,10 +207,6 @@
         //https://legulegu.com/stockdata/fund-position/pos-stock 手动下载
         //https://api.jiucaishuo.com/v2/kjtl/kjtlconnect  
 
-        恐贪指数 = 恐贪指数.date.map((item, index) => {
-            return [item, parseFloat(恐贪指数.data[index])]
-        })
-
         let 基金持仓$恐贪指数
         if (typeof (股票型date) != "undefined") {
             let 基金股票型 = 股票型date.map((item, index) => {
