@@ -11,6 +11,9 @@
     <script type="text/javascript" src="./data/财新制造业PMI,官方制造业PMI.js"></script>
     <script type="text/javascript" src="./data/利润同比,亏损增减.js"></script>
     <script type="text/javascript" src="./data/股债差300平均.js"></script>
+    <script type="text/javascript" src="./data/股300pe.js"></script>
+    <script type="text/javascript" src="./data/MSCI中国指数,MSCI中国收益率.js"></script>
+    <script type="text/javascript" src="../us/data/Y10.js"></script>
     <script type="text/javascript" src="./data/沪深300PE中位数,全A股PE中位数,十年期国债利率倒数.js"></script>
     <script type="text/javascript" src="data/沪深300同比,上证同比.js"></script>
     <script type="text/javascript" src="./data/M1,M1_M2.js"></script>
@@ -68,6 +71,35 @@
         }).filter(item => {
             return true //parseFloat(item[0].substring(0, 4)) >= 2008
         })
+
+
+        // let 股债差300平均美债 = 沪深300pe.map((item) => {
+        //     let date = new Date(item.ts)  
+        //     Y = date.getFullYear() + '-'
+        //     M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-'
+        //     D = date.getDate() < 10 ? '0' + date.getDate() : date.getDate()
+        //     date = Y + M + D
+
+        //     let findY10 = Y10.find(element => {
+        //         return element[0] == date
+        //     })
+
+        //     if (findY10)
+        //         return [date, parseFloat(findY10[1]) - (1 / item.pe) ]
+        //     else
+        //         return [date, ""]
+        // })
+
+        // // let 股债差MSCI中国美债 = MSCI中国收益率.map((item) => {
+        // //     let findY10 = Y10.find(element => {
+        // //         return element[0] == item[0]
+        // //     })
+        // //     if (findY10)
+        // //         return [item[0], parseFloat(findY10[1]) - parseFloat(item[1])  ]
+        // //     else
+        // //         return [item[0], ""]
+        // // })
+       
 
 
         M1 = M1.map(((item, index, arr) => {
@@ -191,6 +223,7 @@
         沪深300_xueqiu_day = 沪深300_xueqiu_day.data.item.map((ele) => {
             return sectorIndexToObj(ele, "day")
         })
+        
     </script>
     <script type="text/javascript" src="data/中证行情/科技龙头_csi_day.js"></script>
     <script>
@@ -576,8 +609,8 @@
                             else return value
                         }
                     },
-                    max: 7.5,
-                    min: 0
+                     max: 8.5,
+                     min: 0
                 },
                 { //中位股债
                     gridIndex: 4,
@@ -865,6 +898,10 @@
                     },
 
                 },
+          
+        
+
+                
                 {
                     name: "中位PE_十年倒数", //300剔除后中位
                     type: "line",

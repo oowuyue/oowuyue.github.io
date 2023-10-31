@@ -159,8 +159,8 @@
             }
         })
     </script>
-    <script type="text/javascript" src="./data/kdj月周.js"></script>
-    <script type="text/javascript" src="./data/kdj周日.js"></script>
+
+    <script type="text/javascript" src="./data/kdj等技术指标.js"></script>
     <script>
         function countKdj(json, Period = "month") {
             let countJson = {}
@@ -185,16 +185,23 @@
         }
 
 
-        let kdj月周_countDay = []
-        if (typeof (kdj月周) != "undefined") {
-            kdj月周_countDay = countKdj(kdj月周, "month").filter((item) => {
+        let kdj日周月_countDay = []
+        if (typeof (kdj日周月) != "undefined") {
+            kdj日周月_countDay = countKdj(kdj日周月, "month").filter((item) => {
                 return item[1] >= 1
             })
         }
 
-        let kdj周日_countDay = []
-        if (typeof (kdj周日) != "undefined") {
-            kdj周日_countDay = countKdj(kdj周日, "month").filter((item) => {
+        let kdj日周_countDay = []
+        if (typeof (kdj日周) != "undefined") {
+            kdj日周_countDay = countKdj(kdj日周, "month").filter((item) => {
+                return item[1] >= 1
+            })
+        }
+
+        let kdj日_countDay = []
+        if (typeof (kdj日) != "undefined") {
+            kdj日_countDay = countKdj(kdj日, "month").filter((item) => {
                 return item[1] >= 1
             })
         }
@@ -203,10 +210,27 @@
     <script type="text/javascript" src="data/基金平衡型.js"></script>
     <script type="text/javascript" src="data/基金股票型.js"></script>
     <script type="text/javascript" src="data/恐贪指数.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/crypto-js.min.js"></script>
     <script>
         //https://legulegu.com/stockdata/fund-position/pos-stock 手动下载
-        //https://api.jiucaishuo.com/v2/kjtl/kjtlconnect  
-
+        //https://api.jiucaishuo.com/v2/kjtl/kjtlconnect  https://app.jiucaishuo.com/pagesA/highchart/greedy?kt_type=1 默认加密了
+        let cdefault = {
+            "iv": "h5.jiucaishuo.com",
+            "ivv": "h5.jiucaishuo.comaaaaaaaaaaaaaaa",
+        }
+        let P = CryptoJS
+        let o = {
+            iv: P.enc.Utf8.parse(cdefault.iv),
+            mode: P.mode.CBC,
+            padding: P.pad.Pkcs7
+        }
+        let r = cdefault.ivv
+        jsonData = JSON.parse(P.AES.decrypt(恐贪指数, P.enc.Utf8.parse(r), o).toString(P.enc.Utf8))
+        恐贪指数 = jsonData.data.xAxis.categories.map((item, index) => {
+            return [item, parseFloat(jsonData.data.series[0].data[index])]
+        })
+       
+        let 基金持仓
         let 基金持仓$恐贪指数
         if (typeof (股票型date) != "undefined") {
             let 基金股票型 = 股票型date.map((item, index) => {
@@ -221,9 +245,10 @@
             })
 
 
-            let 基金持仓 = 基金平衡型.map((item, index) => {
+            基金持仓 = 基金平衡型.map((item, index) => {
                 return [item[0], (item[1] + 基金股票型[index][1]) / 2]
             })
+            
 
             基金持仓$恐贪指数 = 基金持仓.map((item, index) => {
                 let fearItem = 恐贪指数.find(ele => ele[0] == item[0])
@@ -241,6 +266,7 @@
         else {
             基金持仓$恐贪指数 = 恐贪指数
         }
+        //console.log(jsonData,恐贪指数,基金持仓,基金持仓$恐贪指数)
 
     </script>
     <script type="text/javascript" src="data/雪球行情/沪深300_xueqiu_day.js"></script>
@@ -363,15 +389,12 @@
             arr = start.concat(arr)
 
             //当天 或 hs300最后一天 
-            // let currentDay = new Date()
-            // currentDay = currentDay.getFullYear() + "-" + (currentDay.getMonth() + 1) + "-" + currentDay.getDate()
-            let hs300EndDay = 沪深300_xueqiu_day[沪深300_xueqiu_day.length - 1].date
+            let currentDay = new Date()
+            let lastDay = currentDay.getFullYear() + "-" + (currentDay.getMonth() + 1) + "-" + currentDay.getDate()
+            // let lastDay = 沪深300_xueqiu_day[沪深300_xueqiu_day.length - 1].date
 
-            let found = arr.find((element) => element[0] == hs300EndDay);
-            if (!found) {
-                arr.push([hs300EndDay, ""])
-            }
-
+            let found = arr.find((element) => element[0] == lastDay);
+            if (!found) arr.push([lastDay, ""])
             return arr
         }
 
@@ -821,9 +844,8 @@
                         tmp[0] = item.date
                         tmp[1] = item.close ? item.close : ""
                         return tmp
-                    }).concat([["2000-01-01", ""]])
+                    }).addStartEnd()
                 },
-
 
 
                 {
@@ -904,8 +926,7 @@
                     yAxisIndex: 2,
                     smooth: true,
                     showSymbol: false,
-
-                    "itemStyle": {
+                    itemStyle: {
                         "color": {
                             "type": "linear",
                             "x": 0,
@@ -944,7 +965,7 @@
                     smooth: true,
                     showSymbol: false,
 
-                    "itemStyle": {
+                    itemStyle: {
                         "color": {
                             "type": "linear",
                             "x": 0,
@@ -991,7 +1012,7 @@
                         // type: "dotted"
 
                     },
-                    data: 社融存量,
+                    data: 社融存量.addStartEnd(),
                 },
 
 
@@ -1052,10 +1073,6 @@
                     },
                     data: M1_MA,
                 },
-
-
-
-
 
 
                 {
@@ -1306,7 +1323,7 @@
 
 
                 {
-                    name: 'kdj月周菱$周日球',
+                    name: 'kdj月菱$周球$日',
                     type: 'scatter',
                     xAxisIndex: 4,
                     yAxisIndex: 7,
@@ -1321,12 +1338,10 @@
                         return 12
                     },
                     zlevel: 3,
-                    data: kdj周日_countDay
+                    data: kdj日周月_countDay
                 },
-
-
                 {
-                    name: 'kdj月周菱$周日球',
+                    name: 'kdj月菱$周球$日',
                     type: 'scatter',
                     xAxisIndex: 4,
                     yAxisIndex: 7,
@@ -1338,10 +1353,28 @@
                         }
                     },
                     symbolSize: function (val) {
-                        return 9
+                        return 10
                     },
                     zlevel: 6,
-                    data: kdj月周_countDay
+                    data: kdj日周_countDay
+                },
+                {
+                    name: 'kdj月菱$周球$日',
+                    type: 'scatter',
+                    xAxisIndex: 4,
+                    yAxisIndex: 7,
+                    symbol: "arrow",
+                    itemStyle: {
+                        normal: {
+                            opacity: 2,
+                            color: "#f28500 "
+                        }
+                    },
+                    symbolSize: function (val) {
+                        return 8
+                    },
+                    zlevel: 6,
+                    data: kdj日_countDay
                 },
 
                 {
