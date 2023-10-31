@@ -229,7 +229,7 @@
         恐贪指数 = jsonData.data.xAxis.categories.map((item, index) => {
             return [item, parseFloat(jsonData.data.series[0].data[index])]
         })
-       
+
         let 基金持仓
         let 基金持仓$恐贪指数
         if (typeof (股票型date) != "undefined") {
@@ -248,7 +248,7 @@
             基金持仓 = 基金平衡型.map((item, index) => {
                 return [item[0], (item[1] + 基金股票型[index][1]) / 2]
             })
-            
+
 
             基金持仓$恐贪指数 = 基金持仓.map((item, index) => {
                 let fearItem = 恐贪指数.find(ele => ele[0] == item[0])
@@ -724,12 +724,13 @@
                     },
                     axisLabel: {
                         formatter: (value, index) => {
-                            if ([30, 40, 70, 80].includes(value)) return value
+                            if ([35, 75,].includes(value)) return value
                             else return ""
                         }
                     },
                     show: true,
                     min: 20,
+                    interval: 5,
                     position: "right"
                 },
 
@@ -744,7 +745,7 @@
                     position: "right",
                     axisLabel: {
                         formatter: (value, index) => {
-                            if ([-50, -30, -20, 0, 20, 30, 50, 70, 100].includes(value)) return value
+                            if ([-50, -30, -20, 0, 20, 30, 35].includes(value)) return value
                             else return ""
                         }
                     },
@@ -785,12 +786,13 @@
                     splitLine: {
                         show: false
                     },
-                    // axisLabel: {
-                    //     formatter: (value, index) => {
-                    //         if ([-50, -30, -20, 0, 30, 50, 70, 100].includes(value)) return value
-                    //         else return ""
-                    //     }
-                    // },
+                    axisLabel: {
+                        // formatter: (value, index) => {
+                        //     if ([-50, -30, -20, 0, 30, 50, 70, 100].includes(value)) return value
+                        //     else return ""
+                        // }
+                        color:"black"
+                    },
                     max: 35,
                     min: 1,
                     position: "letf"
@@ -1335,7 +1337,7 @@
                         }
                     },
                     symbolSize: function (val) {
-                        return 12
+                        return 10
                     },
                     zlevel: 3,
                     data: kdj日周月_countDay
@@ -1353,7 +1355,7 @@
                         }
                     },
                     symbolSize: function (val) {
-                        return 10
+                        return 8
                     },
                     zlevel: 6,
                     data: kdj日周_countDay
@@ -1367,7 +1369,7 @@
                     itemStyle: {
                         normal: {
                             opacity: 2,
-                            color: "#f28500 "
+                            color: "#ff00d3 "
                         }
                     },
                     symbolSize: function (val) {
@@ -1387,6 +1389,40 @@
                     lineStyle: {
                         width: 1,
                         color: "#a45db2"
+                    },
+                    markLine: {
+                        symbol: ["none", "none"],
+                        data: [
+                            {
+                                lineStyle: {
+                                    width: 0.5,
+                                    color: "red",
+                                    //type: "solid" // 实线，不写默认虚线
+                                },
+                                label: {
+                                    formatter: "",
+                                    color: "red",
+                                    fontSize: "0",
+                                    position: "start",
+                                },
+                                yAxis: 75, // 标线值
+                                x: "87%",
+                            },
+                            {
+                                lineStyle: {
+                                    width: 0.5,
+                                    color: "green",
+                                },
+                                label: {
+                                    formatter: "",
+                                    color: "green",
+                                    fontSize: "10",
+                                    position: "insideStartBottom",
+                                },
+                                yAxis: 35, // 标线值
+                                x: "87%", //固定起点的 x 像素位置
+                            },
+                        ],
                     },
                     data: 基金持仓$恐贪指数.addStartEnd()
                 },
