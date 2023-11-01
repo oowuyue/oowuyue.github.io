@@ -187,21 +187,21 @@
 
         let kdj日周月_countDay = []
         if (typeof (kdj日周月) != "undefined") {
-            kdj日周月_countDay = countKdj(kdj日周月, "month").filter((item) => {
+            kdj日周月_countDay = countKdj(kdj日周月, "day").filter((item) => {
                 return item[1] >= 1
             })
         }
 
         let kdj日周_countDay = []
         if (typeof (kdj日周) != "undefined") {
-            kdj日周_countDay = countKdj(kdj日周, "month").filter((item) => {
+            kdj日周_countDay = countKdj(kdj日周, "day").filter((item) => {
                 return item[1] >= 1
             })
         }
 
         let kdj日_countDay = []
         if (typeof (kdj日) != "undefined") {
-            kdj日_countDay = countKdj(kdj日, "month").filter((item) => {
+            kdj日_countDay = countKdj(kdj日, "day").filter((item) => {
                 return item[1] >= 1
             })
         }
@@ -791,7 +791,7 @@
                         //     if ([-50, -30, -20, 0, 30, 50, 70, 100].includes(value)) return value
                         //     else return ""
                         // }
-                        color:"black"
+                        color: "black"
                     },
                     max: 35,
                     min: 1,
@@ -817,6 +817,42 @@
             ],
 
             series: [
+
+                // {
+                //     name: '沪深300',
+                //     type: 'line',
+                //     //smooth: true,
+                //     xAxisIndex: 0,
+                //     yAxisIndex: 0,
+                //     showSymbol: false,
+                //     silent: true,
+                //     areaStyle: {
+                //         normal: {
+                //             color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                //                 { offset: 0.3, color: '#d2c777' }, // FF6384
+                //                 { offset: 0.5, color: '#d2c777' }, // #FFCD56
+                //                 { offset: 1, color: '#d2c777' } //1E90FF
+                //             ])
+                //         },
+                //         // emphasis: {
+                //         //     color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                //         //         { offset: 0, color: '#f12700' }, // FF6384
+                //         //         { offset: 0.25, color: '#ffb735' }, // #FFCD56
+                //         //         { offset: 0.7, color: '#009a56' } //1E90FF
+                //         //     ])
+                //         // }
+                //     },
+                //     lineStyle: {
+                //         width: 0
+                //     },
+                //     data: 沪深300_xueqiu_day.map((item) => {
+                //         let tmp = []
+                //         tmp[0] = item.date
+                //         tmp[1] = item.close ? item.close : ""
+                //         return tmp
+                //     }).addStartEnd()
+                // },
+
                 {
                     name: '沪深300',
                     type: 'line',
@@ -828,12 +864,12 @@
                     itemStyle: {
                         normal: {
                             areaStyle: {
-                                color: "#87c5cf" // "#57aacb",
+                                color: "#c5bb49" // FFAA33   9ACD32
                             },
                         },
                         emphasis: {
                             areaStyle: {
-                                color: "#87c5cf",
+                                color: "#c5bb49",
                             },
                         },
                     },
@@ -1085,7 +1121,7 @@
                     showSymbol: false,
                     smooth: true,
                     lineStyle: {
-                        width: 1,
+                        width: 0.8,
                         color: "#22aa62"
                     },
 
@@ -1198,7 +1234,7 @@
                     showSymbol: false,
                     lineStyle: {
                         width: 1,
-                        color: "#22aa62",
+                        color: "#22aa62"
                     },
                     markLine: {
                         symbol: ["none", "none"],
@@ -1340,7 +1376,7 @@
                         return 10
                     },
                     zlevel: 3,
-                    data: kdj日周月_countDay
+                    data: kdj日周月_countDay.addStartEnd()
                 },
                 {
                     name: 'kdj月菱$周球$日',
@@ -1351,21 +1387,21 @@
                     itemStyle: {
                         normal: {
                             opacity: 2,
-                            color: "blue"
+                            color: "#003ecc"
                         }
                     },
                     symbolSize: function (val) {
                         return 8
                     },
                     zlevel: 6,
-                    data: kdj日周_countDay
+                    data: kdj日周_countDay.addStartEnd()
                 },
                 {
                     name: 'kdj月菱$周球$日',
                     type: 'scatter',
                     xAxisIndex: 4,
                     yAxisIndex: 7,
-                    symbol: "arrow",
+                    symbol: "triangle",
                     itemStyle: {
                         normal: {
                             opacity: 2,
@@ -1373,10 +1409,10 @@
                         }
                     },
                     symbolSize: function (val) {
-                        return 8
+                        return 7
                     },
                     zlevel: 6,
-                    data: kdj日_countDay
+                    data: kdj日_countDay.addStartEnd()
                 },
 
                 {
