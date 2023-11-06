@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="zh-CN" style="height: 100%">
+
+<head>
+    <meta charset="utf-8">
+</head>
+
+<body style="height: 100%; margin: 0">
+    <div id="container" style="height: 100%"></div>
+    <script type="text/javascript" src="../eco5/cn/data/雪球行情/沪深300_xueqiu_month.js"></script>
+
+    <script type="text/javascript" src="m2.js"></script>
+
+    <script>
+        function xueqiuFormatDate(stamp, period = "month") {
+            var date = new Date(stamp);
+            var y = date.getFullYear(),
+                m = date.getMonth() + 1,
+                d = date.getDate();
+            if (m < 10)
+                m = '0' + m;
+            if (d < 10)
+                d = '0' + d;
+
+            if (period == "month") {
+                var current_date = new Date();
+                var current_y = current_date.getFullYear(),
+                    current_m = current_date.getMonth() + 1,
+                    current_d = current_date.getDate();
+                if (current_m < 10)
+                    current_m = '0' + current_m;
+                if (current_d < 10)
+                    current_d = '0' + current_d;
+
+                if ((y + '-' + m) == (current_y + '-' + current_m)) { //当月不处理
+                    var t = y + '-' + m + '-' + d;
+                } else {
+                    var t = y + '-' + m + '-28';
+                }
+            }
+
+            if (period == "day") {
+                var t = y + '-' + m + '-' + d;
+            }
+
+
+            return t;
+        }
+
+        function sectorIndexToObj(ele, period = "month") {
+            let newItem = {}
+            newItem.stamp = ele[0]
+            newItem.date = xueqiuFormatDate(ele[0], period)
+            newItem.open = ele[2] //open
+            newItem.close = ele[5] //close
+            return newItem
+        }
+
+        function sectorIndexYoY(ele, index, datasArr) {
+
+            const preItem = datasArr.find(element => {
+                let preYear = '' + (parseInt(ele.date.slice(0, 4)) - 1) + ele.date.substring(4, 10)
+                return element.date == preYear
+            })
+            if (preItem) {
+                let openYoY = (ele.open - preItem.open) / preItem.open
+                let closeYoY = (ele.close - preItem.close) / preItem.close
+                let highYoY = (ele.high - preItem.high) / preItem.high
+                let lowYoY = (ele.low - preItem.low) / preItem.low
+                ele.openYoY = openYoY
+                ele.closeYoY = closeYoY
+                ele.highYoY = highYoY
+                ele.lowYoY = lowYoY
+            } else {
+                ele.openYoY = ""
+                ele.closeYoY = ""
+                ele.highYoY = ""
+                ele.lowYoY = ""
+            }
+            return ele
+
+        }
+
+        沪深300_xueqiu_month = 沪深300_xueqiu_month.data.item.map((ele) => {
+            return sectorIndexToObj(ele, "month")
+        })
+    </script>
+
+    <script type="text/javascript" src="https://fastly.jsdelivr.net/npm/echarts@5.3.2/dist/echarts.min.js"></script>
+    <script type="text/javascript">
+
+        Array.prototype.filterAndAddStartEnd = function () {
+            let arr = this
+            arr = arr.filter(item => {
+                return parseFloat(item[0].substring(0, 4)) >= 2015
+            })
+
+            // let start = [["2015-01-28", ""]]
+            // arr = start.concat(arr)
+
+            let currentDay = new Date()
+            currentDay = currentDay.getFullYear() + "-" + (currentDay.getMonth() + 1) + "-" + currentDay.getDate()
+            arr.push([currentDay, ""])
+
+            return arr
+        }
+
+        M1 = M1.filterAndAddStartEnd().slice(1)
+        M2 = M2.filterAndAddStartEnd().slice(1)
+        融资余额 = 融资余额.filterAndAddStartEnd()
+        融资买入额 = 融资买入额.filterAndAddStartEnd()
+
+        融资余额_M1 = 融资余额.map((item, index) => {
+            return [item[0], item[1] / M1[index][1] * 100 ]
+        })
+        融资余额_M2 = 融资余额.map((item, index) => {
+            return [item[0], item[1] / M2[index][1] * 100]
+        })
+
+
+        融资买入额_M1 = 融资买入额.map((item, index) => {
+            return [item[0], item[1] / M1[index][1] * 100]
+        })
+        融资买入额_M2 = 融资买入额.map((item, index) => {
+            return [item[0], item[1] / M2[index][1] * 100 ]
+        })
+
+
+
+        融资买入额_融资余额= 融资买入额.map((item, index) => {
+            return [item[0], item[1] / 融资余额[index][1] * 100 ]
+        })
+
+        融资买入额减融资余额= 融资买入额.map((item, index) => {
+            return [item[0], item[2] - 融资余额[index][2] ]
+        })
+
+       
+
+        沪深300_xueqiu_month = 沪深300_xueqiu_month.map((item) => {
+            let tmp = []
+            tmp[0] = item.date
+            tmp[1] = item.close ? item.close : ""
+            return tmp
+        }).filterAndAddStartEnd().slice(1)
+
+       // console.log(融资余额_M1, 融资余额_M2)
+
+
+        var dom = document.getElementById('container');
+        var myChart = echarts.init(dom, "#fff", {
+            renderer: 'canvas',
+            useDirtyRect: false
+        });
+        var app = {};
+        var option;
+        option = {
+            title: {},
+
+            tooltip: {
+                trigger: "axis", //item cross,
+                show: true,
+                position: ['30%', '80%'],
+                order: 'seriesDesc',
+                axisPointer: {
+                    type: "cross",
+                    show: true,
+                    crossStyle: {
+                        width: 1,
+                        color: "black", // 鼠标十字横轴
+                    },
+                },
+                formatter: function (params, ticket, callback) {
+                    return null;
+                },
+
+            },
+
+            legend: {
+                left: 53
+            },
+            toolbox: {
+            },
+            axisPointer: {
+                link: [{
+                    xAxisIndex: 'all'
+                }],
+                lineStyle: {
+                    color: "black", // 鼠标十字竖轴
+                },
+            },
+            dataZoom: [{
+                show: true,
+                realtime: true,
+                start: 0,
+                end: 100,
+                bottom: -10,
+                xAxisIndex: [0, 1, 2, 3, 4, 5],
+            },
+            {
+                type: 'inside',
+                realtime: true,
+                start: 0,
+                end: 100,
+                xAxisIndex: [0, 1, 2, 3, 4, 5]
+            }
+            ],
+            grid: [
+
+                { //
+                    left: 60,
+                    right: 80,
+                    top: "0%",
+                    height: '30%',
+                    backgroundColor: '#fafffd',
+                    show: true,
+                },
+
+                { //
+                    left: 60,
+                    right: 80,
+                    top: "30%",
+                    height: '30%',
+                    backgroundColor: '#fafffd',
+                    show: true,
+                },
+
+
+                { //
+                    left: 60,
+                    right: 80,
+                    top: "60%",
+                    height: '27%',
+                },
+
+
+                { //
+                    left: 60,
+                    right: 80,
+                    top: "0%",
+                    height: '97%',
+
+                    backgroundColor: '#fafffd',
+                    show: true,
+                },
+
+
+            ],
+            xAxis: [
+                {
+                    gridIndex: 0,
+                    type: 'time',
+                    splitNumber: 20,
+                    splitLine: {
+                        show: true,
+                        lineStyle: {
+
+                        }
+                    },
+                    axisPointer: {
+                        show: true,
+                        label: {
+                            show: false,
+                        },
+                    },
+                    axisLabel: {
+                        show: false
+                    }
+                },
+
+                {
+                    gridIndex: 1,
+                    type: 'time',
+                    splitNumber: 20,
+                    splitLine: {
+                        show: true,
+                        lineStyle: {
+                            color: ['#bdbdbd']
+                        }
+                    },
+                    axisPointer: {
+                        show: true,
+                        label: {
+                            show: false,
+                        },
+                    },
+                    axisLabel: {
+                        show: false
+                    }
+                },
+
+                {
+                    gridIndex: 2,
+                    type: 'time',
+                    splitNumber: 20,
+                    splitLine: {
+                        show: true,
+                        lineStyle: {
+                            color: ['#bdbdbd']
+                        }
+                    },
+                    axisPointer: {
+                        show: true,
+                        label: {
+                            show: false,
+                        },
+                    },
+                    axisLabel: {
+                        fontSize: 10,
+                        formatter: "{yyyy}",
+                        padding: [0, -60, 0, 0],
+                    },
+                },
+
+
+                {
+                    gridIndex: 3,
+                    type: 'time',
+                    splitNumber: 20,
+                    splitLine: {
+                        show: true,
+                        lineStyle: {
+                            color: ['#bdbdbd']
+                        }
+                    },
+                    axisPointer: {
+                        show: true,
+                        label: {
+                            show: true,
+                        },
+                    },
+                    axisLabel: {
+                        show: false
+                    },
+                },
+
+
+            ],
+            yAxis: [
+                //默认
+                {
+                    gridIndex: 0, //指数
+                    type: 'value',
+                    splitLine: {
+                        "show": false //去掉网格线
+                    },
+                },
+
+                {
+                    gridIndex: 1, //
+                    type: 'value',
+
+                    splitLine: {
+                        show: false
+                    },
+                    show: true,
+                    //min:-20,
+                    //inverse:true
+                },
+
+                {
+                    gridIndex: 2,// 
+                    name: '',
+                    type: 'value',
+
+                    splitLine: {
+                        show: false
+                    },
+                    show: true,
+                },
+
+                {
+                    gridIndex: 3,
+                    name: '',
+                    type: 'value',
+                    splitLine: {
+                        show: false
+                    },
+                    show: true,
+                    position: "right"
+                },
+            ],
+
+            series: [
+
+                {
+                    name: '融资买入额_融资余额',
+                    type: 'line',
+                    xAxisIndex: 0,
+                    yAxisIndex: 0,
+                    smooth: true,
+                    showSymbol: false,
+                    lineStyle: {
+                        width: 1,
+                        color: "black"
+                    },
+
+                    data: 融资买入额_融资余额
+                },
+
+
+                {
+                    name: '融资买入额减融资余额',
+                    type: 'line',
+                    xAxisIndex: 1,
+                    yAxisIndex: 1,
+                    smooth: true,
+                    showSymbol: false,
+
+                    lineStyle: {
+                        //width: 0.7,
+                        color: "red"
+                    },
+                    zlevel: 3,
+                    data: 融资买入额减融资余额
+                },
+
+
+
+
+
+                {
+                    name: '融资买入额_M1',
+                    type: 'line',
+                    xAxisIndex: 2,
+                    yAxisIndex: 2,
+                    smooth: true,
+                    showSymbol: false,
+
+                    lineStyle: {
+                        width: 0.7,
+                        color: "blue"
+                    },
+                    zlevel: 3,
+                    data: 融资买入额_M1
+
+                },
+
+                {
+                    name: '融资买入额_M2',
+                    type: 'line',
+                    xAxisIndex: 2,
+                    yAxisIndex: 2,
+                    smooth: true,
+                    showSymbol: false,
+
+                    lineStyle: {
+                        width: 0.7,
+                        color: "green"
+                    },
+                    zlevel: 3,
+                    data: 融资买入额_M2
+
+                },
+
+
+                {
+                    name: '沪深300',
+                    type: 'line',
+                    //smooth: true,
+                    xAxisIndex: 3,
+                    yAxisIndex: 3,
+                    showSymbol: false,
+                    silent: true,
+                    itemStyle: {
+                        normal: {
+                            areaStyle: {
+                                color: "#87c5cf" // "#57aacb",
+                            },
+                        },
+                        emphasis: {
+                            areaStyle: {
+                                color: "#87c5cf",
+                            },
+                        },
+                    },
+
+                    lineStyle: {
+                        width: 0
+                    },
+                    data: 沪深300_xueqiu_month
+                },
+
+            ]
+        };
+
+
+        if (option && typeof option === 'object') {
+            myChart.setOption(option);
+        }
+        window.addEventListener('resize', myChart.resize)
+
+
+    </script>
+</body>
+
+</html>

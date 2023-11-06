@@ -6,194 +6,224 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content="KLineChart example" />
     <title>KLineChart + js</title>
-    <script type="text/javascript" src="klinecharts.min.js"></script>
-    <script type="text/javascript" src="./testData.js"></script>
-
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/klinecharts/dist/klinecharts.min.js"></script>
+    <script type="text/javascript" src="./data_json.js"></script>
+    <script type="text/javascript" src="../eco5/cn/data/雪球行情/创业板_xueqiu_day.js"></script>
+    <script type="text/javascript" src="../eco5/cn/data/雪球行情/创业板_xueqiu_week.js"></script>
     <script type="text/javascript" src="../eco5/cn/data/雪球行情/沪深300_xueqiu_day.js"></script>
+    <script type="text/javascript" src="../eco5/cn/data/雪球行情/沪深300_xueqiu_week.js"></script>
+    <script type="text/javascript" src="../eco5/cn/data/雪球行情/沪深300_xueqiu_month.js"></script>
+    <script type="text/javascript" src="../eco5/cn/data/雪球行情/上证指数_xueqiu_day.js"></script>
+    <script type="text/javascript" src="../eco5/cn/data/雪球行情/上证指数_xueqiu_week.js"></script>
+    
+    <script type="text/javascript" src="../eco5/cn/data/雪球行情/中证500_xueqiu_day.js"></script>
+    <script type="text/javascript" src="../eco5/cn/data/雪球行情/中证500_xueqiu_week.js"></script>
+    <script type="text/javascript" src="../eco5/cn/data/雪球行情/红利低波_xueqiu_day.js"></script>
+    <script type="text/javascript" src="../eco5/cn/data/雪球行情/红利低波_xueqiu_week.js"></script>
 
-    <script type="text/javascript" src="../eco5/cn/data/恐贪指数.js"></script>
 
 
+    <script type="text/javascript" src="./m2.js"></script>
+    <script type="text/javascript">
+    // 统一数量
+    </script>
 </head>
 
 <body style="margin: 0;height: 100%">
     <div id="chart" style="height: 100%"></div>
     <script>
-        window.onload = function () {
+    window.onload = loaddata("沪深300_xueqiu_day", 沪深300_xueqiu_day, "上证指数_xueqiu_day", 上证指数_xueqiu_day)
 
 
-
-            klinecharts.registerIndicator({
-                name: '恐贪指数',
-                shortName: '恐贪指数',
-
-                calcParams: [],
-                figures: [
-                    { key: '恐贪指数', title: '恐贪指数: ', type: 'line' },
-                ],
+    // k1时间长主图
+    function loaddata(k1Name, k1, k2Name, k2) {
 
 
-                // 计算结果
-                calc: (kLineDataList, { calcParams, figures }) => {
-                    // 注意：返回数据个数需要和kLineDataList的数据个数一致，如果无值，用{}代替即可。
-                    // 计算参数最好取回调参数calcParams，如果不是，后续计算参数发生变化的时候，这里计算不能及时响应
-                    const closeSums = []
-                    return kLineDataList.map((kLineData, i) => {
-
-                        return { "恐贪指数": 恐贪指数[i][1] }
-
-                    })
-                }
-            })
-
-
-            // 初始化图表  klinecharts  dsxindexer  MyTT
-            var chart = klinecharts.init('chart')
-
-            chart.setStyles({
-
-                grid: {
-                    show: true,
-                    horizontal: {
-                        show: true,
-                        size: 0.5,
-                        color: 'black',
-                        style: 'dashed',
-                       // dashedValue: [0.5, 0.5]
-                    },
-                    vertical: {
-                        show: true,
-                        size: 1,
-                        color: '#EDEDED',
-                        style: 'dashed',
-                        dashedValue: [2, 2]
-                    }
-                },
-                priceMark: {
-      show: false,
-      // 最高价标记
-      },
-                candle: {
-                    // 蜡烛图类型 'candle_solid'|'candle_stroke'|'candle_up_stroke'|'candle_down_stroke'|'ohlc'|'area'
-                    type: 'candle_up_stroke',
-                    // 蜡烛柱
-                    bar: {
-                        upColor: '#f50000',
-                        downColor: '#009b3e',
-                        noChangeColor: '#888888',
-
-                        upBorderColor: '#f50000',
-                        downBorderColor: '#009b3e',
-                        noChangeBorderColor: '#888888',
-
-                        upWickColor: '#f50000',
-                        downWickColor: '#009b3e',
-                        noChangeWickColor: '#888888'
-                    },
-
-                },
-                indicator: {
-                    ohlc: {
-                        upColor: 'rgba(249, 40, 85, .7)',
-                        downColor: 'rgba(45, 192, 142, .7)',
-                        noChangeColor: '#888888'
-                    },
-                    bars: [{
-                        // 'fill' | 'stroke' | 'stroke_fill'
-                        style: 'fill',
-                        // 'solid' | 'dashed'
-                        borderStyle: 'solid',
-                        borderSize: 1,
-                        borderDashedValue: [2, 2],
-                        upColor: 'rgba(45, 192, 142, .7)',
-                        downColor: 'rgba(249, 40, 85, .7)',
-                        noChangeColor: '#888888'
-                    }],
-                    lines: [{
-                            style: 'solid',
-                            smooth: false,
-                            size: 1,
-                            dashedValue: [2, 2],
-                            color: '#ff5e20'
-                        },
-
-                        {
-                            // 'solid' | 'dashed'
-                            style: 'solid',
-                            smooth: false,
-                            size: 1,
-                            dashedValue: [2, 2],
-                            color: '#0068cc'
-                        }, 
-                        {
-                            style: 'solid',
-                            smooth: false,
-                            size: 1,
-                            dashedValue: [2, 2],
-                            color: '#f61eb0'
-                        }, {
-                            style: 'solid',
-                            smooth: false,
-                            size: 1,
-                            dashedValue: [2, 2],
-                            color: '#00c784'
-                        }
-                    ]
-                }
-            })
-
-            // 创建一个主图技术指标
-            chart.createIndicator({ name: "MA", calcParams: [5, 30] }, false, { id: 'candle_pane' })
-            // chart.createIndicator('BOLL',false, { id: 'candle_pane' })
-
-            // 创建一个副图技术指标MACD
-            chart.createIndicator('KDJ')
-            chart.createIndicator('恐贪指数')
-            // 加载数据
-            // var chartDataList = baostock_list.map(function (data) {
-            //     return {
-            //         timestamp: new Date(data[0]).getTime(),
-            //         open: +data[1],
-            //         high: +data[2],
-            //         low: +data[3],
-            //         close: +data[4],
-            //         volume: Math.ceil(+data[5]),
-            //     }
-            // })
-            // var chartDataList = akshare_list.map(function (data) {
-            //     return {
-            //         timestamp: new Date(data.日期).getTime(),
-            //         open: +data.开盘,
-            //         high: +data.最高,
-            //         low: +data.最低,
-            //         close: +data.收盘,
-            //         volume: Math.ceil(+data.成交量),
-            //     }
-            // })
-
-            var chartDataList = 沪深300_xueqiu_day.data.item.filter((data) => {
-                let startTimeStamp = Date.parse(恐贪指数[0][0] + ' GMT +8')
-                let endTimeStamp = Date.parse(恐贪指数[恐贪指数.length - 1][0] + ' GMT +8')
+        if (k1.data.item.length >= k2.data.item.length) {
+            let startTimeStamp = k2.data.item[0][0]
+            let endTimeStamp = k2.data.item[k2.data.item.length - 1][0]
+            k1 = k1.data.item.filter((data) => {
                 return startTimeStamp <= data[0] && data[0] <= endTimeStamp
-
-            }).map(function (data) {
-                return {
-                    timestamp: +data[0],
-                    open: +data[2],
-                    high: +data[3],
-                    low: +data[4],
-                    close: +data[5],
-                    volume: Math.ceil(+data[1]),
-                }
             })
-
-            chart.applyNewData(chartDataList)
-
-            let res = chart.getIndicatorByPaneId()
-            console.log(res)
-
-
+            k2 = k2.data.item
+        } else {
+            let startTimeStamp = k1.data.item[0][0]
+            let endTimeStamp = k1.data.item[k1.data.item.length - 1][0]
+            k2 = k2.data.item.filter((data) => {
+                return startTimeStamp <= data[0] && data[0] <= endTimeStamp
+            })
+            k1 = k1.data.item
         }
+
+        klinecharts.registerIndicator({
+            name: k2Name,
+            figures: [
+                { key: k2Name, title: k2Name, type: 'line' },
+            ],
+            calc: (kLineDataList, { calcParams, figures }) => {
+                // 注意：返回数据个数需要和kLineDataList的数据个数一致，如果无值，用{}代替即可。
+                // 计算参数最好取回调参数calcParams，如果不是，后续计算参数发生变化的时候，这里计算不能及时响应
+                const closeSums = []
+                return kLineDataList.map((kLineData, i) => {
+                    return { "k2Name": k2[i][5] }
+                })
+            }
+        })
+        klinecharts.registerIndicator({
+            name: '市值比',
+            figures: [
+                { key: '市值比', title: '市值比: ', type: 'line' },
+            ],
+
+            // 计算结果
+            calc: (kLineDataList, { calcParams, figures }) => {
+                // 注意：返回数据个数需要和kLineDataList的数据个数一致，如果无值，用{}代替即可。
+                // 计算参数最好取回调参数calcParams，如果不是，后续计算参数发生变化的时候，这里计算不能及时响应
+                const closeSums = []
+                return kLineDataList.map((kLineData, i) => {
+                    //console.log(kLineData)
+                    return { "市值比": kLineData.close / k2[i][5] }
+                })
+            }
+        })
+        klinecharts.registerIndicator({
+            name: '涨幅差',
+            shortName: '涨幅差',
+            calcParams: [],
+            figures: [
+                { key: '涨幅差', title: '涨幅差: ', type: 'line' },
+            ],
+
+            // 计算结果
+            calc: (kLineDataList, { calcParams, figures }) => {
+                // 注意：返回数据个数需要和kLineDataList的数据个数一致，如果无值，用{}代替即可。
+                // 计算参数最好取回调参数calcParams，如果不是，后续计算参数发生变化的时候，这里计算不能及时响应
+                const closeSums = []
+                return kLineDataList.map((kLineData, i) => {
+                    //console.log(kLineData)
+                    return { "涨幅差": kLineData.percent - k2[i][7] }
+                })
+            }
+        })
+
+
+        //初始化图表
+        var chart = klinecharts.init('chart')
+        chart.setStyles({
+            grid: {
+                show: true,
+                horizontal: {
+                    show: true,
+                    size: 0.5,
+                    color: 'black',
+                    style: 'dashed',
+                    // dashedValue: [0.5, 0.5]
+                },
+                vertical: {
+                    show: true,
+                    size: 1,
+                    color: '#EDEDED',
+                    style: 'dashed',
+                    dashedValue: [2, 2]
+                }
+            },
+            priceMark: {
+                show: false,
+                // 最高价标记
+            },
+            candle: {
+                // 蜡烛图类型 'candle_solid'|'candle_stroke'|'candle_up_stroke'|'candle_down_stroke'|'ohlc'|'area'
+                type: 'candle_up_stroke',
+                // 蜡烛柱
+                bar: {
+                    upColor: '#f50000',
+                    downColor: '#009b3e',
+                    noChangeColor: '#888888',
+
+                    upBorderColor: '#f50000',
+                    downBorderColor: '#009b3e',
+                    noChangeBorderColor: '#888888',
+
+                    upWickColor: '#f50000',
+                    downWickColor: '#009b3e',
+                    noChangeWickColor: '#888888'
+                },
+
+            },
+            indicator: {
+                ohlc: {
+                    upColor: 'rgba(249, 40, 85, .7)',
+                    downColor: 'rgba(45, 192, 142, .7)',
+                    noChangeColor: '#888888'
+                },
+                bars: [{
+                    // 'fill' | 'stroke' | 'stroke_fill'
+                    style: 'fill',
+                    // 'solid' | 'dashed'
+                    borderStyle: 'solid',
+                    borderSize: 1,
+                    borderDashedValue: [2, 2],
+                    upColor: 'rgba(45, 192, 142, .7)',
+                    downColor: 'rgba(249, 40, 85, .7)',
+                    noChangeColor: '#888888'
+                }],
+                lines: [{
+                        style: 'solid',
+                        smooth: false,
+                        size: 1,
+                        dashedValue: [2, 2],
+                        color: '#ff5e20'
+                    },
+
+                    {
+                        // 'solid' | 'dashed'
+                        style: 'solid',
+                        smooth: false,
+                        size: 1,
+                        dashedValue: [2, 2],
+                        color: '#0068cc'
+                    },
+                    {
+                        style: 'solid',
+                        smooth: false,
+                        size: 1,
+                        dashedValue: [2, 2],
+                        color: '#f61eb0'
+                    }, {
+                        style: 'solid',
+                        smooth: false,
+                        size: 1,
+                        dashedValue: [2, 2],
+                        color: '#00c784'
+                    }
+                ]
+            }
+        })
+
+        //创建一个主图技术指标
+        chart.createIndicator({ name: "MA", calcParams: [5, 30] }, false, { id: 'candle_pane' })
+
+        //创建一个副图技术指标MACD
+        chart.createIndicator('涨幅差')
+        chart.createIndicator('市值比')
+        chart.createIndicator('KDJ')
+
+
+        var chartDataList = k1.map(function(data) {
+            return {
+                timestamp: +data[0],
+                open: +data[2],
+                high: +data[3],
+                low: +data[4],
+                close: +data[5],
+                percent: +data[7],
+                volume: Math.ceil(+data[1]),
+            }
+        })
+        chart.applyNewData(chartDataList)
+        let res = chart.getIndicatorByPaneId()
+        //console.log(res)
+    }
     </script>
 </body>
 

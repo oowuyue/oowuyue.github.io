@@ -725,11 +725,24 @@ const path = require('path');
 
 
 
-    // await task_xueqiu([
-    //     { "name": "沪深300_xueqiu_day", "symbol": "SH000300", "period": "day" },
-    //     { "name": "沪深300_xueqiu_month", "symbol": "SH000300", "period": "month" },
-    //     { "name": "红利低波_xueqiu_month", "symbol": "CSIH30269", "period": "month" },
-    // ])
+    await task_xueqiu([
+        { "name": "创业板_xueqiu_day", "symbol": "SZ399006", "period": "day" },
+        { "name": "创业板_xueqiu_week", "symbol": "SZ399006", "period": "week" },
+
+        { "name": "沪深300_xueqiu_day", "symbol": "SH000300", "period": "day" },
+        { "name": "沪深300_xueqiu_week", "symbol": "SH000300", "period": "week" },
+        { "name": "沪深300_xueqiu_month", "symbol": "SH000300", "period": "month" },
+
+        { "name": "上证指数_xueqiu_day", "symbol": "SH000001", "period": "day" },
+        { "name": "上证指数_xueqiu_week", "symbol": "SH000001", "period": "week" },
+
+
+        { "name": "中证500_xueqiu_day", "symbol": "SH000905", "period": "day" },
+        { "name": "中证500_xueqiu_week", "symbol": "SH000905", "period": "week" },
+
+        { "name": "红利低波_xueqiu_day", "symbol": "CSIH30269", "period": "day" },
+        { "name": "红利低波_xueqiu_week", "symbol": "CSIH30269", "period": "week" },
+    ])
 
     // await task_csindex([                                                      
     //     { "name": "科技龙头_csi_day", "indexCode": "931524", "period": "day" }, //蓝筹白马                 流动性    SHS科技龙头   SHS消费龙头
@@ -794,16 +807,16 @@ const path = require('path');
     // })
 
 
-    taskPage("恐贪指数", "funddb", "https://api.jiucaishuo.com/v2/kjtl/kjtlconnect", "https://api.jiucaishuo.com/v2/kjtl/kjtlconnect").then((values) => {
-        try {
-            let dataName = "恐贪指数" 
-            let fileStr = `let ${dataName} = "${values.resdata}" `  //默认加密了 html里解密  https://app.jiucaishuo.com/pagesA/highchart/greedy?kt_type=1
-            fs.writeFileSync(`${folder}${dataName}.js`, fileStr);
-            console.log(`${dataName} JSON data is saved   ${folder}${dataName}.js `)
-        } catch (error) {
-            console.error(error);
-        }
-    })
+    // taskPage("恐贪指数", "funddb", "https://api.jiucaishuo.com/v2/kjtl/kjtlconnect", "https://api.jiucaishuo.com/v2/kjtl/kjtlconnect").then((values) => {
+    //     try {
+    //         let dataName = "恐贪指数" 
+    //         let fileStr = `let ${dataName} = "${values.resdata}" `  //默认加密了 html里解密  https://app.jiucaishuo.com/pagesA/highchart/greedy?kt_type=1
+    //         fs.writeFileSync(`${folder}${dataName}.js`, fileStr);
+    //         console.log(`${dataName} JSON data is saved   ${folder}${dataName}.js `)
+    //     } catch (error) {
+    //         console.error(error);
+    //     }
+    // })
 
 
 })()
