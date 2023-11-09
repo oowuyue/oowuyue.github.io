@@ -29,7 +29,7 @@ let csvToJson = async (fileName) => {
 
 (async () => {
 
-    let lastFileStr = await csvToJson('kdj日周月') + await csvToJson('kdj日周') + await csvToJson('kdj日')
+    let lastFileStr = await csvToJson('kdj日周月') + await csvToJson('kdj日周') + await csvToJson('kdj日周2') + await csvToJson('kdj日')
     try {
         fs.writeFileSync(`kdj等技术指标.js`, lastFileStr);
         console.log(`kdj等技术指标 JSON data is saved`);

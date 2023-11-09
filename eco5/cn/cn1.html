@@ -199,6 +199,13 @@
             })
         }
 
+        let kdj日周2_countDay = []
+        if (typeof (kdj日周2) != "undefined") {
+            kdj日周2_countDay = countKdj(kdj日周2, "day").filter((item) => {
+                return item[1] >= 1
+            })
+        }
+
         let kdj日_countDay = []
         if (typeof (kdj日) != "undefined") {
             kdj日_countDay = countKdj(kdj日, "day").filter((item) => {
@@ -1373,11 +1380,12 @@
                         }
                     },
                     symbolSize: function (val) {
-                        return 10
+                        return 12
                     },
                     zlevel: 3,
                     data: kdj日周月_countDay.addStartEnd()
                 },
+
                 {
                     name: 'kdj月菱$周球$日',
                     type: 'scatter',
@@ -1391,11 +1399,30 @@
                         }
                     },
                     symbolSize: function (val) {
-                        return 8
+                        return 9.5
                     },
                     zlevel: 6,
                     data: kdj日周_countDay.addStartEnd()
                 },
+                {
+                    name: 'kdj月菱$周球$日',
+                    type: 'scatter',
+                    xAxisIndex: 4,
+                    yAxisIndex: 7,
+                    symbol: "diamond",
+                    itemStyle: {
+                        normal: {
+                            opacity: 2,
+                            color: "#00ffff"
+                        }
+                    },
+                    symbolSize: function (val) {
+                        return 5
+                    },
+                    zlevel: 6,
+                    data: kdj日周2_countDay.addStartEnd()
+                },
+
                 {
                     name: 'kdj月菱$周球$日',
                     type: 'scatter',
@@ -1409,7 +1436,7 @@
                         }
                     },
                     symbolSize: function (val) {
-                        return 7
+                        return 6.5
                     },
                     zlevel: 6,
                     data: kdj日_countDay.addStartEnd()
