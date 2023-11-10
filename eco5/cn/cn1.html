@@ -161,6 +161,7 @@
     </script>
 
     <script type="text/javascript" src="./data/kdj等技术指标.js"></script>
+    <script type="text/javascript" src="./data/k大市值统计.js"></script>
     <script>
         function countKdj(json, Period = "month") {
             let countJson = {}
@@ -183,7 +184,6 @@
 
             return countArr
         }
-
 
         let kdj日周月_countDay = []
         if (typeof (kdj日周月) != "undefined") {
@@ -212,6 +212,10 @@
                 return item[1] >= 1
             })
         }
+        
+
+
+
 
     </script>
     <script type="text/javascript" src="data/基金平衡型.js"></script>
@@ -415,7 +419,6 @@
         var option;
         option = {
             title: {},
-
             tooltip: {
                 trigger: "axis", //item cross,
                 show: true,
@@ -450,7 +453,6 @@
                     }
                 }
             },
-
             legend: {
                 // data: ['M1', 'M1-M2', "PPI", "股GDP比", "股债比", "上证"],
                 left: 53
@@ -481,6 +483,7 @@
                 xAxisIndex: [0, 1, 2, 3, 4, 5]
             }
             ],
+            
             grid: [
 
                 { //沪深300
@@ -806,7 +809,7 @@
 
                 },
                 {
-                    gridIndex: 4,//kdj
+                    gridIndex: 4,//kdj 指标
                     name: '',
                     type: 'value',
                     splitLine: {
@@ -821,45 +824,26 @@
                     position: "letf"
 
                 },
+
+                {
+                    gridIndex: 5,//kdj 指标
+                    name: '',
+                    type: 'value',
+                    splitLine: {
+                        show: false
+                    },
+                    axisLabel: {
+                        show: false
+                    },
+                    show: false,
+                    max: 7,
+                    min: 0.5,
+                    position: "letf"
+
+                },
             ],
 
             series: [
-
-                // {
-                //     name: '沪深300',
-                //     type: 'line',
-                //     //smooth: true,
-                //     xAxisIndex: 0,
-                //     yAxisIndex: 0,
-                //     showSymbol: false,
-                //     silent: true,
-                //     areaStyle: {
-                //         normal: {
-                //             color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                //                 { offset: 0.3, color: '#d2c777' }, // FF6384
-                //                 { offset: 0.5, color: '#d2c777' }, // #FFCD56
-                //                 { offset: 1, color: '#d2c777' } //1E90FF
-                //             ])
-                //         },
-                //         // emphasis: {
-                //         //     color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                //         //         { offset: 0, color: '#f12700' }, // FF6384
-                //         //         { offset: 0.25, color: '#ffb735' }, // #FFCD56
-                //         //         { offset: 0.7, color: '#009a56' } //1E90FF
-                //         //     ])
-                //         // }
-                //     },
-                //     lineStyle: {
-                //         width: 0
-                //     },
-                //     data: 沪深300_xueqiu_day.map((item) => {
-                //         let tmp = []
-                //         tmp[0] = item.date
-                //         tmp[1] = item.close ? item.close : ""
-                //         return tmp
-                //     }).addStartEnd()
-                // },
-
                 {
                     name: '沪深300',
                     type: 'line',
@@ -891,7 +875,6 @@
                         return tmp
                     }).addStartEnd()
                 },
-
 
                 {
                     name: 'PPI',
@@ -1043,7 +1026,6 @@
                     data: 信贷脉冲_MA
                 },
 
-
                 {
                     name: "社融存量",
                     type: "line",
@@ -1059,8 +1041,6 @@
                     },
                     data: 社融存量.addStartEnd(),
                 },
-
-
 
                 {
                     name: 'M1',
@@ -1102,7 +1082,6 @@
                     },
                     data: M1.addStartEnd()
                 },
-
                 {
                     name: "M1_MA",
                     type: "line",
@@ -1118,7 +1097,6 @@
                     },
                     data: M1_MA,
                 },
-
 
                 {
                     name: 'PMI',
@@ -1201,7 +1179,6 @@
                     }).addStartEnd()
                     //zlevel: 5
                 },
-
                 {
                     name: "房地产$汽车与出口",
                     type: "line",
@@ -1228,8 +1205,6 @@
                     },
                     data: 零售汽车$出口.addStartEnd()
                 },
-
-
 
                 {
                     name: "中位PE", //300剔除后中位
@@ -1277,7 +1252,6 @@
                     },
                     data: 沪深300PE中位数.addStartEnd()
                 },
-
 
                 {
                     name: "沪深300同比", //
@@ -1366,12 +1340,11 @@
                     }).addStartEnd()
                 },
 
-
                 {
                     name: 'kdj月菱$周球$日',
                     type: 'scatter',
-                    xAxisIndex: 4,
-                    yAxisIndex: 7,
+                    xAxisIndex: 5,
+                    yAxisIndex: 8,
                     symbol: "pin",
                     itemStyle: {
                         normal: {
@@ -1385,12 +1358,11 @@
                     zlevel: 3,
                     data: kdj日周月_countDay.addStartEnd()
                 },
-
                 {
                     name: 'kdj月菱$周球$日',
                     type: 'scatter',
-                    xAxisIndex: 4,
-                    yAxisIndex: 7,
+                    xAxisIndex: 5,
+                    yAxisIndex: 8,
                     symbol: "diamond",
                     itemStyle: {
                         normal: {
@@ -1404,30 +1376,29 @@
                     zlevel: 6,
                     data: kdj日周_countDay.addStartEnd()
                 },
+                // {
+                //     name: 'kdj月菱$周球$日',
+                //     type: 'scatter',
+                //     xAxisIndex: 5,
+                //     yAxisIndex: 8,
+                //     symbol: "diamond",
+                //     itemStyle: {
+                //         normal: {
+                //             opacity: 2,
+                //             color: "#00ffff"
+                //         }
+                //     },
+                //     symbolSize: function (val) {
+                //         return 5
+                //     },
+                //     zlevel: 6,
+                //     data: kdj日周2_countDay.addStartEnd()
+                // },
                 {
                     name: 'kdj月菱$周球$日',
                     type: 'scatter',
-                    xAxisIndex: 4,
-                    yAxisIndex: 7,
-                    symbol: "diamond",
-                    itemStyle: {
-                        normal: {
-                            opacity: 2,
-                            color: "#00ffff"
-                        }
-                    },
-                    symbolSize: function (val) {
-                        return 5
-                    },
-                    zlevel: 6,
-                    data: kdj日周2_countDay.addStartEnd()
-                },
-
-                {
-                    name: 'kdj月菱$周球$日',
-                    type: 'scatter',
-                    xAxisIndex: 4,
-                    yAxisIndex: 7,
+                    xAxisIndex: 5,
+                    yAxisIndex: 8,
                     symbol: "triangle",
                     itemStyle: {
                         normal: {
@@ -1442,6 +1413,47 @@
                     data: kdj日_countDay.addStartEnd()
                 },
 
+                // {
+                //     name: 'continues',
+                //     type: 'scatter',
+                //     xAxisIndex: 4,
+                //     yAxisIndex: 7,
+                //     symbol: "triangle",
+                //     itemStyle: {
+                //         normal: {
+                //             opacity: 2,
+                //             color: "#ff00d3 "
+                //         }
+                //     },
+                //     symbolSize: function (val) {
+                //         return 8.5
+                //     },
+                //     zlevel: 6,
+                //     data: continuesMax.map((item) => {
+                //         return [item[0],item[3]]
+                //     }).addStartEnd()
+                // },
+                {
+                    name: 'continues',
+                    type: 'scatter',
+                    xAxisIndex: 4,
+                    yAxisIndex: 7,
+                    symbol: "triangle",
+                    itemStyle: {
+                        normal: {
+                            opacity: 2,
+                            color: "black "
+                        }
+                    },
+                    symbolSize: function (val) {
+                        return 6.5
+                    },
+                    zlevel: 6,
+                    data: continues2.map((item) => {
+                        return [item[0],item[3]]
+                    }).addStartEnd()
+                },
+
                 {
                     name: '基金持仓$fear',
                     type: 'line',
@@ -1451,7 +1463,7 @@
                     smooth: true,
                     lineStyle: {
                         width: 1,
-                        color: "#a45db2"
+                        color: "gray"
                     },
                     markLine: {
                         symbol: ["none", "none"],

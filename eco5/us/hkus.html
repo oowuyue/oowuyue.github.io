@@ -629,40 +629,40 @@
                 },
 
 
-                {
-                    name: 'insiderBuy', 
-                    type: 'line',
-                    xAxisIndex: 3,
-                    yAxisIndex: 3,
-                    showSymbol: false,
-                    smooth: true,
-                    lineStyle: {
-                        width: 0.7,
-                        color: "gray"
+                // {
+                //     name: 'insiderBuy', 
+                //     type: 'line',
+                //     xAxisIndex: 3,
+                //     yAxisIndex: 3,
+                //     showSymbol: false,
+                //     smooth: true,
+                //     lineStyle: {
+                //         width: 0.7,
+                //         color: "gray"
 
-                    },
-                    data: 股Insider_trading
-                },
+                //     },
+                //     data: 股Insider_trading
+                // },
 
-                {
-                    name: 'insiderBuy_Sell', 
-                    type: 'line',
-                    xAxisIndex: 3,
-                    yAxisIndex: 3,
-                    showSymbol: false,
-                    smooth: true,
-                    lineStyle: {
-                        width: 0.7,
-                        //color: "#a45db2"
+                // {
+                //     name: 'insiderBuy_Sell', 
+                //     type: 'line',
+                //     xAxisIndex: 3,
+                //     yAxisIndex: 3,
+                //     showSymbol: false,
+                //     smooth: true,
+                //     lineStyle: {
+                //         width: 0.7,
+                //         //color: "#a45db2"
 
-                    },
-                    data:  股Insider_trading.map((item) => {
-                        let newItem = []
-                        newItem[0] = item[0]
-                        newItem[1] = item[1]-item[2]
-                        return newItem
-                    })
-                },
+                //     },
+                //     data:  股Insider_trading.map((item) => {
+                //         let newItem = []
+                //         newItem[0] = item[0]
+                //         newItem[1] = item[1]-item[2]
+                //         return newItem
+                //     })
+                // },
 
 
                 
