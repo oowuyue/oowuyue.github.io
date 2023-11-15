@@ -9,36 +9,62 @@
             margin-bottom: -2px;
         }
     </style>
-    <title></title>
+    <script>
+        window.onload = () => {
+            // document.querySelector('html').addEventListener('keydown', (e) => {
+            //     if (e && e.keyCode === 122) {//f11进入全屏 后按f11无法监听
+            //         document.getElementById("fullScreenShow").style.display = ''
+            //     }
+            // })
+            window.onresize = function (e) {
+                let fullScreenShowObj = document.getElementById("fullScreenShow")
+                if (fullScreenShowObj.style.display == 'none') {
+                    //console.log(e,e.keyCode)
+                    fullScreenShowObj.style.display = ''
+                } else if (fullScreenShowObj.style.display == '') {
+                    fullScreenShowObj.style.display = 'none'
+                }
+            }
+        }
+    </script>
 </head>
 
 <body>
-
+    <!--月度指数同比  下穿20       -20上下
+        波动恐慌      上穿40        60以上      
+        差距越大
+    -->
     <iframe src="https://fred.stlouisfed.org/graph/graph-landing.php?g=1blNG&width=1300&height=390" scrolling="yes"
         frameborder="0" style="overflow:hidden;width:100%;height:230px;" allowtransparency="true"
         loading="lazy"></iframe>
-    <!--月度指数 同比下穿20       -20上下
-        波动恐慌     上穿40        60以上      
-        差距越大
-    -->
 
 
-    <iframe src="https://fred.stlouisfed.org/graph/graph-landing.php?g=1blA0&width=1300&height=500" scrolling="yes"
-        frameborder="0" style="overflow:hidden;width:100%;height:290px;" allowtransparency="true" loading="lazy"
-        id="Gdp"></iframe>
-    <!--月度cpi 失业率
-         
+    <!--月度cpi 失业率 -->
+    <!--
         季度默认
         realGdp  =  nominalGdp - CPI或PCEPI ≈ PCE - CPI或PCEPI
         CPI-realGdp    上穿0  上穿realGdp
         摩擦失业率      小于0
-    -->
+
+        私人投资 - 国家购买  
+        企业利润   信贷紧缩
+     -->
+    <iframe src="https://fred.stlouisfed.org/graph/graph-landing.php?g=1blA0&width=1300&height=500" scrolling="yes"
+        frameborder="0" style="overflow:hidden;width:100%;height:290px;" allowtransparency="true"
+        loading="lazy"></iframe>
+    <iframe src="https://fred.stlouisfed.org/graph/graph-landing.php?g=1bo09&width=1300&height=350" scrolling="yes"
+        frameborder="0" style="overflow:hidden;width:100%;height:180px;display: none; margin-top: -3px;"
+        allowtransparency="true" loading="lazy" id="fullScreenShow"></iframe>
 
 
+
+    <!--月度外央行 外内国债收益率 -->
     <iframe src="https://fred.stlouisfed.org/graph/graph-landing.php?g=1blCJ&width=1300&height=500" scrolling="yes"
         frameborder="0" style="overflow:hidden;width:100%;height:250px;" allowtransparency="true"
         loading="lazy"></iframe>
-    <!--月度 方向同异程度  以小博防大彩票保险  美港同涨 港先跌跌大-美后跌跌小 
+
+
+    <!--方向同异程度大小  以小博防大彩票保险  美港同涨 港先跌跌大-美后跌跌小 
 
                                    相对量        相对收益率           角度         
                 国债等金融资产供需宽紧 量 价格  反 收益率角度   静储
@@ -47,28 +73,28 @@
                                  转折点 跨年12-1月 年中5-6月
                               通过 cpi 失业率(谁主要矛盾) GDP表现出来
 
-              外作用                    内循环
+           外作用                       内循环
         人口
         科技 
 
         货币  提前预判式托压        正常的货币债务需求主导               
-        财政                                           共同主导  
+        财政                                            共同主导  
               突发应急式托压        异常大宗供应链供给主导
         政治                       
         战争
 
         自然
-        生态
-    -->
+        生环
+    
 
-    <!-- 
-      货币财政政策无法消除周期波动只能减缓平抑 https://www.physixfan.com/40-upro-60-tmf
-                                                                                                            
-           货币需求端  ------→    主动预判  房市泡沫-→升缩-→降-→次贷危机-→降-→qe123     新冠收缩需求             老年人死亡叠加前期发钱
-                       ↘                                                                                    年轻人普遍有钱
-                         ↘
-                           ↘
-           商品供给端  ------→    被动应急                                            新冠收缩供给  降息扩张    俄乌中东导致能源紧张    持续通胀超3-5持续加息
+
+        货币财政政策无法消除周期波动只能减缓平抑 https://www.physixfan.com/40-upro-60-tmf
+                                                                                                        
+        货币需求端  ------→    主动预判  房市泡沫-→升缩-→降-→次贷危机-→降-→qe123     新冠收缩需求             老年人死亡叠加前期发钱
+                    ↘                                                                                    年轻人普遍有钱
+                        ↘
+                        ↘
+        商品供给端  ------→    被动应急                                            新冠收缩供给  降息扩张    俄乌中东导致能源紧张    持续通胀超3-5持续加息
     -->
 </body>
 
