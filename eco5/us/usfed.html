@@ -18,10 +18,9 @@
             // })
             window.onresize = function (e) {
                 let fullScreenShowObj = document.getElementById("fullScreenShow")
-                if (fullScreenShowObj.style.display == 'none') {
-                    //console.log(e,e.keyCode)
+                if (fullScreenShowObj.style.display == 'none' && window.innerHeight >= 880) {
                     fullScreenShowObj.style.display = ''
-                } else if (fullScreenShowObj.style.display == '') {
+                } else if (fullScreenShowObj.style.display == '' && window.innerHeight < 880) {
                     fullScreenShowObj.style.display = 'none'
                 }
             }
@@ -34,7 +33,7 @@
         波动恐慌      上穿40        60以上      
         差距越大
     -->
-    <iframe src="https://fred.stlouisfed.org/graph/graph-landing.php?g=1blNG&width=1300&height=390" scrolling="yes"
+    <iframe src="https://fred.stlouisfed.org/graph/graph-landing.php?g=1borr&width=1300&height=390" scrolling="yes"
         frameborder="0" style="overflow:hidden;width:100%;height:230px;" allowtransparency="true"
         loading="lazy"></iframe>
 
