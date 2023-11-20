@@ -5,33 +5,47 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width">
     <style type="text/css">
-        iframe {
-            margin-bottom: -2px;
-        }
+    iframe {
+        margin-bottom: -2px;
+    }
     </style>
     <script>
-        window.onload = () => {
-            // let element = document.querySelector('html')
-            // element.addEventListener('keydown', handleKeyDown)
-            // function handleKeyDown(e) {
-            //     if (e && e.keyCode === 122) {
-            //         console.log("f11 jinru") //进入全屏后按f11无法监听
-            //     }
-            // }
+    function myadd(a, b) {
+        return a + b
+    }
 
 
-            window.onresize = function () {
-                console.log( document ) 
-            }
+    function Peo(name) {
+        this.name = name
+    }
 
-            
-        }
+
+    function Cat(name) {
+        this.name = name
+        this.weight = 0
+    }
+    Cat.prototype.eat = function() {
+        this.weight++
+    }
+
+    let fff = parseFloat("1.22") //全局函数，不属于任何对象。
+    let a = new myadd()
+    let b = new Peo("sam")
+    let c = new Cat("tom")
+
+
+
+    let fuck = [1, 2, 3].map((item) => {
+        return item * 2
+    })
     </script>
-
 </head>
 
 <body>
-    11
+    
+
+
+
 </body>
 
 </html>

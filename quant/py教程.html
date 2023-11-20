@@ -1,0 +1,128 @@
+基本数据类型
+a=10         # int 整数
+a=1.3        # float 浮点数
+a=True       # 真值 (True/False)
+a='Hello!'   # 字符串。字符串也可以用双引号。
+
+
+s1 = (2, 1.3, 'love', 5.6, 9, 12, False)         # s1是一个tuple  tuple的各个元素不可再变更
+s2 = [True, 5, 'smile']                          # s2是一个list   list的各个元素可以再变更
+
+
+dic = {'tom':11, 'sam':57,'lily':100}            # 词典
+
+
+
+
+
+循环对象是这样一个对象，它包含有一个next()方法 这个方法的目的是进行到下一个结果而在结束一系列结果之后，举出StopIteration错误。
+当一个循环结构（比如for）调用循环对象时，它就会每次循环的时候调用next()方法，直到StopIteration出现，for循环接收到，就知道循环已经结束，停止调用next()。
+循环对象和迭代器常常相互指代对方
+
+
+生成器(generator)的主要目的是构成一个用户自定义的循环对象。
+生成器的编写方法和函数定义类似，只是在return的地方改为yield。生成器中可以有多个yield。当生成器遇到一个yield时，会暂停运行生成器，返回yield后面的值。
+当再次调用生成器的时候，会从刚才暂停的地方继续运行，直到下一个yield。
+
+
+
+Everything is Object   对象原型链  dir()用来查询一个(类 实例)对象所有属性   help()用来查询的说明文档
+
+
+运算符是特殊方法  运算符如+, -, >, <, 以及下标引用[start:end]等从根本上都是定义在(类 实例)对象内部的特殊方法
+使用dir(list)的时候，能看到一个属性，是__add__()。从形式上看是特殊方法（下划线，下划线）
+这个方法定义了"+"运算符对于list对象的意义，两个list的对象相加时，会进行的操作。 [1,2,3] + [5,6,9]
+'abc' + 'xyz' =>  'abc'.__add__('xyz')   
+(1.8).__mul__(2.0)
+True.__or__(False)
+
+
+多数内置函数也都是调用对象的特殊方法
+len([1,2,3]) => [1,2,3].__len__()
+(-1).__abs__()
+(2.3).__int__()
+[1, 2, 3, 4][3] => [1, 2, 3, 4].__getitem__(3)
+
+
+
+函数也是一个对象 是一种可运行有作用域链的对象 任何一个有__call__()特殊方法的对象都被当作是函数
+函数对象的作用域与def所在的层级相同  使用lambda定义函数那么函数对象的作用域与lambda所在的层级相同
+
+class SampleMore(object):
+    def __call__(self, a):
+        return a + 5
+
+add = SampleMore()     # A function object
+print(add(2))          # Call function    
+map(add, [2, 4, 5])    # Pass around function object
+
+
+def func(a):
+    if a > 100:
+        return True
+    else:
+        return False
+
+re = filter(func, [10,56,101,500])   # filter map是可迭代对象 https://www.cnblogs.com/traditional/p/14038011.html
+re = map((lambda x: x+3), [1,3,5,6])
+
+
+
+
+函数是一个对象，所以可以作为某个函数的返回结果。  line所参照的b值是函数对象定义时可供参考的b值 我们称b为line的环境变量
+一个函数和它的环境变量合在一起，就构成了一个闭包(closure)。在Python中，所谓的闭包是一个包含有环境变量取值的函数对象。环境变量取值被保存在函数对象的__closure__属性中
+def line_conf():
+    b = 15
+    def line(x):
+        return 2*x+b
+    return line       # return a function object
+
+b = 5
+my_line = line_conf()
+print(my_line.__closure__)
+print(my_line.__closure__[0].cell_contents)
+
+
+
+
+
+
+一切皆对象          对象间有关系结构原型链[[Prototype]]   实例类对象
+
+函数是对象          是可以运行的有作用域链[[Scopes]]的实例对象 
+
+自定义函数是对象    是有prototype属性的实例对象(prototype互指constructor)是可以new新实例对象的类对象 
+                   内置函数不一定有prototype  即便有prototype也不一定能new   明希豪森三难困境互指无穷自指  37%原则
+
+<script>
+
+    function myadd(a, b) {
+        return a + b
+    }
+
+    function Peo(name) {
+        this.name = name
+    }
+
+    function Cat(name) {
+        this.name = name
+        this.weight = 0
+    }
+    Cat.prototype.eat = function(){
+        this.weight++
+    }
+
+    let fff = parseFloat("1.22")  //全局内置函数，不属于任何对象。
+    let a = new myadd()           // https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Function/prototype
+    let b = new Peo("sam")        // 当 Function 实例作为构造函数与 new 运算符一起使用时，该实例的 prototype 数据属性将用作新对象的原型。
+    let c = new Cat("tom")        // 内置函数不一定有prototype  即便有prototype也不一定能new
+
+
+
+    let fuck = [1, 2, 3].map((item) => {  //Array.prototype.map()  内置函数
+        return item * 2
+    })
+
+
+   
+</script>
