@@ -623,7 +623,7 @@
 
 
 
-                { //M1 M1-M2 信贷
+                { //M1 M1-M2 
                     gridIndex: 5,
                     type: 'value',
                     splitLine: {
@@ -634,11 +634,12 @@
                         formatter: (value, index) => {
                             if (value > 30) return ""
                             else return value
-                        }
+                        },
+                        color: "black"
                     },
                     max: 35
                 },
-                { //M1 M1-M2 信贷
+                { // 信贷
                     gridIndex: 5,
                     type: 'value',
                     splitLine: {

@@ -13,52 +13,45 @@
         }
     </style>
     <script src="https://cdn.bootcss.com/jquery/3.2.0/jquery.min.js"></script>
-    <script language="javascript" src="https://www.lodop.net/demolist/LodopFuncs.js"></script>
+    <script language="javascript" src="http://localhost:8000/CLodopDemos/LodopFuncs.js"></script>
 </head>
 
 <body>
-
-    <!-- 内嵌 -->
-    <object id="LODOP2" classid="clsid:2105C259-1E0C-4534-8141-A753534CB4CA" width=700 height=407
-        style="display: inline-block;">
-        <param name="Caption" value="内嵌显示区域11111111">
-        <param name="Border" value="11">
-        <param name="Color" value="red">
-        <embed id="LODOP_EM2" TYPE="application/x-print-lodop" width=700 height=407 PLUGINSPAGE="install_lodop.exe">
-    </object>
-    <object id="LODOP3" classid="clsid:2105C259-1E0C-4534-8141-A753534CB4CA" width=700 height=407
-        style="display: inline-block;">
-        <param name="Caption" value="内嵌显示区域">
-        <param name="Color" value="#C0C0C0">
-        <embed id="LODOP_EM3" TYPE="application/x-print-lodop" width=700 height=407 PLUGINSPAGE="install_lodop.exe">
-    </object>
-    <div>
-        <input type="button" value="lodop内嵌" onclick="lodopClick()">
-        <a href="javascript:;" onclick="javascript:LODOP3.SET_PRINT_STYLEA('Selected','Content','fffff');">所选内容项</a>或
-        <a href="javascript:;" onclick="javascript:LODOP3.SET_PRINT_STYLEA('Selected','Deleted',true);">删除所选项</a>
-    </div>
+    
+    <!--测试用 -->
+    <!-- <iframe id="lodopFrame" width=100% height=100%></iframe> -->
+    <input type="button" value="test1" onclick="test1()">
+    <input type="button" value="test2" onclick="test2()">
     <script language="javascript" type="text/javascript">
-        var LODOP2;
-        var LODOP3;
+        function test1(index) {
+            let LODOP = getLodop()
+            LODOP.PRINT_INIT("文件" + index)
+            LODOP.SET_PRINTER_INDEX("Bullzip PDF Printer")
+            LODOP.ADD_PRINT_TEXT(50, 231, 260, 39, "任务" + arr[index] + ":page-1")
+            LODOP.ADD_PRINT_IMAGE(30, 150, 400, 400, "<img border='0' src='http://www.c-lodop.com/demolist/PrintSample8.jpg' />")
+            LODOP.NEWPAGE()
+            LODOP.ADD_PRINT_TEXT(50, 231, 260, 39, "任务" + arr[index] + ":page-2")
+            LODOP.SET_PRINT_MODE("PRINT_START_PAGE", 1);
+            LODOP.SET_PRINT_MODE("PRINT_END_PAGE", 1);
 
-        //内嵌
-        function lodopClick() {
-            LODOP2 = getLodop(document.getElementById('LODOP2'), document.getElementById('LODOP_EM2'));
-            LODOP2.PRINT_INITA(0, 0, 760, 321, "打印控件功能演示_Lodop功能_在线编辑获得程序代码");
-            LODOP2.ADD_PRINT_TEXT(10, 50, 175, 30, "先加的内容");
-            LODOP2.SET_SHOW_MODE("PREVIEW_IN_BROWSE", true); //预览界面内嵌到页面内
-            LODOP2.SET_SHOW_MODE("SETUP_ENABLESS", "11111111000000"); //隐藏关闭(叉)按钮
-            LODOP2.SET_SHOW_MODE("HIDE_GROUND_LOCK", true); //隐藏纸钉按钮
-            LODOP2.PREVIEW();
-            LODOP2.DO_ACTION("PREVIEW_PERCENT", 4);
-            LODOP2.DO_ACTION("PREVIEW_ZOOM_OUT", 0);
+            LODOP.PREVIEW();//_blank
+        }
 
-            LODOP3 = getLodop(document.getElementById('LODOP3'), document.getElementById('LODOP_EM3'));
-            LODOP3.PRINT_INITA(0, 0, 760, 321, "打印控件功能演示_Lodop功能_在线编辑获得程序代码");
-            LODOP3.ADD_PRINT_TEXT(10, 50, 175, 30, "先加的内容");
-            LODOP3.SET_SHOW_MODE("DESIGN_IN_BROWSE", true); //预览界面内嵌到页面内
-            LODOP3.SET_PREVIEW_WINDOW(1, 2, 1, 800, 800, "自定义标题.开始打印");
-            LODOP3.PRINT_DESIGN();
+        function test2(index) {
+            let LODOP = getLodop()
+            LODOP.PRINT_INIT()
+            LODOP.ADD_PRINT_TEXT(50, 231, 260, 39, "任务")
+            LODOP.SET_PRINT_MODE("AUTO_CLOSE_PREWINDOW", 1);
+            if (LODOP.CVERSION) {//clodop
+                LODOP.On_Return = function (TaskID, Value) {//clodop异步回调获取返回值 
+                    var stResult = Value;//返回true认为成功
+                    console.log(TaskID, "==", Value);
+                }
+                LODOP.PREVIEW(); //PREVIEW预览  PRINT_DESIGN设计  PRINT直接打印   SAVE_TO_FIL  GET_FILE_TEXT  GET_VALUE
+            } else {//lodop
+                var stResult = LODOP.PREVIEW(); //lodop同步获取返回值
+                console.log(stResult);
+            }
         }
     </script>
     <hr>
@@ -346,10 +339,10 @@
         </table>
     </div>
 
-    <input type="button" id="save_button" value="save file" onclick="SaveAsFile()">
-    <input type="button" id="stat_button" value="stat file" onclick="StatAsFile()">
+    <input type="button" id="save_button" value="导出excel" onclick="saveAsFile()">
+    <input type="button" id="stat_button" value="打印预览" onclick="printTable()">
     <script language="javascript" type="text/javascript">
-        function SaveAsFile() {
+        function saveAsFile() { //样例27  excle的xformat格式
             LODOP = getLodop();
             for (let index = 0; index < 2; index++) {
                 LODOP.PRINT_INIT("");
@@ -365,112 +358,12 @@
             }
 
         };
-        function StatAsFile() {
+        function printTable() { //样例31 lodopDelphi的 format
             LODOP = getLodop();
             LODOP.PRINT_INIT("打印控件功能演示_Lodop功能_打印表格");
             LODOP.ADD_PRINT_TABLE(100, 1, "99.8%", 250, document.getElementById("div_table").innerHTML);
             LODOP.PREVIEW();
         };	
-    </script>
-    <hr>
-
-    <!--设计 维护 预览 打印  html 图片 纯文本 -->
-    <div id="h5_id">
-        <img src=" http://www.w3school.com.cn/svg/rect1.svg">
-    </div>
-    <div id="textarea_id">
-        <textarea rows="5" cols="25">
-            在w3school，你可以找到你所需要的所有的网站建设教程。
-        </textarea>
-    </div>
-    <iframe src="http://www.c-lodop.com/demolist/PrintSample3.html" width="800" height="200"></iframe>
-
-    <div>
-        <input type="button" value="设计 预览 维护测试" onclick="mytest()">
-        <input type="button" value="获取值" onclick="getMyValue()">
-    </div>
-
-    <script language="javascript" type="text/javascript">
-        var LODOP;
-        function mytest() {
-            LODOP = getLodop();
-            LODOP.PRINT_INIT("任务名");
-            LODOP.SET_PRINT_PAGESIZE(2, "217mm", "306mm", "");
-
-            //alert(LODOP.SELECT_PRINTER());
-            // if (LODOP.SET_PRINTER_INDEXA("Doro PDF Writer")) {
-            //     alert("ok")
-            // } else {
-            //     alert("false");
-            // }
-
-            //LODOP.ADD_PRINT_SETUP_BKIMG("<img border='0' src='https://www.baidu.com/img/bd_logo1.png'>");
-            //LODOP.SET_SHOW_MODE("BKIMG_IN_PREVIEW", 1);
-
-            //document.getElementById("h5").innerHTML document.documentElement.innerHTML   URL:http://www.baidu.com
-            //LODOP.ADD_PRINT_HTM(10, 10, "100%", "100%", document.getElementById("textarea_id").innerHTML);
-            //LODOP.SET_PRINT_STYLEA(0, "HtmWaitMilSecs", 3000) //设置上一项延迟超文本
-
-            //LODOP.ADD_PRINT_HTM(500,450,300,100,"超文本页号：<span tdata='pageNO-2'>第##页</span>/<span tdata='pageCount-2'>共##页</span>");
-            //LODOP.SET_PRINT_STYLEA(0,"ItemType",1);
-            //LODOP.SET_PRINT_STYLEA(0,"PageUnIndex","1,last");//前两页不显示该页号
-
-
-            LODOP.ADD_PRINT_IMAGE(30, 150, 400, 400, "<img border='0' src='http://img1.z3-gz.com/group1/M00/00/36/rBKDZVvNN1mAbgbfAAQeeAWawn4164.jpg' />");
-            //LODOP.SET_PRINT_STYLEA(0, "ItemType", 1); //使用页眉页脚，0代表前一个打印内容
-
-            LODOP.ADD_PRINT_TEXT(215, 15, 222, 100, "qwqwqw11");
-            LODOP.SET_PRINT_STYLEA(0, "FontName", "微软雅黑");
-            LODOP.SET_PRINT_STYLEA(0, "FontSize", "15");
-
-            //LODOP.ADD_PRINT_BARCODEA("ttt",173, 244, 235, 172, "EAN13", "1234567890123");   
-            //LODOP.SET_PRINT_STYLEA(0,"FontName","隶书");
-
-            //LODOP.SET_PRINT_STYLEA("ALL", "ShowBarText", false);//内嵌时候
-            //LODOP.SET_PRINT_STYLEA('All', 'Deleted', true);//内嵌时候
-
-            //LODOP.SET_SHOW_MODE("HIDE_PBUTTIN_PREVIEW", 1);
-            //LODOP.SET_SHOW_MODE("TEXT_SHOW_BORDER", 0); //设置字符编辑框默认为single   
-
-            //LODOP.SET_PRINT_MODE("CONTROL_PRINTER:Microsoft XPS Document Writer", "RESUME");
-            //LODOP.SET_PRINT_MODE("PROGRAM_ROOTDIR", "F:/testroot");
-            //alert( LODOP.SET_PRINT_MODE("PRINT_NOCOLLATE", 1));
-
-
-            //LODOP.SET_PRINT_MODE("CATCH_PRINT_STATUS", true);
-            if (LODOP.CVERSION) { //c-lodop
-                LODOP.On_Return = function (TaskID, Value) {
-                    //console.log(TaskID + "==" + Value);
-                };
-                var TaskID = LODOP.PRINT();
-            } else //lodop
-            {
-                var Value = LODOP.PRINT();
-                //LODOP.PREVIEW();
-                //LODOP.PRINT();
-                //LODOP.PRINTA();
-                //LODOP.PRINT_DESIGN();
-                //LODOP.PRINT_SETUP();
-                //LODOP.GET_VALUE();
-            }
-        }
-
-        function getMyValue() {// 设计或预览后获取参考样例22 建议lodop内嵌使用  clodop有些值不支持 
-
-            if (LODOP.CVERSION) {//clodop
-                LODOP.altMessageNoReadFile = "NoReadFile"
-                LODOP.On_Return = function (TaskID, Value) {//clodop异步回调获取返回值 
-                    var stResult = Value;
-                    console.log(stResult);
-                }
-                LODOP.GET_VALUE("ItemWidth", "0"); //PREVIEW PRINT_DESIGN PRINT SAVE_TO_FILE GET_FILE_TEXT
-            } else {//lodop
-                var stResult = LODOP.GET_VALUE("ItemWidth", "0"); //lodop同步获取返回值
-                console.log(stResult);
-            }
-
-        };
-
     </script>
     <hr>
 
@@ -558,8 +451,8 @@
                 }
                 if (TaskID == GET_VALUE_ID_TaskID) {
                     P_ID_ID = Value
-                    console.log(TaskID + "-GET_VALUE(PRINT_STATUS_ID," + P_ID + ")异步返回值, 打印任务" + P_ID + "的打印状态代码:" + P_ID_ID 
-                    + " getStatuMessage(" + P_ID_ID + ")解析:" + getStatuMessage(P_ID_ID))
+                    console.log(TaskID + "-GET_VALUE(PRINT_STATUS_ID," + P_ID + ")异步返回值, 打印任务" + P_ID + "的打印状态代码:" + P_ID_ID
+                        + " getStatuMessage(" + P_ID_ID + ")解析:" + getStatuMessage(P_ID_ID))
                 }
             }
             LODOP.ADD_PRINT_TEXT(10, 60, 300, 200, "纯文本任务" + index)
@@ -696,9 +589,9 @@
         */
         function MyPrint() {
             LODOP = getLodop();
-            if (!confirm("下面的演示会产生大量的实际打印操作，确定继续吗？")) return
+            // if (!confirm("下面的演示会产生大量的实际打印操作，确定继续吗？")) return
             var i = 1
-            while (i < 3) {
+            while (i <= 1) {
                 LODOP.PRINT_INIT("任务" + i)
                 if (isMingWen == true) {//明文js模板 样例35
                     for (j = 1; j <= 5; j++) {
@@ -712,10 +605,10 @@
                     LODOP.ADD_PRINT_DATA("ProgramData", template)  //装载模板
                     //LODOP.ADD_PRINT_TEXTA("jj_xm", 83, 78, 75, 20, "寄件人姓名") 类名赋值
                     LODOP.SET_PRINT_STYLEA("jj_xm", "CONTENT", "任务" + i); // 一个任务里面打印项类名可以一样 类似css里的class
-                    //LODOP.NEWPAGE()                                //ADD_PRINT_DATA 和 NEWPAGE 不兼容
+                    LODOP.NEWPAGE()                                //ADD_PRINT_DATA 和 NEWPAGE 不兼容
                 }
                 i++
-                LODOP.PRINT()
+                LODOP.PREVIEW()
             }
         }
 
@@ -783,11 +676,11 @@
             return decodeURIComponent(escape(s))
         }
     </script>
-
+    <hr>
 
 
     <!--套打 单位 -->
-    <input type="button" value="taodadanwei" onclick="write1()">
+    <input type="button" value="套打" onclick="taoda()">
     <script type="text/javascript">
         /**
         * 获取DPI
@@ -819,64 +712,25 @@
             //console.log(c_value);
             return c_value;
         };
+        console.log( this.conversion_getDPI()[0], "==", pxConversionMm(1700))
 
         function taoda() {
             LODOP.PRINT_INITA(0, 0, "210mm", "297mm", "纸张尺寸");
             LODOP.SET_PRINT_PAGESIZE(1, 2100, 2970, "纸张尺寸");
             LODOP.SET_PRINT_MODE("PRINT_NOCOLLATE", 1);
-            LODOP.ADD_PRINT_SETUP_BKIMG("C:\\Users\\wuyue\\Desktop\\扫描纸张图片.jpg");
+            LODOP.ADD_PRINT_SETUP_BKIMG("C:\\Users\\wuyue\\Pictures\\2020-10-21\\001.jpg"); //打印机扫描出的图片 
             LODOP.SET_SHOW_MODE("BKIMG_LEFT", 0);
             LODOP.SET_SHOW_MODE("BKIMG_TOP", 0);
-            LODOP.SET_SHOW_MODE("BKIMG_WIDTH", "210mm");//纸张尺寸
+            LODOP.SET_SHOW_MODE("BKIMG_WIDTH", "210mm");//纸张尺寸 
             LODOP.SET_SHOW_MODE("BKIMG_HEIGHT", "297mm");
 
             LODOP.SET_SHOW_MODE("BKIMG_IN_PREVIEW", 1);
             LODOP.SET_SHOW_MODE("BKIMG_PRINT", 0);
             LODOP.ADD_PRINT_TEXT(353, 438, 160, 20, "文本");
+            LODOP.PREVIEW()
         }
     </script>
-
-
-
-    <!--测试用 -->
-    <iframe id="lodopFrame" width=100% height=100%></iframe>
-    <input type="button" value="test1" onclick="test1()">
-    <input type="button" value="test2" onclick="test2()">
-    <script language="javascript" type="text/javascript">
-        function test1(index) {
-            let LODOP = getLodop()
-            LODOP.PRINT_INIT("文件" + index)
-            LODOP.SET_PRINTER_INDEX("Bullzip PDF Printer")
-            LODOP.ADD_PRINT_TEXT(50, 231, 260, 39, "任务" + arr[index] + ":page-1")
-            LODOP.ADD_PRINT_IMAGE(30, 150, 400, 400, "<img border='0' src='http://www.c-lodop.com/demolist/PrintSample8.jpg' />")
-            LODOP.NEWPAGE()
-            LODOP.ADD_PRINT_TEXT(50, 231, 260, 39, "任务" + arr[index] + ":page-2")
-            LODOP.SET_PRINT_MODE("PRINT_START_PAGE", 1);
-            LODOP.SET_PRINT_MODE("PRINT_END_PAGE", 1);
-
-            LODOP.PREVIEW();//_blank
-        }
-
-        function test2(index) {
-            let LODOP = getLodop()
-            LODOP.PRINT_INIT()
-            LODOP.ADD_PRINT_TEXT(50, 231, 260, 39, "任务")
-            LODOP.SET_PRINT_MODE("AUTO_CLOSE_PREWINDOW", 1);
-            if (LODOP.CVERSION) {//clodop
-                LODOP.On_Return = function (TaskID, Value) {//clodop异步回调获取返回值 
-                    var stResult = Value;//返回true认为成功
-                    console.log(TaskID, "==", Value);
-                }
-                LODOP.PREVIEW(); //PREVIEW预览  PRINT_DESIGN设计  PRINT直接打印   SAVE_TO_FIL  GET_FILE_TEXT  GET_VALUE
-            } else {//lodop
-                var stResult = LODOP.PREVIEW(); //lodop同步获取返回值
-                console.log(stResult);
-            }
-        }
-    </script>
-
-
-
+    
 </body>
 
 </html>
