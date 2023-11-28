@@ -1,0 +1,262 @@
+<!--
+  此示例下载自 https://echarts.apache.org/examples/zh/editor.html?c=candlestick-brush
+
+  https://d.10jqka.com.cn/v6/line/33_002531/01/last1800.js
+  
+-->
+<!DOCTYPE html>
+<html lang="zh-CN" style="height: 100%">
+
+<head>
+    <meta charset="utf-8">
+</head>
+
+<body style="height: 100%; margin: 0">
+    <div id="container" style="height: 100%"></div>
+    <script type="text/javascript" src="https://fastly.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="https://fastly.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <script type="text/javascript" src="天顺风能.js"></script>
+    <script type="text/javascript" src="indicator.js"></script>
+    <script type="text/javascript">
+    // {"t": "20181031", "open": 165.92, "high": 165.95, "low": 130.06, "close": 142.28, "volume": 544315530 }
+    let kdjData = 天顺风能.map((element, index) => {
+        return { "t": element[0], "open": element[1], "high": element[4], "low": element[3], "close": element[2], "volume": element[5] }
+    })
+
+    var ylIndicator = window[`ylIndicator`];
+    var result = ylIndicator.KDJ(kdjData);
+    //console.log('result==>', ylIndicator, result, 天顺风能)
+
+
+
+    var dom = document.getElementById('container');
+    var myChart = echarts.init(dom, null, {
+        renderer: 'canvas',
+        useDirtyRect: false
+    });
+    var app = {};
+    var ROOT_PATH = 'https://echarts.apache.org/examples';
+    var option;
+
+    const upColor = '#ec0000';
+    const downColor = '#00da3c';
+
+    function splitData(rawData) {
+
+        let categoryData = [];
+        let values = [];
+        let kdj_K = [];
+        let kdj_D = [];
+        let kdj_J = [];
+        for (let i = 0; i < rawData.length; i++) {
+            categoryData.push(rawData[i].splice(0, 1)[0]);
+            values.push(rawData[i]);
+            kdj_K.push(result[i].K)
+            kdj_D.push(result[i].D);
+            kdj_J.push(result[i].J)
+        }
+        return {
+            categoryData: categoryData,
+            values: values,
+            kdj_K: kdj_K,
+            kdj_D: kdj_D,
+            kdj_J: kdj_J
+        };
+    }
+
+    var data = splitData(天顺风能)
+    console.log(data, result)
+
+    myChart.setOption(
+        (option = {
+            animation: false,
+            legend: {
+                bottom: 10,
+                left: 'center',
+                data: ['Dow-Jones index', 'MA5']
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'cross'
+                },
+                borderWidth: 1,
+                borderColor: '#ccc',
+                padding: 10,
+                textStyle: {
+                    color: '#000'
+                },
+                position: function(pos, params, el, elRect, size) {
+                    const obj = {
+                        top: 10
+                    };
+                    obj[['left', 'right'][+(pos[0] < size.viewSize[0] / 2)]] = 30;
+                    return obj;
+                }
+                // extraCssText: 'width: 170px'
+            },
+            axisPointer: {
+                link: [{
+                    xAxisIndex: 'all'
+                }],
+                label: {
+                    backgroundColor: '#777'
+                }
+            },
+            toolbox: {
+                feature: {
+                    dataZoom: {
+                        yAxisIndex: false
+                    },
+                    brush: {
+                        type: ['lineX', 'clear']
+                    }
+                }
+            },
+            dataZoom: [{
+                    type: 'inside',
+                    xAxisIndex: [0, 1],
+                    start: 98,
+                    end: 100
+                },
+                {
+                    show: true,
+                    xAxisIndex: [0, 1],
+                    type: 'slider',
+                    top: '85%',
+                    start: 98,
+                    end: 100
+                }
+            ],
+            brush: {
+                xAxisIndex: 'all',
+                brushLink: 'all',
+                outOfBrush: {
+                    colorAlpha: 0.1
+                }
+            },
+            visualMap: {
+                show: false,
+                seriesIndex: 5,
+                dimension: 2,
+                pieces: [{
+                        value: 1,
+                        color: downColor
+                    },
+                    {
+                        value: -1,
+                        color: upColor
+                    }
+                ]
+            },
+            grid: [{
+                    left: '10%',
+                    right: '8%',
+                    height: '50%'
+                },
+                {
+                    left: '10%',
+                    right: '8%',
+                    top: '63%',
+                    height: '16%'
+                }
+            ],
+            xAxis: [{
+                    type: 'category',
+                    data: data.categoryData,
+                    boundaryGap: false,
+                    axisLine: { onZero: false },
+                    splitLine: { show: false },
+                    min: 'dataMin',
+                    max: 'dataMax',
+                    axisPointer: {
+                        z: 100
+                    }
+                },
+                {
+                    type: 'category',
+                    gridIndex: 1,
+                    data: data.categoryData,
+                    boundaryGap: false,
+                    axisLine: { onZero: false },
+                    axisTick: { show: false },
+                    splitLine: { show: false },
+                    axisLabel: { show: false },
+                    min: 'dataMin',
+                    max: 'dataMax'
+                }
+            ],
+            yAxis: [{
+                    scale: true,
+                    splitArea: {
+                        show: true
+                    }
+                },
+                {
+                    scale: true,
+                    gridIndex: 1,
+                    splitNumber: 2,
+                    axisLabel: { show: false },
+                    axisLine: { show: false },
+                    axisTick: { show: false },
+                    splitLine: { show: false }
+                }
+            ],
+            series: [
+
+               {
+                    name: 'Dow-Jones index',
+                    type: 'candlestick',
+                    data: data.values,
+                    itemStyle: {
+                        color: upColor,
+                        color0: downColor,
+                        borderColor: undefined,
+                        borderColor0: undefined
+                    }
+                },
+
+                {
+                    name: 'K',
+                    type: 'line',
+                    xAxisIndex: 1,
+                    yAxisIndex: 1,
+                    data: data.kdj_K
+                },
+                {
+                    name: 'D',
+                    type: 'line',
+                    xAxisIndex: 1,
+                    yAxisIndex: 1,
+                    data: data.kdj_D
+                },
+                {
+                    name: 'J',
+                    type: 'line',
+                    xAxisIndex: 1,
+                    yAxisIndex: 1,
+                    data: data.kdj_J
+                }
+            ]
+        }),
+        true
+    );
+    myChart.dispatchAction({
+        type: 'brush',
+        areas: [{
+            brushType: 'lineX',
+            coordRange: ['2023-06-01', '2023-06-30'],
+            xAxisIndex: 0
+        }]
+    });
+
+
+    if (option && typeof option === 'object') {
+        myChart.setOption(option);
+    }
+
+    window.addEventListener('resize', myChart.resize);
+    </script>
+</body>
+
+</html>

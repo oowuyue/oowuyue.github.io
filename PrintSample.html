@@ -19,29 +19,12 @@
 <body>
     
     <!--测试用 -->
-    <!-- <iframe id="lodopFrame" width=100% height=100%></iframe> -->
-    <input type="button" value="test1" onclick="test1()">
-    <input type="button" value="test2" onclick="test2()">
+    <input type="button" value="test1" onclick="test()">
     <script language="javascript" type="text/javascript">
-        function test1(index) {
-            let LODOP = getLodop()
-            LODOP.PRINT_INIT("文件" + index)
-            LODOP.SET_PRINTER_INDEX("Bullzip PDF Printer")
-            LODOP.ADD_PRINT_TEXT(50, 231, 260, 39, "任务" + arr[index] + ":page-1")
-            LODOP.ADD_PRINT_IMAGE(30, 150, 400, 400, "<img border='0' src='http://www.c-lodop.com/demolist/PrintSample8.jpg' />")
-            LODOP.NEWPAGE()
-            LODOP.ADD_PRINT_TEXT(50, 231, 260, 39, "任务" + arr[index] + ":page-2")
-            LODOP.SET_PRINT_MODE("PRINT_START_PAGE", 1);
-            LODOP.SET_PRINT_MODE("PRINT_END_PAGE", 1);
-
-            LODOP.PREVIEW();//_blank
-        }
-
-        function test2(index) {
+        function test(index) {
             let LODOP = getLodop()
             LODOP.PRINT_INIT()
             LODOP.ADD_PRINT_TEXT(50, 231, 260, 39, "任务")
-            LODOP.SET_PRINT_MODE("AUTO_CLOSE_PREWINDOW", 1);
             if (LODOP.CVERSION) {//clodop
                 LODOP.On_Return = function (TaskID, Value) {//clodop异步回调获取返回值 
                     var stResult = Value;//返回true认为成功
