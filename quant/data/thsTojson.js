@@ -12,8 +12,8 @@ let txtToJson = async (fileName) => {
 
                 lines = lines.map((item) => {
                     let newItem = []
-                    itemArr = item.split(",")                
-                    newItem[0] = itemArr[0].substring(0,4) + "-" + itemArr[0].substring(4,6) + "-" + itemArr[0].substring(6,8)
+                    itemArr = item.split(",")
+                    newItem[0] = itemArr[0].substring(0, 4) + "-" + itemArr[0].substring(4, 6) + "-" + itemArr[0].substring(6, 8)
                     newItem[1] = parseFloat(itemArr[1]) //open
                     newItem[2] = parseFloat(itemArr[4]) //close
                     newItem[3] = parseFloat(itemArr[3]) //low
@@ -34,15 +34,32 @@ let txtToJson = async (fileName) => {
 
 
 
-
 (async () => {
 
-    let lastFileStr = await txtToJson('天顺风能')
-    try {
-        fs.writeFileSync(`天顺风能.js`, lastFileStr);
-        console.log(`天顺风能 JSON data is saved`);
-    } catch (error) {
-        console.error(error);
-    }
+
+    //['广西广电', '翰博高新']   https://d.10jqka.com.cn/v6/line/33_300103/01/last1800.js
+    let canshu = process.argv.slice(2)
+    canshu = canshu.map(async (stockName) => {
+        let lastFileStr = await txtToJson(stockName)
+        try {
+            fs.writeFileSync(`${stockName}.js`, lastFileStr);
+            return `${stockName}保存成功`
+        } catch (error) {
+            return `${stockName}保存失败`
+        }
+    })
+
+
+
+    let results = await Promise.all(canshu)
+
+
+    console.log(results)
+
 
 })()
+
+
+//https://stock2.finance.sina.com.cn/futures/api/jsonp.php/var%20_SC02023_11_30=/InnerFuturesNewService.getDailyKLine?symbol=SC0&_=2023_11_30
+//https://stock2.finance.sina.com.cn/futures/api/jsonp.php/var%20_SR02023_11_30=/InnerFuturesNewService.getDailyKLine?symbol=SR0&_=2023_11_30
+

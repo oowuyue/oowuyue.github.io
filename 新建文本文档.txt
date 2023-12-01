@@ -1355,3 +1355,41 @@ go   c++
               数据算法结构   os_db_net     
   与自动机
   pc组成原理     
+
+
+
+
+
+      if (weekKdjData.length >= 9 && currentWeekList[currentWeekList.length-1].date.substring(0,10)=="2018-10-19") {
+
+            let preWeekKdj = weekKdjData[weekKdjData.length - 2]
+            let currentWeekKdj = weekKdjData[weekKdjData.length - 1]
+
+            let fu
+debugger
+            //clearInterval(timer)
+            // if ((preWeekKdj.k < preWeekKdj.d) && (currentWeekKdj.k >= currentWeekKdj.d) && currentWeekKdj.j<=25 ) {
+            //    console.log( JSON.stringify(currentWeekList[currentWeekList.length-1]) ," 金叉 ")
+            // }
+        }
+
+        // if (weekKdjData.length >= 9 && currentWeekList[currentWeekList.length-1].date.substring(0,10)=="2018-10-22") {
+
+        //     let preWeekKdj = weekKdjData[weekKdjData.length - 2]
+        //     let currentWeekKdj = weekKdjData[weekKdjData.length - 1]
+
+        //     let fuk
+
+
+        //     // if ((preWeekKdj.k < preWeekKdj.d) && (currentWeekKdj.k >= currentWeekKdj.d) && currentWeekKdj.j<=25 ) {
+        //     //    console.log( JSON.stringify(currentWeekList[currentWeekList.length-1]) ," 金叉 ")
+        //     // }
+        // }
+
+
+
+           //10/15周1 10/18周4  /10/19周5       22周一
+    //600936    广西广电    20181022    20181116    3.62    4.38    20.99%
+
+
+      let weekKdjData = chartWeek.getIndicatorByPaneId(weekKdj, "KDJ").result
