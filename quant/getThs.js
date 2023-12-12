@@ -32,7 +32,7 @@ const path = require('path');
 
 
 
-    let dataName = "大叶股份"
+    let dataName = "广西广电"
     let res = await taskPage(dataName, "同花顺", `https://search.10jqka.com.cn/unifiedwap/result?w=${dataName}`, "last1800.js")
     try {
         let resStr = res.resdata.match(/\{.*\}/sg)

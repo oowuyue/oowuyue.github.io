@@ -7,7 +7,6 @@
     <meta name="description" content="KLineChart example" />
     <title>KLineChart + js</title>
     <script type="text/javascript" src="jslib/klinecharts.min.js"></script>
-    <script type="text/javascript" src="data/大叶股份.js"></script>
     <script type="text/javascript">
     function isMonthLastDay(ymd) {
         //"2000-01-09" 传入年份和月份 获取该年对应月份的天数 第三个参数是0，第二个参数是人类意识中的月份
@@ -188,6 +187,7 @@
     <div id="chartDay" style="height:20%"></div>
     <div id="chartWeek" style="height:40%"></div>
     <div id="chartMonth" style="height:40%"></div>
+    <script type="text/javascript" src="data/本立科技.json"></script>
     <script>
     let normalStyle = {
         grid: {
@@ -227,7 +227,11 @@
         },
     }
 
-    let dayDatas = 大叶股份.data.map(function(data) {
+    let dayDatas = 本立科技.filter(ele => {
+        let year = parseInt(ele[0].substring(0, 4))
+        return ((1900 < year) && (year < 2051))
+        //return ele.timestamp <= 1413849600000
+    }).map(function(data) {
         return {
             date: data[0],
             timestamp: new Date(data[0]).getTime(),
@@ -280,7 +284,9 @@
 
     let dayDatasLength = dayDatas.length + 1
     let weekGoldenCrossList = []
+    let logLastWeekGoldenCross2List = []
     let monthGoldenCrossList = []
+    let logLastMonthGoldenCross5List = []
     let currentDayIndex = 1
     let dayCross = false
     let weekCrossBottom = false
@@ -306,9 +312,8 @@
             let preDay = currentDayList[currentDayList.length - 2]
             let currentDay = currentDayList[currentDayList.length - 1]
             if ((preDay.K < preDay.D) && (currentDay.K >= currentDay.D) && currentDay.D <= 35) {
-                dayCross = true //日金叉
+                dayCross = true //日低位金叉
             }
-
 
             let preWeek = currentWeekList[currentWeekList.length - 2]
             let currentWeek = currentWeekList[currentWeekList.length - 1]
@@ -324,11 +329,57 @@
                 }
             }
 
+            // let preWeek = currentWeekList[currentWeekList.length - 2]
+            // let currentWeek = currentWeekList[currentWeekList.length - 1]
+            // //高位死叉
+            // if ((preWeek.K > preWeek.D) && (currentWeek.K <= currentWeek.D) && currentWeek.D >= 50) { // or pre5 J > 80
+            //     weekGoldenCrossList = []
+            // }
+            // //低位金叉 
+            // weekGoldenCrossList = weekGoldenCrossList.filter(ele => !isSameWeek(ele.date, currentWeek.date)) //更新同周数据
+            // if ((preWeek.K < preWeek.D) && (currentWeek.K >= currentWeek.D) && currentWeek.J <= 27) {
+            //     weekGoldenCrossList.push(currentWeek) //连续的没有高位死叉打断的低位金叉 
+            //     for (var i = weekGoldenCrossList.length - 2; i >= 0; i--) {
+            //         let preOne = weekGoldenCrossList[i]
+            //         if ((preOne.close > currentWeek.close) && (preOne.K < currentWeek.K)) {
+            //             weekCrossBottom = true //周连续低位金叉 连续的没有高位死叉打断的连续低位金叉  底背离 
+            //             logLastWeekGoldenCross2List.push(weekGoldenCrossList[weekGoldenCrossList.length - 1])
+            //             break
+            //         }
+            //     }
+            // }
+
+
+
+            // let preMonth = currentMonthList[currentMonthList.length - 2]
+            // let currentMonth = currentMonthList[currentMonthList.length - 1]
+
+            // //高位死叉
+            // if ((preMonth.K > preMonth.D) && (currentMonth.K <= currentMonth.D) && currentWeek.D >= 50) { // or pre5 J > 80
+            //     monthGoldenCrossList = []
+            // }
+
+            // //金叉 
+            // monthGoldenCrossList = monthGoldenCrossList.filter(ele => ele.date.substring(0, 7) != currentMonth.date.substring(0, 7)) //更新同月数据
+            // if ((preMonth.K < preMonth.D) && (currentMonth.K >= currentMonth.D)) {
+            //     monthGoldenCrossList.push(currentMonth) //月金叉 没有高位死叉打断的金叉
+            // }
+            // let pre5MonthList = pre5Month(currentMonth.date.substring(0, 7))
+            // for (var i = pre5MonthList.length - 1; i >= 0; i--) {
+            //     recent5MonthCross = monthGoldenCrossList.find(ele => ele.date.substring(0, 7) == pre5MonthList[i])
+            //     if (recent5MonthCross) {
+            //         recent5MonthCross = true //最近5月月金叉2018-10-19
+            //         logLastMonthGoldenCross5List.push(monthGoldenCrossList[monthGoldenCrossList.length - 1])
+            //         break
+            //     }
+            // }
+
+
             let preMonth = currentMonthList[currentMonthList.length - 2]
             let currentMonth = currentMonthList[currentMonthList.length - 1]
             monthGoldenCrossList = monthGoldenCrossList.filter(ele => ele.date.substring(0, 7) != currentMonth.date.substring(0, 7))
             if ((preMonth.K < preMonth.D) && (currentMonth.K >= currentMonth.D)) {
-                monthGoldenCrossList.push(currentMonth)//月金叉
+                monthGoldenCrossList.push(currentMonth) //月金叉
             }
             let pre5MonthList = pre5Month(currentMonth.date.substring(0, 7))
             for (var i = pre5MonthList.length - 1; i >= 0; i--) {
@@ -340,7 +391,7 @@
             }
 
 
-            //if (currentMonth.date == "2018-10-19") debugger
+            if (currentDay.date == "2021-11-01") debugger
             let lastResult = dayCross && weekCrossBottom && recent5MonthCross
             if (lastResult) console.log(currentDay.date, currentWeek.date, currentMonth.date, "日金叉 && 周金叉且底背离 && 最近5日月kdj金叉")
         }
@@ -350,7 +401,7 @@
         weekCrossBottom = false
         recent5MonthCross = false
         if (timer && currentDayIndex == dayDatasLength) {
-            console.log(weekGoldenCrossList, monthGoldenCrossList)
+            console.log(logLastWeekGoldenCross2List, logLastMonthGoldenCross5List)
             clearInterval(timer)
         }
 

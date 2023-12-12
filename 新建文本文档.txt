@@ -1229,7 +1229,7 @@ https://wenku.baidu.com/view/1e05ecaa142ded630b1c59eef8c75fbfc67d9455.html?_wkts
 最近5天月线周期kdj金叉；   周线周期kdj底背离；周线周期kdj金叉；周线周期kdjj值小于25；日线周期kdj金叉且d值小于35； pe<=120；pb>0;  排除st；风险警示取反
 最近5日月kdj金叉出现>=1次；周kdj底背离且金叉且j值小于25；                          kdj金叉且d值小于35；        pe<=120；pb>0;  排除st；风险警示取反
 
-☆☆☆ 月周日kdj 转折
+☆☆☆☆☆ 月周日kdj 转折
 10-20   1,1  10,3-5
 
 23,3.5  5.5
@@ -1243,35 +1243,46 @@ https://wenku.baidu.com/view/1e05ecaa142ded630b1c59eef8c75fbfc67d9455.html?_wkts
 周kdj金叉且j值小于59；最近10日日kdj金叉出现>=1次；日kdjd值小于39；BIAS买入信号；实际换手率大于2.9；股价大于5日均线；最近3日收盘获利小于5%的天数>0；最近3日主力资金流入大于-250万；振幅小于12；扣非净利润大于3100万 或者 放量
 pe<=120；roe>0； 排除st；风险警示取反；roe从大到小
 
-☆☆☆  周日kdj转折
+☆☆☆☆☆  周日kdj转折
 10-20   1,1  10,3-5
 
 33,10   8.5
 
 ------------------------------------------
 
-kdj买入信号，bias买入信号，macd买入信号，wr信号买入，振幅小于12，实际换手率大于2.9，排除st，排除退市，cci大于-120小于0，股价低于压力位
+kdj买入信号，bias买入信号，wr信号买入，macd买入信号，cci大于-120小于0，振幅小于12，股价低于压力位，实际换手率大于2.9， 排除st，排除退市， 
 
-☆☆☆  日kdj 转折
+kdj买入信号，bias买入信号，wr信号买入，rsi买入信号，周kdj金叉，振幅小于12，cci大于-130小于97，过去30个交易日涨跌幅大于-25%，最近3日主力资金流入大于-250万，实际换手率大于1，roe大于0，排除st，换手率从大到小
+
+☆☆☆☆☆  日kdj 转折
 10-20   1,1 10,3-5
 
-17,5.5  10.5
+20,5.5  10.5
+25,10   12
 
+
+16-1    18-10 18-12    20-3    22-4 22-10      23-10 23-12         10月底12月底到1月底  5月底到6月底    
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-总市值大于等于10亿小于等于20亿； 0<pb<=2.5；0<=pe<=25；股息大于0； BIAS买入信号；放量；振幅小于10； 排除st；上市天数>100；风险提示取反； roe从大到小排列   
 
-☆☆☆ 小市值低估 全时
-50-60   1,1   2,2
-
+总市值大于等于10亿小于等于20亿； 0<pb<=2.5；0<=pe<=25；股息大于0； BIAS买入信号；放量；振幅小于10； 排除st；上市天数>100；风险提示取反； roe或换手率从大到小排列   
+☆☆☆☆ 小市值低估 全时
+50-60   1,1 10,3-5
 17,5    12
 
------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-市值大于1000亿；非科创板；非创业板; 同花顺二级行业龙头；细分行业龙头; 过去3年的基本每股收益增长率>3%; 过去30个交易日涨跌幅大于-5%; 新股上市日期从大到小排名；总市值从小到大排列
-☆☆☆ 风险提示取反；  ppi0-5
-20-30     1,1
+市值大于1000亿；非科创板；非创业板; 同花顺二级行业龙头；细分行业龙头; 过去3年的基本每股收益增长率>3%; 过去30个交易日涨跌幅大于-5%小于23; 振幅小于8; 上市日期从大到小排名; 总市值从小到大排列
+☆☆☆☆ 风险提示取反；  ppi0-5
+20-30     1,1 10,3-5
 37,7      12.5
+
+
+今日大股东增持比例大于5%；sar红色；cci小于等于97；资金流入大于-250万；涨跌幅-5~5；换手率从大到小  +rsi上移？？？ 
+☆☆☆☆ 大股东增持 ppi0-5 低-二次顶
+10-20   1,1 10,3-5
+17,5    10
+
+-------------------------
 
 
 macd周线二次金叉；macd日线>0；股价大于周线ma30；最近10日换手率大于20小于45；cci小于等于97；振幅小于10,12；sar红色；排除st；上市天数>100；roe从大到小排序 
@@ -1360,36 +1371,4 @@ go   c++
 
 
 
-      if (weekKdjData.length >= 9 && currentWeekList[currentWeekList.length-1].date.substring(0,10)=="2018-10-19") {
-
-            let preWeekKdj = weekKdjData[weekKdjData.length - 2]
-            let currentWeekKdj = weekKdjData[weekKdjData.length - 1]
-
-            let fu
-debugger
-            //clearInterval(timer)
-            // if ((preWeekKdj.k < preWeekKdj.d) && (currentWeekKdj.k >= currentWeekKdj.d) && currentWeekKdj.j<=25 ) {
-            //    console.log( JSON.stringify(currentWeekList[currentWeekList.length-1]) ," 金叉 ")
-            // }
-        }
-
-        // if (weekKdjData.length >= 9 && currentWeekList[currentWeekList.length-1].date.substring(0,10)=="2018-10-22") {
-
-        //     let preWeekKdj = weekKdjData[weekKdjData.length - 2]
-        //     let currentWeekKdj = weekKdjData[weekKdjData.length - 1]
-
-        //     let fuk
-
-
-        //     // if ((preWeekKdj.k < preWeekKdj.d) && (currentWeekKdj.k >= currentWeekKdj.d) && currentWeekKdj.j<=25 ) {
-        //     //    console.log( JSON.stringify(currentWeekList[currentWeekList.length-1]) ," 金叉 ")
-        //     // }
-        // }
-
-
-
-           //10/15周1 10/18周4  /10/19周5       22周一
-    //600936    广西广电    20181022    20181116    3.62    4.38    20.99%
-
-
-      let weekKdjData = chartWeek.getIndicatorByPaneId(weekKdj, "KDJ").result
+  

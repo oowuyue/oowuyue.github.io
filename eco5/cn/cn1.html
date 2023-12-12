@@ -160,64 +160,86 @@
         })
     </script>
 
-    <script type="text/javascript" src="./data/kdj等技术指标.js"></script>
-    <script type="text/javascript" src="./data/k大市值统计.js"></script>
+    <script type="text/javascript" src="./data/同花顺策略/同花顺策略统计.js"></script>
     <script>
-        function countKdj(json, Period = "month") {
-            let countJson = {}
-            json.forEach((element) => {
-                let startTime = Period == "month" ? element[2].substring(0, 7) : element[2] //month day
-                if (countJson[startTime]) {
-                    countJson[startTime].count += 1;
-                    countJson[startTime].detail.push(element);
-                } else {
-                    countJson[startTime] = { count: 1, detail: [element] }
-                }
-            })
-
-
-            let countArr = []
-            for (var key of Object.keys(countJson)) {
-                startTime = Period == "month" ? key + "-28" : key //month day
-                countArr.push([startTime, countJson[key].count]);
+    function countStat(json, name = "kdj日周月", Period = "day") {
+        let countJson = {}
+        json.forEach((element) => {
+            let startTime = Period == "month" ? element[2].substring(0, 7) : element[2] //month day
+            if (countJson[startTime]) {
+                countJson[startTime].count += 1;
+                countJson[startTime].detail.push(element);
+            } else {
+                countJson[startTime] = { count: 1, detail: [element] }
             }
+        })
 
-            return countArr
+        let countArr = []
+        for (var key of Object.keys(countJson)) {
+            startTime = Period == "month" ? key + "-28" : key //month day
+            countArr.push([startTime, countJson[key].count, name])
         }
 
-        let kdj日周月_countDay = []
-        if (typeof (kdj日周月) != "undefined") {
-            kdj日周月_countDay = countKdj(kdj日周月, "day").filter((item) => {
-                return item[1] >= 1
-            })
+        return countArr
+    }
+
+    let kdj日周月统计 = []
+    let kdj日周统计 = []
+    let kdj日周2统计 = []
+    let 买入信号统计 = []
+    let 买入信号2统计 = []
+    let 技术指标Contact = []
+
+    if (typeof(kdj日周月) != "undefined") {
+        kdj日周月统计 = countStat(kdj日周月, "kdj日周月")
+    }
+    if (typeof(kdj日周) != "undefined") {
+        kdj日周统计 = countStat(kdj日周, "kdj日周")
+    }
+    if (typeof(kdj日周2) != "undefined") {
+        kdj日周2统计 = countStat(kdj日周2, "kdj日周2")
+    }
+    if (typeof(买入信号) != "undefined") {
+        买入信号统计 = countStat(买入信号, "买入信号")
+    }
+    if (typeof(买入信号2) != "undefined") {
+        买入信号2统计 = countStat(买入信号2, "买入信号2")
+    }
+    统计Contact = [...kdj日周月统计, ...kdj日周统计, ...kdj日周2统计, ...买入信号统计, ...买入信号2统计]
+    统计Contact.sort(function(a, b) {
+        return new Date(a[0]) - new Date(b[0])
+    })
+    统计Contact = 统计Contact.map((ele) => {
+        return {
+            date: ele[0],
+            count: ele[1],
+            quanName: ele[2]
         }
+    })
 
-        let kdj日周_countDay = []
-        if (typeof (kdj日周) != "undefined") {
-            kdj日周_countDay = countKdj(kdj日周, "day").filter((item) => {
-                return item[1] >= 1
-            })
-        }
+    function groupBy(objectArray, property) {
+        return objectArray.reduce((acc, obj) => {
+            const key = obj[property];
+            const curGroup = acc[key] ?? [];
 
-        let kdj日周2_countDay = []
-        if (typeof (kdj日周2) != "undefined") {
-            kdj日周2_countDay = countKdj(kdj日周2, "day").filter((item) => {
-                return item[1] >= 1
-            })
-        }
+            return { ...acc, [key]: [...curGroup, obj] };
+        }, {});
+    }
+    let 统计byDate = groupBy(统计Contact, "date")
+    let 统计byName = groupBy(统计Contact, "quanName");
 
-        let kdj日_countDay = []
-        if (typeof (kdj日) != "undefined") {
-            kdj日_countDay = countKdj(kdj日, "day").filter((item) => {
-                return item[1] >= 1
-            })
-        }
-        
-
-
-
-
+    let 技术指标统计 = []
+    for (let dateKey in 统计byDate) {
+        let sum = 统计byDate[dateKey].reduce((acc, cruEle) => {
+            acc += cruEle.count
+            return acc
+        }, 0)
+        //日期   总数 策略数已经单个策略数的总数
+        技术指标统计.push([dateKey, sum, 统计byDate[dateKey]])
+    }
+    console.log(技术指标统计)
     </script>
+
     <script type="text/javascript" src="data/基金平衡型.js"></script>
     <script type="text/javascript" src="data/基金股票型.js"></script>
     <script type="text/javascript" src="data/恐贪指数.js"></script>
@@ -819,8 +841,8 @@
                         show: false
                     },
                     show: false,
-                    max: 7,
-                    min: 0,
+                    // max: 7,
+                    // min: 0,
                     position: "letf"
 
                 },
@@ -836,8 +858,8 @@
                         show: false
                     },
                     show: false,
-                    max: 7,
-                    min: 0.5,
+                    // max: 7,
+                    // min: 0.5,
                     position: "letf"
 
                 },
@@ -883,7 +905,6 @@
                     yAxisIndex: 1,
                     smooth: true,
                     showSymbol: false,
-
                     markLine: {
                         symbol: ["none", "none"],
                         data: [{
@@ -917,7 +938,6 @@
                         },
                         ],
                     },
-
                     itemStyle: {
                         "color": {
                             "type": "linear",
@@ -941,8 +961,43 @@
                     lineStyle: {
                         width: 2,
                     },
-
                     data: PPI.filter(item => {
+                        return parseFloat(item[0].substring(0, 4)) >= 2000
+                    }).addStartEnd()
+                },
+
+                {
+                    name: 'PPI_MA',
+                    type: 'line',
+                    xAxisIndex: 1,
+                    yAxisIndex: 1,
+                    smooth: true,
+                    showSymbol: false,
+                    itemStyle: {
+                        "color": {
+                            "type": "linear",
+                            "x": 0,
+                            "y": 0,
+                            "x2": 0,
+                            "y2": 1,
+                            "colorStops": [{
+                                "offset": 0.29,
+                                "color": "#fc737b"
+                            },
+
+                            {
+                                "offset": 1,
+                                "color": "#0079cd"
+                            }
+                            ],
+                            "globalCoord": false
+                        }
+                    },
+                    lineStyle: {
+                        width: 1.5,
+                        type:"dotted"
+                    },
+                    data: PPI_MA.filter(item => {
                         return parseFloat(item[0].substring(0, 4)) >= 2000
                     }).addStartEnd()
                 },
@@ -1341,7 +1396,7 @@
                 },
 
                 {
-                    name: 'kdj月菱$周球$日',
+                    name: '策略',
                     type: 'scatter',
                     xAxisIndex: 5,
                     yAxisIndex: 8,
@@ -1349,92 +1404,45 @@
                     itemStyle: {
                         normal: {
                             opacity: 1,
-                            color: "black"
+                            color: "#00bfff"
                         }
                     },
-                    symbolSize: function (val) {
-                        return 12
+                    symbolSize: function(val) {
+                        return 13
                     },
                     zlevel: 3,
-                    data: kdj日周月_countDay.addStartEnd()
-                },
-                {
-                    name: 'kdj月菱$周球$日',
-                    type: 'scatter',
-                    xAxisIndex: 5,
-                    yAxisIndex: 8,
-                    symbol: "diamond",
-                    itemStyle: {
-                        normal: {
-                            opacity: 2,
-                            color: "#003ecc"
-                        }
-                    },
-                    symbolSize: function (val) {
-                        return 9.5
-                    },
-                    zlevel: 6,
-                    data: kdj日周_countDay.addStartEnd()
-                },
-                // {
-                //     name: 'kdj月菱$周球$日',
-                //     type: 'scatter',
-                //     xAxisIndex: 5,
-                //     yAxisIndex: 8,
-                //     symbol: "diamond",
-                //     itemStyle: {
-                //         normal: {
-                //             opacity: 2,
-                //             color: "#00ffff"
-                //         }
-                //     },
-                //     symbolSize: function (val) {
-                //         return 5
-                //     },
-                //     zlevel: 6,
-                //     data: kdj日周2_countDay.addStartEnd()
-                // },
-                {
-                    name: 'kdj月菱$周球$日',
-                    type: 'scatter',
-                    xAxisIndex: 5,
-                    yAxisIndex: 8,
-                    symbol: "triangle",
-                    itemStyle: {
-                        normal: {
-                            opacity: 2,
-                            color: "#ff00d3 "
-                        }
-                    },
-                    symbolSize: function (val) {
-                        return 6.5
-                    },
-                    zlevel: 6,
-                    data: kdj日_countDay.addStartEnd()
+                    data: 技术指标统计.filter(ele => {
+                        return ele[1] >= 3 || ele[2].length>=2
+                    }).addStartEnd()
+
                 },
 
-                // {
-                //     name: 'continues',
-                //     type: 'scatter',
-                //     xAxisIndex: 4,
-                //     yAxisIndex: 7,
-                //     symbol: "triangle",
-                //     itemStyle: {
-                //         normal: {
-                //             opacity: 2,
-                //             color: "#ff00d3 "
-                //         }
-                //     },
-                //     symbolSize: function (val) {
-                //         return 8.5
-                //     },
-                //     zlevel: 6,
-                //     data: continuesMax.map((item) => {
-                //         return [item[0],item[3]]
-                //     }).addStartEnd()
-                // },
                 {
-                    name: 'continues',
+                    name: '策略',
+                    type: 'scatter',
+                    xAxisIndex: 5,
+                    yAxisIndex: 8,
+                    symbol: "pin",
+                    itemStyle: {
+                        normal: {
+                            opacity: 1,
+                            color: "#ff69b4"
+                        }
+                    },
+                    symbolSize: function(val) {
+                        return 10
+                    },
+                    zlevel: 3,
+                    data: 技术指标统计.filter(ele => {
+                        return ele[1] >= 3 || ele[2].length>=2
+                    }).map(ele => {
+                        return [ele[0], ele[2].length]
+                    }).addStartEnd() 
+
+                },
+        
+                {
+                    name: '大max',
                     type: 'scatter',
                     xAxisIndex: 4,
                     yAxisIndex: 7,
@@ -1449,8 +1457,51 @@
                         return 6.5
                     },
                     zlevel: 6,
+                    data: continuesMax.map((item) => {
+                        return [item[0], parseFloat( item[1].substring(0,item[1].length-1) ) ]
+                    }).addStartEnd()
+                },
+
+
+                {
+                    name: '大2',
+                    type: 'scatter',
+                    xAxisIndex: 4,
+                    yAxisIndex: 7,
+                    symbol: "triangle",
+                    itemStyle: {
+                        normal: {
+                            opacity: 2,
+                            color: "black"
+                        }
+                    },
+                    symbolSize: function (val) {
+                        return 6.5
+                    },
+                    zlevel: 6,
                     data: continues2.map((item) => {
-                        return [item[0],item[3]]
+                        return [item[0], parseFloat( item[1].substring(0,item[1].length-1) ) ]
+                    }).addStartEnd()
+                },
+
+                {
+                    name: '大小市值',
+                    type: 'scatter',
+                    xAxisIndex: 4,
+                    yAxisIndex: 7,
+                    symbol: "diamond",
+                    itemStyle: {
+                        normal: {
+                            opacity: 2,
+                            color: "#008000"
+                        }
+                    },
+                    symbolSize: function (val) {
+                        return 9
+                    },
+                    zlevel: 6,
+                    data: smallDown.map((item) => {
+                        return [item[3],parseFloat( item[6].substring(0,item[6].length-1) ) ]
                     }).addStartEnd()
                 },
 
