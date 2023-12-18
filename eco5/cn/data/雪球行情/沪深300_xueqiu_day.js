@@ -1,4 +1,4 @@
-let 沪深300_xueqiu_day = {
+var 沪深300_xueqiu_day = {
     "data": {
         "symbol": "SH000300",
         "column": [

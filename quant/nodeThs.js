@@ -5,183 +5,22 @@ puppeteer.use(StealthPlugin())
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
-const folder = "./data/"
+const args = require('minimist')(process.argv.slice(2));
 
-function isMonthLastDay(ymd) {
-    //"2000-01-09" 传入年份和月份 获取该年对应月份的天数 第三个参数是0，第二个参数是人类意识中的月份
-    let monthDays = new Date(ymd.substring(0, 4), ymd.substring(5, 7), 0).getDate() //月的天数
-    return monthDays == parseInt(ymd.substring(8, 10))
-}
+const myjs = require("./jslib/my.js");
+const isMonthLastDay = myjs.isMonthLastDay
+const pre5Month = myjs.pre5Month
+const isSameWeek = myjs.isSameWeek
+const dayToPeriod = myjs.dayToPeriod
+const xueqiuFormatDate = myjs.xueqiuFormatDate
+const getDayPercent = myjs.getDayPercent
 
-function pre5Month(ym) {
-    //"2000-09"
-    let result = []
-    let year = parseInt(ym.substring(0, 4))
-    let month = parseInt(ym.substring(5, 7))
-    if (month >= 5) {
-        for (var i = 4; i >= 0; i--) {
-            let m = (month - i) >= 10 ? "" + (month - i) : "0" + (month - i)
-            result.push("" + year + "-" + m)
-        }
-    } else {
-        // 11 12   1 2 3
-        let preYCount = 5 - month
-        for (var i = preYCount; i > 0; i--) {
-            let m = (13 - i) >= 10 ? "" + (13 - i) : "0" + (13 - i)
-            result.push("" + (year - 1) + "-" + m)
-        }
-        for (var i = 1; i <= month; i++) {
-            let m = i >= 10 ? "" + i : "0" + i
-            result.push("" + (year) + "-" + m)
-        }
+const folder = "./data/thsStocks/"
 
-    }
-    return result
-}
-
-function isSameWeek(d1, d2) {
-    if (d1 == "" || d2 == "") return false
-    d1 = new Date(d1)
-    d2 = new Date(d2)
-    const ONE_DAY = 1000 * 60 * 60 * 24
-    const difftime = Math.abs(d2 - d1)
-    let bigDay = (d1 > d2 ? d1.getDay() : d2.getDay()) || 7
-    let smallDay = (d1 < d2 ? d1.getDay() : d2.getDay()) || 7
-    return !(difftime >= ONE_DAY * 7 || bigDay < smallDay || (bigDay === smallDay && difftime > ONE_DAY))
-}
-
-function dayToPeriod(dayIndexList, period) {
-
-    let open, high, low, close, volume
-    let preDayIndexDate = ""
-    let periodIndexList = []
-    let dayIndexListLastIndex = dayIndexList.length - 1
-
-    dayIndexList.forEach((dayIndex, i, dayIndexList) => {
-
-        currentDate = dayIndex.date
-        currentOpen = parseFloat(dayIndex.open)
-        currentHigh = parseFloat(dayIndex.high)
-        currentLow = parseFloat(dayIndex.low)
-        currentClose = parseFloat(dayIndex.close)
-        currentVolume = parseFloat(dayIndex.volume)
-
-
-        let samePeriod
-        if (period == "week")
-            samePeriod = isSameWeek(preDayIndexDate, currentDate)
-        if (period == "month")
-            samePeriod = preDayIndexDate.substring(0, 7) == currentDate.substring(0, 7) ? true : false
-
-        if (!samePeriod) {
-            let prPeriodIndex = {
-                "date": preDayIndexDate,
-                "timestamp": new Date(preDayIndexDate).getTime(),
-                "open": open,
-                "high": high,
-                "low": low,
-                "close": close,
-                "volume": volume,
-                "period": period
-            }
-            periodIndexList.push(prPeriodIndex)
-
-            open = currentOpen
-            high = currentHigh
-            low = currentLow
-            close = currentClose
-            volume = currentVolume
-            preDayIndexDate = currentDate
-        }
-
-        if (samePeriod) {
-            high = currentHigh > high ? currentHigh : high
-            low = currentLow < low ? currentLow : low
-            close = currentClose
-            volume = volume + currentVolume
-            preDayIndexDate = currentDate
-        }
-        if (dayIndexListLastIndex == i) {
-            let currentPeriodIndex = {
-                "date": currentDate,
-                "timestamp": new Date(currentDate).getTime(),
-                "open": open,
-                "high": high,
-                "low": low,
-                "close": close,
-                "volume": volume,
-                "period": period
-            }
-            periodIndexList.push(currentPeriodIndex)
-        }
-    })
-
-    periodIndexList.shift()
-    return periodIndexList
-}
-
-Array.prototype.calKdj = function() {
-    var getMaxHighAndMinLow = function(ticks) {
-        var maxHigh = ticks[0].high,
-            minLow = ticks[0].low;
-        for (var i = 0; i < ticks.length; i++) {
-            var t = ticks[i],
-                high = t.high,
-                low = t.low;
-            if (high > maxHigh) {
-                maxHigh = high;
-            }
-            if (low < minLow) {
-                minLow = low;
-            }
-        }
-        return [maxHigh, minLow];
-    };
-    let candleList = this
-    var nineDaysTicks = [],
-        days = 9,
-        rsvs = [];
-    var lastK, lastD, curK, curD;
-    var maxAndMin, max, min;
-    for (var i = 0; i < candleList.length; i++) {
-
-        var t = candleList[i],
-            close = t.close;
-        nineDaysTicks.push(t);
-        maxAndMin = getMaxHighAndMinLow(nineDaysTicks);
-        max = maxAndMin[0];
-        min = maxAndMin[1];
-        if (max == min) {
-            rsvs.push(0);
-        } else {
-            rsvs.push((close - min) / (max - min) * 100);
-        }
-        if (nineDaysTicks.length == days) {
-            nineDaysTicks.shift();
-        }
-        if (i == 0) {
-            lastK = lastD = rsvs[i];
-        }
-
-        curK = 2 / 3 * lastK + 1 / 3 * rsvs[i];
-        lastK = curK;
-
-        curD = 2 / 3 * lastD + 1 / 3 * curK;
-        lastD = curD;
-
-        curJ = 3 * curK - 2 * curD;
-
-        candleList[i].K = curK
-        candleList[i].D = curD
-        candleList[i].J = curJ
-    }
-
-    return candleList;
-}
 
 async function writeToFile(dataName, dayDatas) {
 
-    fs.writeFile(`${folder}${dataName}.json`, JSON.stringify(dayDatas, null, 2), 'utf8', (err) => {
+    fs.writeFile(`${folder}${dataName}.json`, `var ${dataName} = ` + JSON.stringify(dayDatas, null, 2), 'utf8', (err) => {
         if (err) {
             console.log(`${dataName}写入失败${err}`);
             return;
@@ -189,8 +28,6 @@ async function writeToFile(dataName, dayDatas) {
         console.log(`${dataName}写入成功`);
     });
 }
-
-
 async function getDataFromFile(dataName, dataCode) {
 
     let promise1 = new Promise((resolve, reject) => {
@@ -200,13 +37,14 @@ async function getDataFromFile(dataName, dataCode) {
                 return;
             }
             console.log(`\r\n${dataName} getDataFromFile`);
-            resolve(JSON.parse(data));
+            if (data.indexOf("=") >= 0) {
+                data = data.substring(data.indexOf("=") + 1)
+            }
+            resolve(JSON.parse(data))
         })
     })
     return promise1
 }
-
-
 async function getDataFromUrl(dataName, dataCode) {
 
     let taskPage = async (name, site, pageUrl, apiSub) => {
@@ -246,90 +84,161 @@ async function getDataFromUrl(dataName, dataCode) {
     return resObj.data;
 }
 
-function backTest(dataName, dayDatas) {
-
-    let weekGoldenCrossList = [];
-    let logLastWeekGoldenCross2List = []
-    let monthGoldenCrossList = [];
-    let logLastMonthGoldenCross5List = []
-    let dayCross = false;
-    let weekCrossBottom = false;
-    let recent5MonthCross = false;
-
-    for (var currentDayIndex = 1; currentDayIndex <= dayDatas.length; currentDayIndex++) {
-
-        let currentDayList = dayDatas.slice(0, currentDayIndex).calKdj();
-
-        let currentWeekList = dayToPeriod(currentDayList, "week").calKdj();
-        let currentMonthList = dayToPeriod(currentDayList, "month").calKdj();
 
 
-        if ((currentDayList.length > 1) && (currentWeekList.length > 1) && (currentMonthList.length > 1)) {
 
-            let preDay = currentDayList[currentDayList.length - 2]
-            let currentDay = currentDayList[currentDayList.length - 1]
-            if ((preDay.K < preDay.D) && (currentDay.K >= currentDay.D) && currentDay.D <= 37) {
-                dayCross = true //日金叉
-            }
-
-
-            let preWeek = currentWeekList[currentWeekList.length - 2]
-            let currentWeek = currentWeekList[currentWeekList.length - 1]
-            //高位死叉
-            if ((preWeek.K > preWeek.D) && (currentWeek.K <= currentWeek.D) && currentWeek.D >= 50) { // or pre5 J > 80
-                weekGoldenCrossList = []
-            }
-            //低位金叉 
-            weekGoldenCrossList = weekGoldenCrossList.filter(ele => !isSameWeek(ele.date, currentWeek.date)) //更新同周数据
-            if ((preWeek.K < preWeek.D) && (currentWeek.K >= currentWeek.D) && currentWeek.J <= 27) {
-                weekGoldenCrossList.push(currentWeek) //连续的没有高位死叉打断的低位金叉 
-                for (var i = weekGoldenCrossList.length - 2; i >= 0; i--) {
-                    let preOne = weekGoldenCrossList[i]
-                    if ((preOne.close > currentWeek.close) && (preOne.K < currentWeek.K)) {
-                        weekCrossBottom = true //周连续低位金叉 连续的没有高位死叉打断的连续低位金叉  底背离 
-                        logLastWeekGoldenCross2List.push(weekGoldenCrossList[weekGoldenCrossList.length - 1])
-                        break
-                    }
-                }
-            }
-
-     
-            let preMonth = currentMonthList[currentMonthList.length - 2]
-            let currentMonth = currentMonthList[currentMonthList.length - 1]
-            //高位死叉
-            if ((preMonth.K > preMonth.D) && (currentMonth.K <= currentMonth.D) && currentWeek.D >= 50) { // or pre5 J > 80
-                monthGoldenCrossList = []
-            }
-            //金叉 
-            monthGoldenCrossList = monthGoldenCrossList.filter(ele => ele.date.substring(0, 7) != currentMonth.date.substring(0, 7)) //更新同月数据
-            if ((preMonth.K < preMonth.D) && (currentMonth.K >= currentMonth.D)) {
-                monthGoldenCrossList.push(currentMonth) //月金叉 没有高位死叉打断的金叉
-            }
-            let pre5MonthList = pre5Month(currentMonth.date.substring(0, 7))
-            for (var i = pre5MonthList.length - 1; i >= 0; i--) {
-                recent5MonthCross = monthGoldenCrossList.find(ele => ele.date.substring(0, 7) == pre5MonthList[i])
-                if (recent5MonthCross) {
-                    recent5MonthCross = true //最近5月月金叉2018-10-19
-                    logLastMonthGoldenCross5List.push(monthGoldenCrossList[monthGoldenCrossList.length - 1])
-                    break
-                }
-            }
-
-
-            let lastResult = dayCross && weekCrossBottom && recent5MonthCross
-            if (lastResult) console.log(currentDay.date, dataName + ": 日金叉 && 周金叉且底背离 && 最近5日月kdj金叉")
-        }
-
-        dayCross = false;
-        weekCrossBottom = false;
-        recent5MonthCross = false;
-    }
-
-    console.log(dataName + "backEnd : ", dayDatas[0].date, " to ", dayDatas[currentDayIndex - 2].date)
+let edate
+let backday
+if ((typeof args['edate'] !== "undefined") && args['edate']) {
+    edate = args['edate']
+}
+if ((typeof args['backday'] !== "undefined") && args['backday']) {
+    backday = parseInt(args['backday'])
 }
 
 
-async function getDataBack(dataName, dataCode) {
+let weekGoldenCrossList = []
+let logLastWeekGoldenCross2List = []
+
+let monthGoldenCrossList = []
+let logLastMonthGoldenCross5List = []
+
+function backTest(dataName, dayDatas) {
+
+    let dayCross = false
+    let weekCrossBottom = false
+    let recent5MonthCross = false
+
+    function restAction() {
+        dayCross = false
+        weekCrossBottom = false
+        recent5MonthCross = false
+    }
+
+    function testDay(currentDayList) {
+        let preDay = currentDayList[currentDayList.length - 2]
+        let currentDay = currentDayList[currentDayList.length - 1]
+        if ((preDay.K < preDay.D) && (currentDay.K >= currentDay.D) && currentDay.D <= 35) {
+            dayCross = true //日低位金叉
+        }
+    }
+
+    function testWeek(currentWeekList) {
+        let preWeek = currentWeekList[currentWeekList.length - 2]
+        let currentWeek = currentWeekList[currentWeekList.length - 1]
+        weekGoldenCrossList = weekGoldenCrossList.filter(ele => !isSameWeek(ele.date, currentWeek.date))
+        if ((preWeek.K < preWeek.D) && (currentWeek.K >= currentWeek.D) && currentWeek.J <= 25) {
+            weekGoldenCrossList.push(currentWeek) //周金叉
+            for (var i = weekGoldenCrossList.length - 2; i >= 0; i--) {
+                let preOne = weekGoldenCrossList[i]
+                if ((preOne.close > currentWeek.close) && (preOne.K < currentWeek.K)) {
+                    weekCrossBottom = true //周金叉且底背离
+                    break
+                }
+            }
+        }
+    }
+
+    function testWeek2(currentWeekList) {
+
+        let preWeek = currentWeekList[currentWeekList.length - 2]
+        let currentWeek = currentWeekList[currentWeekList.length - 1]
+        //高位死叉
+        if ((preWeek.K > preWeek.D) && (currentWeek.K <= currentWeek.D) && currentWeek.D >= 50) { // or pre5 J > 80
+            weekGoldenCrossList = []
+        }
+        //低位金叉 
+        weekGoldenCrossList = weekGoldenCrossList.filter(ele => !isSameWeek(ele.date, currentWeek.date)) //更新同周数据
+        if ((preWeek.K < preWeek.D) && (currentWeek.K >= currentWeek.D) && currentWeek.J <= 27) {
+            weekGoldenCrossList.push(currentWeek) //连续的没有高位死叉打断的低位金叉 
+            for (var i = weekGoldenCrossList.length - 2; i >= 0; i--) {
+                let preOne = weekGoldenCrossList[i]
+                if ((preOne.close > currentWeek.close) && (preOne.K < currentWeek.K)) {
+                    weekCrossBottom = true //周连续低位金叉 连续的没有高位死叉打断的连续低位金叉  底背离 
+                    logLastWeekGoldenCross2List.push(weekGoldenCrossList[weekGoldenCrossList.length - 1])
+                    break
+                }
+            }
+        }
+    }
+
+    function testMonth(currentMonthList) {
+        let preMonth = currentMonthList[currentMonthList.length - 2]
+        let currentMonth = currentMonthList[currentMonthList.length - 1]
+        monthGoldenCrossList = monthGoldenCrossList.filter(ele => ele.date.substring(0, 7) != currentMonth.date.substring(0, 7))
+        if ((preMonth.K < preMonth.D) && (currentMonth.K >= currentMonth.D)) {
+            monthGoldenCrossList.push(currentMonth) //月金叉
+        }
+        let pre5MonthList = pre5Month(currentMonth.date.substring(0, 7))
+        for (var i = pre5MonthList.length - 1; i >= 0; i--) {
+            recent5MonthCross = monthGoldenCrossList.find(ele => ele.date.substring(0, 7) == pre5MonthList[i])
+            if (recent5MonthCross) {
+                recent5MonthCross = true //最近5月月金叉2018-10-19
+                break
+            }
+        }
+    }
+
+    function testMonth2(currentMonthList) {
+        let preMonth = currentMonthList[currentMonthList.length - 2]
+        let currentMonth = currentMonthList[currentMonthList.length - 1]
+        //高位死叉
+        if ((preMonth.K > preMonth.D) && (currentMonth.K <= currentMonth.D) && currentMonth.D >= 50) { // or pre5 J > 80
+            monthGoldenCrossList = []
+        }
+        //金叉 
+        monthGoldenCrossList = monthGoldenCrossList.filter(ele => ele.date.substring(0, 7) != currentMonth.date.substring(0, 7)) //更新同月数据
+        if ((preMonth.K < preMonth.D) && (currentMonth.K >= currentMonth.D)) {
+            monthGoldenCrossList.push(currentMonth) //月金叉 没有高位死叉打断的金叉
+        }
+        let pre5MonthList = pre5Month(currentMonth.date.substring(0, 7))
+        for (var i = pre5MonthList.length - 1; i >= 0; i--) {
+            recent5MonthCross = monthGoldenCrossList.find(ele => ele.date.substring(0, 7) == pre5MonthList[i])
+            if (recent5MonthCross) {
+                recent5MonthCross = true //最近5月月金叉2018-10-19
+                logLastMonthGoldenCross5List.push(monthGoldenCrossList[monthGoldenCrossList.length - 1])
+                break
+            }
+        }
+    }
+
+    //等效setInterval循环
+    let endIndex = dayDatas.length
+    if (edate) {
+        endIndex = dayDatas.findIndex(ele => ele.date == edate)
+        if (endIndex == -1) endIndex = dayDatas.length
+        else endIndex++
+    }
+
+    let currentDayIndex = 70
+    if (backday>=0) {
+        currentDayIndex = endIndex - backday //for1
+    }
+    let backStartIndex = currentDayIndex
+
+    for (; currentDayIndex <= endIndex; currentDayIndex++) {
+
+        let currentDayList = dayDatas.slice(0, currentDayIndex).calKdj()
+        let currentWeekList = dayToPeriod(currentDayList, "week").calKdj()
+        let currentMonthList = dayToPeriod(currentDayList, "month").calKdj()
+
+        testDay(currentDayList)
+        testWeek(currentWeekList)
+        testMonth(currentMonthList)
+
+        let lastResult = dayCross && weekCrossBottom && recent5MonthCross
+        if (lastResult) {
+            let currentDay = currentDayList[currentDayList.length - 1]
+            console.log(currentDay, "日金叉 && 周金叉且底背离 && 最近5日月kdj金叉")
+        }
+        restAction()
+    }
+    //等效setInterval循环
+
+    console.log("back start from:", dayDatas[backStartIndex-1].date, ";  end at:", dayDatas[endIndex-1].date)
+}
+
+async function start(dataName, dataCode) {
     let dayDatas
     try {
         dayDatas = await getDataFromFile(dataName, dataCode)
@@ -337,12 +246,7 @@ async function getDataBack(dataName, dataCode) {
             dayDatas = await getDataFromUrl(dataName, dataCode)
             writeToFile(dataName, dayDatas)
         }
-
-        dayDatas = dayDatas.filter(ele => {
-            let year = parseInt(ele[0].substring(0, 4))
-            return ((1900 < year) && (year < 2033))
-            //return ele.timestamp <= 1413849600000
-        }).map(function(data) {
+        dayDatas = dayDatas.map(function(data) {
             return {
                 date: data[0],
                 timestamp: new Date(data[0]).getTime(),
@@ -359,7 +263,6 @@ async function getDataBack(dataName, dataCode) {
         console.log(err)
     }
 }
-
 
 let browser;
 (async () => {
@@ -528,7 +431,7 @@ let browser;
             "12.98%"
         ]
     ]
-    for (var i = 0; i < nameCodes.length; i++) {
-        await getDataBack(nameCodes[i][1], nameCodes[i][0])
+    for (var i = 5; i < 6; i++) {
+        await start(nameCodes[i][1], nameCodes[i][0])
     }
 })()

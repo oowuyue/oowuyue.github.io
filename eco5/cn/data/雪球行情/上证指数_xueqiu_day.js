@@ -1,4 +1,4 @@
-let 上证指数_xueqiu_day = {
+var 上证指数_xueqiu_day = {
     "data": {
         "symbol": "SH000001",
         "column": [

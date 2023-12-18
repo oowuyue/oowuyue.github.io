@@ -601,7 +601,7 @@ const path = require('path');
                 page2.on('response', async (response) => {
                     if (response.url().includes(pageUrl)) {
                         resdata = await response.json()
-                        let fileStr = `let ${datasInfo.name} = ` + JSON.stringify(resdata, null, 4) + "\r\n"
+                        let fileStr = `var ${datasInfo.name} = ` + JSON.stringify(resdata, null, 4) + "\r\n"
                         try {
                             fs.writeFileSync(`${folder}雪球行情/${datasInfo.name}.js`, fileStr);
                             console.log(`${datasInfo.name} JSON data is saved   ${folder}${datasInfo.name}.js `)
