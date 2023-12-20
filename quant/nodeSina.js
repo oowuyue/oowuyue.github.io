@@ -105,6 +105,7 @@ let logDay5 = []
 let logDay5percent = ""
 let log20 = []
 let log30 = []
+let log50 = []
 let log70 = []
 
 function backTest2(dataName, dayDatas) {
@@ -120,6 +121,8 @@ function backTest2(dataName, dayDatas) {
     let monthJlow5 = false
     let monthPre5Jlow0 = false
 
+    let volumeUp = false
+
     function restAction() {
         dayCross = false
         dayNlowM = false
@@ -128,6 +131,8 @@ function backTest2(dataName, dayDatas) {
         monthJup = false
         monthJlow5 = false
         monthPre5Jlow0 = false
+
+        volumeUp = false
 
         logDay5 = []
         logDay5percent = ""
@@ -200,6 +205,28 @@ function backTest2(dataName, dayDatas) {
         }
     }
 
+    function testVolume(currentDayList, currentWeekList, currentMonthList) {
+
+        //40,80     80,110
+        let preWeek = currentWeekList[currentWeekList.length - 2]
+        let currentWeek = currentWeekList[currentWeekList.length - 1]
+
+        let shortDay = 3
+        let longDay = 6
+        let shortSum = 0
+        let longSum = 0
+        for (var i = 1; i <= longDay; i++) {
+            let currentDay = currentDayList[currentDayList.length - i]
+            if (i <= shortDay) shortSum += currentDay.volume
+            longSum += currentDay.volume
+        }
+        if(
+              ((longSum/longDay) < (shortSum/shortDay))
+            ||(preWeek.volume <= currentWeek.volume)
+        ){volumeUp = true}
+
+    }
+
     function log(currentDayList, currentWeekList, currentMonthList) {
 
         let currentDayIndex = currentDayList.length - 1
@@ -213,13 +240,16 @@ function backTest2(dataName, dayDatas) {
             next70DayData = dayDatas[currentDayIndex + 70]
 
             let profile20 = (next20DayData.close - nextDayData.close) / nextDayData.close * 100
-            log20.push([dataName, currentDay.date, next20DayData.date, profile20])
+            log20.push([dataName, currentDay.date, next20DayData.date, "20day", profile20])
 
             let profile30 = (next30DayData.close - nextDayData.close) / nextDayData.close * 100
-            log30.push([dataName, currentDay.date, next30DayData.date, profile30])
+            log30.push([dataName, currentDay.date, next30DayData.date, "30day", profile30])
+
+            let profile50 = (next50DayData.close - nextDayData.close) / nextDayData.close * 100
+            log50.push([dataName, currentDay.date, next50DayData.date, "50day", profile50])
 
             let profile70 = (next70DayData.close - nextDayData.close) / nextDayData.close * 100
-            log70.push([dataName, currentDay.date, next70DayData.date, profile70])
+            log70.push([dataName, currentDay.date, next70DayData.date, "70day", profile70])
         }
     }
 
@@ -233,8 +263,9 @@ function backTest2(dataName, dayDatas) {
         testDay(currentDayList)
         testWeek(currentWeekList)
         testMonth(currentMonthList)
+        testVolume(currentDayList, currentWeekList, currentMonthList)
 
-        let lastResult = dayCross && dayNlowM && weekJup && monthJup && monthJlow5 && monthPre5Jlow0
+        let lastResult = dayCross && dayNlowM && weekJup && monthJup && monthJlow5 && monthPre5Jlow0 && volumeUp
         if (lastResult) log(currentDayList, currentWeekList, currentMonthList)
         restAction()
     }
@@ -262,62 +293,62 @@ let browser;
 
     let nameCodes = [
         // //全up
-        // { name: "橡胶连续", code: "RU0" },
-        // { name: "沪铜连续", code: "CU0" },
-        // { name: "热卷连续", code: "HC0" },
-        // { name: "豆粕连续", code: "M0" },
-        // { name: "黄金连续", code: "AU0" },
-        // { name: "玻璃连续", code: "FG0" },
-        // { name: "20号胶连续", code: "NR0" },
-        // { name: "PP连续", code: "PP0" },
-        // { name: "液化气连续", code: "PG0" },
-        // { name: "白银连续", code: "AG0" },
-        // { name: "短纤连续", code: "PF0" },
-        // { name: "纸浆连续", code: "SP0" },
-        // { name: "苹果连续", code: "AP0" },
+        { name: "橡胶连续", code: "RU0" },
+        { name: "沪铜连续", code: "CU0" },
+        { name: "热卷连续", code: "HC0" },
+        { name: "豆粕连续", code: "M0" },
+        { name: "黄金连续", code: "AU0" },
+        { name: "玻璃连续", code: "FG0" },//
+        { name: "20号胶连续", code: "NR0" },
+        { name: "PP连续", code: "PP0" },
+        { name: "液化气连续", code: "PG0" },
+        { name: "白银连续", code: "AG0" },
+        { name: "短纤连续", code: "PF0" },
+        { name: "纸浆连续", code: "SP0" },
+        { name: "苹果连续", code: "AP0" },
 
-        // //高up
+        //高up
         { name: "不锈钢连续", code: "SS0" },
-        // { name: "螺纹连续", code: "RB0" },
-        // { name: "锡连续", code: "SN0" },
-        // { name: "燃油连续", code: "FU0" },
-        // { name: "玉米连续", code: "C0" },
-        // { name: "菜油连续", code: "OI0" },
-        // { name: "鸡蛋连续", code: "JD0" },
-        // { name: "焦煤连续", code: "JM0" },
-        // { name: "纤维板连续", code: "FB0" },
-        // { name: "强麦连续", code: "WH0" },
+        { name: "螺纹连续", code: "RB0" },
+        { name: "锡连续", code: "SN0" },
+        { name: "燃油连续", code: "FU0" },
+        { name: "玉米连续", code: "C0" },
+        { name: "菜油连续", code: "OI0" },//
+        { name: "鸡蛋连续", code: "JD0" },
+        { name: "焦煤连续", code: "JM0" },
+        { name: "纤维板连续", code: "FB0" },
+        { name: "强麦连续", code: "WH0" },
 
-        // // 平
-        // { name: "沪锌连续", code: "ZN0" },
-        // { name: "生猪连续", code: "LH0" },
-        // { name: "棕榈油连续", code: "P0" },
-        // { name: "棉花连续", code: "CF0" },
-        // { name: "沪镍连续", code: "NI0" },
-        // { name: "PVC连续", code: "V0" },
-        // { name: "豆油连续", code: "Y0" },
-        // { name: "豆二连续", code: "B0" },
-        // { name: "PTA连续", code: "TA0" },
-        // { name: "粳米连续", code: "RR0" },
-        // { name: "硅铁连续", code: "SF0" },
-        // { name: "低硫燃料油连续", code: "LU0" },
+        // 平
+        { name: "沪锌连续", code: "ZN0" },
+        { name: "生猪连续", code: "LH0" },
+        { name: "棕榈油连续", code: "P0" },
+        { name: "棉花连续", code: "CF0" },
+        { name: "沪镍连续", code: "NI0" },
+        { name: "PVC连续", code: "V0" },
+        { name: "豆油连续", code: "Y0" },
+        { name: "豆二连续", code: "B0" },
+        { name: "PTA连续", code: "TA0" },
+        { name: "粳米连续", code: "RR0" },
+        { name: "硅铁连续", code: "SF0" },
+        { name: "低硫燃料油连续", code: "LU0" },
 
 
-        // //高low
-        // { name: "锰硅连续", code: "SM0" },
-        // { name: "焦炭连续", code: "J0" },
-        // { name: "甲醇连续", code: "MA0" },
-        // { name: "白糖连续", code: "SR0" },
-        // { name: "红枣连续", code: "CJ0" },
-        // { name: "花生连续", code: "PK0" },
-        // { name: "菜粕连续", code: "RM0" },
-        // { name: "豆一连续", code: "A0" },
-        //  { name: "铅连续", code: "PB0" },
+        //高low
+        { name: "锰硅连续", code: "SM0" },
+        { name: "焦炭连续", code: "J0" },
+        { name: "甲醇连续", code: "MA0" },
+        { name: "白糖连续", code: "SR0" },
+        { name: "红枣连续", code: "CJ0" },
+        { name: "花生连续", code: "PK0" },
+        { name: "菜粕连续", code: "RM0" },
+        { name: "豆一连续", code: "A0" },
+         { name: "铅连续", code: "PB0" },
 
-        // //全low
-        // { name: "PTA连续", code: "TA0" },
-        // { name: "乙二醇连续", code: "EG0" },
-        // { name: "铁矿石连续", code: "I0" },
+        //全low
+        { name: "PTA连续", code: "TA0" },
+        { name: "乙二醇连续", code: "EG0" },
+        { name: "铁矿石连续", code: "I0" },
 
 
         // //无
@@ -336,19 +367,33 @@ let browser;
         // { name: "沥青连续", code: "BU0" },
     ]
 
+
+    let log20All = []
+    let log30All = []
+    let log50All = []
+    let log70All = []
     for (var i = 0; i < nameCodes.length; i++) {
         await start(nameCodes[i].name, nameCodes[i].code)
 
-        log20.sort((a, b) => a[3] - b[3])
-        log30.sort((a, b) => a[3] - b[3])
-        log70.sort((a, b) => a[3] - b[3])
-        console.log(log20, log30, log70)
+        console.log(log20, log30, log50, log70)
+        log20All = log20All.concat(log20)
+        log30All = log30All.concat(log30)
+        log50All = log50All.concat(log50)
+        log70All = log50All.concat(log70)
         log20 = []
         log30 = []
+        log50 = []
         log70 = []
     }
 
-    // writeToFile("2log20", log20, 0)
-    // writeToFile("2log30", log30, 0)
-    // writeToFile("2log70", log70, 0)
+    let logAll = ""
+    logAll += `var log20All = ` + JSON.stringify(log20All, null, 0) + "\r\n"
+    logAll += `var log30All = ` + JSON.stringify(log30All, null, 0) + "\r\n"
+    logAll += `var log50All = ` + JSON.stringify(log50All, null, 0) + "\r\n"
+    logAll += `var log70All = ` + JSON.stringify(log70All, null, 0) + "\r\n"
+    fs.writeFile(`${folder}logAll.json`, logAll, 'utf8', (err) => {
+        if (err) console.log(`logAll写入失败${err}`);
+        else console.log(`logAll写入成功`);
+    })
+
 })()

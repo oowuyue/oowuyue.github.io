@@ -4,56 +4,78 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
-    <script type="text/javascript" src="data/log20.json"></script>
-    <script type="text/javascript" src="data/log30.json"></script>
-    <script type="text/javascript" src="data/log70.json"></script>
+    <script type="text/javascript" src="data/sinaFutures/logAll.json"></script>
     <script type="text/javascript">
-    log20 = log20.filter(ele => ele[3] < 0)
-    log30 = log30.filter(ele => ele[3] < 0)
-    log70 = log70.filter(ele => ele[3] < 0)
-    logContact = [...log20, ...log30, ...log70]
-    logContact.sort(function(a, b) {
-        if (a[0] === b[0]) {
-            if (a[3] > b[3]) {
-                return 1;
-            } else if (a[3] < b[3]) {
-                return -1;
-            } else {
-                return 0;
-            }
-        } else {
-            if (a[0] > b[0]) {
-                return 1;
-            } else {
-                return -1;
-            }
+    function ttt(filterType = "low", sortType = "name") {
+        if (filterType == "low") {
+            var log20AllRes = log20All.filter(ele => ele[4] < 0)
+            var log30AllRes = log30All.filter(ele => ele[4] < 0)
+            var log50AllRes = log50All.filter(ele => ele[4] < 0)
+            var log70AllRes = log70All.filter(ele => ele[4] < 0)
         }
-    })
 
-
-    let resultArr = []
-
-    function hasSameNameStart(testItem) {
-        let res = false
-        for (var i = 0; i < resultArr.length; i++) {
-            if ((resultArr[i][0] + resultArr[i][1]) == (testItem[0] + testItem[1])) {
-                res = true
-            }
+        if (filterType == "up") {
+            var log20AllRes = log20All.filter(ele => ele[4] > 0)
+            var log30AllRes = log30All.filter(ele => ele[4] > 0)
+            var log50AllRes = log50All.filter(ele => ele[4] > 0)
+            var log70AllRes = log70All.filter(ele => ele[4] > 0)
         }
-        return res
+
+        logContact = [...log50AllRes]
+        logContact.sort(function(a, b) {
+            if (a[0] === b[0]) { //name
+                if (a[4] > b[4]) { //percnet
+                    return 1;
+                } else if (a[4] < b[4]) {
+                    return -1;
+                } else {
+                    return 0;
+                }
+            } else {
+                if (a[0] > b[0]) {
+                    return 1;
+                } else {
+                    return -1;
+                }
+            }
+        })
+
+
+        let resultArr = []
+
+        function hasSameNameStart(testItem) {
+            let res = false
+            for (var i = 0; i < resultArr.length; i++) {
+                if ((resultArr[i][0] + resultArr[i][1]) == (testItem[0] + testItem[1])) {
+                    res = true
+                }
+            }
+            return res
+        }
+        for (var i = 0; i < logContact.length; i++) {
+            if (hasSameNameStart(logContact[i])) continue
+            resultArr.push(logContact[i])
+        }
+
+
+        let resultArrSortName = resultArr
+        let resultArrSortPercent = [...resultArrSortName]
+        if (filterType == "up") resultArrSortPercent = resultArrSortPercent.sort((a, b) => b[4] - a[4])
+        if (filterType == "low") resultArrSortPercent = resultArrSortPercent.sort((a, b) => a[4] - b[4])
+
+
+
+        if (sortType == "name") return resultArrSortName
+        if (sortType == "percent") return resultArrSortPercent
     }
-    for (var i = 0; i < logContact.length; i++) {
-        if (hasSameNameStart(logContact[i])) continue
-        resultArr.push(logContact[i])
-    }
-    let resultArrSortName = resultArr.filter(ele => ele[3] < -1)
 
 
-    let resultArrSortPercent = [...resultArrSortName]
-    resultArrSortPercent = resultArrSortPercent.sort((a, b) => a[3] - b[3])
-
-
-    console.log(resultArrSortName, " ", resultArrSortPercent)
+    console.log(
+        ttt("low", "name"),
+        ttt("low", "percent"),
+        ttt("up", "name"),
+        ttt("up", "percent")
+    )
     </script>
 </head>
 

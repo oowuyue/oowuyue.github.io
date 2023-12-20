@@ -183,29 +183,39 @@
         return countArr
     }
 
-    let kdj日周月统计 = []
-    let kdj日周统计 = []
-    let kdj日周2统计 = []
-    let 买入信号统计 = []
-    let 买入信号2统计 = []
+    let 左侧长短周期组合统计 = []
+    let 右侧长短周期组合统计 = []
+
+    let 日周信号组合统计 = []
+    let 日周信号组合2统计 = []
+
+    let 日买入信号组合统计 = []
+    let 日买入信号组合2统计 = []
+
     let 技术指标Contact = []
 
-    if (typeof(kdj日周月) != "undefined") {
-        kdj日周月统计 = countStat(kdj日周月, "kdj日周月")
+    if (typeof(左侧长短周期组合) != "undefined") {
+        左侧长短周期组合统计 = countStat(左侧长短周期组合, "左侧长短周期组合")
     }
-    if (typeof(kdj日周) != "undefined") {
-        kdj日周统计 = countStat(kdj日周, "kdj日周")
+    if (typeof(右侧长短周期组合) != "undefined") {
+        右侧长短周期组合统计 = countStat(右侧长短周期组合, "右侧长短周期组合")
     }
-    if (typeof(kdj日周2) != "undefined") {
-        kdj日周2统计 = countStat(kdj日周2, "kdj日周2")
+
+    if (typeof(日周信号组合) != "undefined") {
+        日周信号组合统计 = countStat(日周信号组合, "日周信号组合")
     }
-    if (typeof(买入信号) != "undefined") {
-        买入信号统计 = countStat(买入信号, "买入信号")
+    if (typeof(日周信号组合2) != "undefined") {
+        日周信号组合2统计 = countStat(日周信号组合2, "日周信号组合2")
     }
-    if (typeof(买入信号2) != "undefined") {
-        买入信号2统计 = countStat(买入信号2, "买入信号2")
+
+    if (typeof(日买入信号组合) != "undefined") {
+        日买入信号组合统计 = countStat(日买入信号组合, "日买入信号组合")
     }
-    统计Contact = [...kdj日周月统计, ...kdj日周统计, ...kdj日周2统计, ...买入信号统计, ...买入信号2统计]
+    if (typeof(日买入信号组合2) != "undefined") {
+        日买入信号组合2统计 = countStat(日买入信号组合2, "日买入信号组合2")
+    }
+
+    统计Contact = [...左侧长短周期组合统计, ...右侧长短周期组合统计, ...日周信号组合统计, ...日周信号组合2统计, ...日买入信号组合统计, ...日买入信号组合2统计]
     统计Contact.sort(function(a, b) {
         return new Date(a[0]) - new Date(b[0])
     })
@@ -1396,7 +1406,7 @@
                 },
 
                 {
-                    name: '策略',
+                    name: '策略总数',
                     type: 'scatter',
                     xAxisIndex: 5,
                     yAxisIndex: 8,
@@ -1408,17 +1418,17 @@
                         }
                     },
                     symbolSize: function(val) {
-                        return 13
+                        return 17
                     },
                     zlevel: 3,
                     data: 技术指标统计.filter(ele => {
-                        return ele[1] >= 3 || ele[2].length>=2
+                        return ele[1] >= 3 || ele[2].length >= 2
                     }).addStartEnd()
 
                 },
 
                 {
-                    name: '策略',
+                    name: '策略数',
                     type: 'scatter',
                     xAxisIndex: 5,
                     yAxisIndex: 8,
@@ -1430,80 +1440,64 @@
                         }
                     },
                     symbolSize: function(val) {
-                        return 10
+                        return 12
                     },
                     zlevel: 3,
                     data: 技术指标统计.filter(ele => {
-                        return ele[1] >= 3 || ele[2].length>=2
+                        return ele[1] >= 3 || ele[2].length >= 2
                     }).map(ele => {
                         return [ele[0], ele[2].length]
-                    }).addStartEnd() 
-
-                },
-        
-                {
-                    name: '大max',
-                    type: 'scatter',
-                    xAxisIndex: 4,
-                    yAxisIndex: 7,
-                    symbol: "triangle",
-                    itemStyle: {
-                        normal: {
-                            opacity: 2,
-                            color: "black "
-                        }
-                    },
-                    symbolSize: function (val) {
-                        return 6.5
-                    },
-                    zlevel: 6,
-                    data: continuesMax.map((item) => {
-                        return [item[0], parseFloat( item[1].substring(0,item[1].length-1) ) ]
                     }).addStartEnd()
+
                 },
 
 
                 {
-                    name: '大2',
+                    name: '小市值亏损',
                     type: 'scatter',
-                    xAxisIndex: 4,
-                    yAxisIndex: 7,
-                    symbol: "triangle",
+                    xAxisIndex: 5,
+                    yAxisIndex: 8,
+                    symbol:'path://M12.0002 21.4142L17.4144 16L16.0002 14.5858L13.0002 17.5858V3H11.0002V17.5858L8.00015 14.5858L6.58594 16L12.0002 21.4142Z',
                     itemStyle: {
                         normal: {
                             opacity: 2,
                             color: "black"
                         }
                     },
-                    symbolSize: function (val) {
-                        return 6.5
+                    symbolSize: function(val) {
+                        return 12
                     },
                     zlevel: 6,
-                    data: continues2.map((item) => {
-                        return [item[0], parseFloat( item[1].substring(0,item[1].length-1) ) ]
+                    data: smallDown.filter(ele => parseFloat(ele[6].substring(0, ele[6].length - 1)) < -3 ).map((item) => {
+                        return [item[3], parseFloat(item[6].substring(0, item[6].length - 1))]
                     }).addStartEnd()
                 },
+        
+                // {
+                //     name: '大max', //大2
+                //     type: 'scatter',
+                //     xAxisIndex: 4,
+                //     yAxisIndex: 7,
+                //     symbol: "triangle",
+                //     itemStyle: {
+                //         normal: {
+                //             opacity: 2,
+                //             color: "black "
+                //         }
+                //     },
+                //     symbolSize: function (val) {
+                //         return 6.5
+                //     },
+                //     zlevel: 6,
+                //     data: continuesMax.map((item) => {
+                //         return [item[0], parseFloat( item[1].substring(0,item[1].length-1) ) ]
+                //     }).addStartEnd()
+                //     // data: continues2.map((item) => {
+                //     //     return [item[0], parseFloat( item[1].substring(0,item[1].length-1) ) ]
+                //     // }).addStartEnd()
+                // },
 
-                {
-                    name: '大小市值',
-                    type: 'scatter',
-                    xAxisIndex: 4,
-                    yAxisIndex: 7,
-                    symbol: "diamond",
-                    itemStyle: {
-                        normal: {
-                            opacity: 2,
-                            color: "#008000"
-                        }
-                    },
-                    symbolSize: function (val) {
-                        return 9
-                    },
-                    zlevel: 6,
-                    data: smallDown.map((item) => {
-                        return [item[3],parseFloat( item[6].substring(0,item[6].length-1) ) ]
-                    }).addStartEnd()
-                },
+           
 
                 {
                     name: '基金持仓$fear',

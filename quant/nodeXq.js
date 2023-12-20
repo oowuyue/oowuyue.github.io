@@ -14,7 +14,7 @@ const dayToPeriod = myjs.dayToPeriod
 const xueqiuFormatDate = myjs.xueqiuFormatDate
 const getDayPercent = myjs.getDayPercent
 
-const folder = "./data/"
+const folder = "./data/xqStocks/"
 async function writeToFile(dataName, dayDatas) {
 
     fs.writeFile(`${folder}${dataName}.json`, `var ${dataName} = ` + JSON.stringify(dayDatas, null, 2), 'utf8', (err) => {
@@ -95,9 +95,12 @@ async function getDataFromUrl(dataName, dataCode) {
 
 let logDay5 = []
 let logDay5percent = ""
+
+let logDates = []
 let log20 = []
 let log30 = []
 let log70 = []
+
 
 function backTest(dataName, dayDatas) {
 
@@ -244,7 +247,10 @@ function backTest(dataName, dayDatas) {
 
         let currentDayIndex = currentDayList.length - 1
         let currentDay = currentDayList[currentDayIndex]
+
         console.log("ok", currentDay.date, logDay5, logDay5percent.toFixed(2), getDayPercent(currentDay))
+        logDates.push([currentDay.date, getDayPercent(currentDay)])
+
         if (currentDayIndex + 70 <= dayDatas.length) {
             nextDayData = dayDatas[currentDayIndex]
             next20DayData = dayDatas[currentDayIndex + 20]
@@ -300,14 +306,22 @@ async function getDataBack(dataName, dataCode) {
 let browser;
 (async () => {
     browser = await puppeteer.launch({ headless: false, });
-
     let nameCodes = [
         { name: "上证指数_xueqiu_day", code: "SH000001" },
-        //{ name: "沪深300_xueqiu_day",  code: "SH000300" },
+        { name: "沪深300_xueqiu_day", code: "SH000300" },
     ]
 
+    let logAllDates = ""
+    
     for (var i = 0; i < nameCodes.length; i++) {
         await getDataBack(nameCodes[i].name, nameCodes[i].code)
+        logAllDates += `var ${nameCodes[i].name.split("_")[0]}策略 = ` + JSON.stringify(logDates, null, 2) + "\r\n"
     }
+
+    fs.writeFile(`${folder}指数策略.json`, logAllDates, 'utf8', (err) => {
+        if (err) console.log(`指数策略写入失败${err}`);
+        else console.log(`指数策略写入成功`);
+    })
+
 
 })()

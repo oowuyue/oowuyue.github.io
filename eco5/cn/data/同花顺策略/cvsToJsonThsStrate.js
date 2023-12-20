@@ -27,89 +27,31 @@ let csvToJson = async (fileName) => {
 } //csvToJson
 
 
-let kdjmwd = async () => {
+
+let signal = async () => {
 
     let fileStr = ""
-    fileStr += `let kdj日周月 = ` + JSON.stringify(await csvToJson('kdj日周月'), null, 4) + "\r\n"
-    fileStr += `let kdj日周 = ` + JSON.stringify(await csvToJson('kdj日周'), null, 4) + "\r\n"
-    fileStr += `let kdj日周2 = ` + JSON.stringify(await csvToJson('kdj日周2'), null, 4) + "\r\n"
+
+    fileStr += `let 左侧长短周期组合 = ` + JSON.stringify(await csvToJson('左侧长短周期组合'), null, 4) + "\r\n"
+    fileStr += `let 右侧长短周期组合 = ` + JSON.stringify(await csvToJson('右侧长短周期组合'), null, 4) + "\r\n"
+
+
+    fileStr += `let 日周信号组合 = ` + JSON.stringify(await csvToJson('日周信号组合'), null, 4) + "\r\n"
+    fileStr += `let 日周信号组合2 = ` + JSON.stringify(await csvToJson('日周信号组合2'), null, 4) + "\r\n"
+
+
+
+    fileStr += `let 日买入信号组合 = ` + JSON.stringify(await csvToJson('日买入信号组合'), null, 4) + "\r\n"
+    fileStr += `let 日买入信号组合2 = ` + JSON.stringify(await csvToJson('日买入信号组合2'), null, 4) + "\r\n"
 
     try {
         fs.writeFileSync(`同花顺策略统计.js`, fileStr);
-        console.log(`kdj信号 JSON data is saved`);
+        console.log(`同花顺策略统计 JSON data is saved`);
     } catch (error) {
         console.error(error);
     }
     return true
 }
-
-
-let buySignal = async () => {
-
-    let fileStr = ""
-    fileStr += `let 买入信号 = ` + JSON.stringify(await csvToJson('买入信号'), null, 4) + "\r\n"
-    fileStr += `let 买入信号2 = ` + JSON.stringify(await csvToJson('买入信号2'), null, 4) + "\r\n"
-
-    try {
-        fs.writeFileSync(`同花顺策略统计.js`, fileStr, { flag: 'a' });
-        console.log(`买入信号 JSON data is saved`);
-    } catch (error) {
-        console.error(error);
-    }
-    return true
-}
-
-
-
-
-let bigCom = async () => {
-
-    let lines = await csvToJson('大市值')
-    lines = lines.reverse()
-    lines = lines.map((item) => {
-        return [item[3], item[6], item[1]]
-    })
-    let continues = 1
-    lines = lines.map((ele, index) => {
-        if (index == 0) return ele
-        let percent = parseFloat(ele[1].substring(0, ele[1].length - 1))
-        if (percent < 0) { //pre<0?   
-            let preEle = lines[index - 1]
-            let prePercent = parseFloat(preEle[1].substring(0, preEle[1].length - 1))
-            if (prePercent < 0) ele.push(++continues)
-        } else {
-            continues = 1
-        }
-        return ele
-    })
-    //console.dir(lines, { 'maxArrayLength': 500 })
-
-
-    let continuesMax = lines.filter((item, index) => {
-        return item[3] >= 2 && isNaN(lines[index + 1][3])
-    })
-
-
-    let continues2 = lines.filter((item, index) => {
-        return item[3] == 2
-    })
-    //console.log(continuesMax, continues2)
-
-
-
-    let fileStr = `let continuesMax = ` + JSON.stringify(continuesMax, null, 4) + "\r\n"
-    fileStr += `let continues2 = ` + JSON.stringify(continues2, null, 4) + "\r\n"
-
-    try {
-        fs.writeFileSync(`同花顺策略统计.js`, fileStr, { flag: 'a' });
-        console.log(`大市值统计 JSON data is saved`);
-    } catch (error) {
-        console.error(error);
-    }
-    return true
-}
-
-
 
 
 let smallCom = async () => {
@@ -135,17 +77,12 @@ let smallCom = async () => {
 }
 
 
-
-
-
 (async () => {
 
     //回测一下
-    await kdjmwd()
-    await buySignal()
+    await signal()
 
     //策略回测
-    await bigCom()
     await smallCom()
 
 })()

@@ -20,7 +20,7 @@ function checkOrTryHttp(dataName, fuc) {
 function checkOrTryHttpXq(dataName, fuc) {
     var head = document.head || document.getElementsByTagName("head")[0] || document.documentElement
     var JS1 = document.createElement("script")
-    JS1.src = `data/${dataName}.json`
+    JS1.src = `data/xqStocks/${dataName}.json`
     JS1.onload = function() { fuc() }
     JS1.onerror = function(e) { console.log(e) }
     head.insertBefore(JS1, head.firstChild);
