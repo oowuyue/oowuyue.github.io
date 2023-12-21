@@ -128,42 +128,12 @@ function backTest(dataName, dayDatas) {
         logDay5percent = ""
     }
 
-    function testDayOld(currentDayList) {
-
-        let preDay = currentDayList[currentDayList.length - 2]
-        let currentDay = currentDayList[currentDayList.length - 1]
-        if ((preDay.K < preDay.D) && (currentDay.K >= currentDay.D) && currentDay.D <= 37) {
-            dayCross = true //日低位金叉
-        }
-
-        let nDayLowCount = 0
-        let haslow2 = false
-        let day5percent = 0
-
-        for (let i = 2; i < 7; i++) {
-            let dayItem = currentDayList[currentDayList.length - i]
-            if (dayItem.percent < 0) {
-                nDayLowCount = nDayLowCount + 1 //前五日下跌天数
-            }
-            if (dayItem.percent < -1) {
-                haslow2 = true // //前五日有下跌超-1的日子
-            }
-            logDay5.push(dayItem.percent)
-        }
-        logDay5.push(currentDay.percent)
-        day5percent = (currentDayList[currentDayList.length - 2].close - currentDayList[currentDayList.length - 6].open) / currentDayList[currentDayList.length - 6].open * 100
-        logDay5percent = day5percent
-        if ((nDayLowCount >= 2) && haslow2 && (day5percent < 0)) {
-            dayNlowM = true //前五日下跌幅度
-        }
-    }
-
 
     function testDay(currentDayList) {
 
         let preDay = currentDayList[currentDayList.length - 2]
         let currentDay = currentDayList[currentDayList.length - 1]
-        if ((preDay.K < preDay.D) && (currentDay.K >= currentDay.D) && currentDay.D <= 55) {
+        if ((preDay.K < preDay.D) && (currentDay.K >= currentDay.D) && currentDay.D <= 50) {
             dayCross = true //日低位金叉
         }
 
@@ -176,7 +146,7 @@ function backTest(dataName, dayDatas) {
             if (dayItem.percent < 0) {
                 nDayLow0Count = nDayLow0Count + 1 //前五日跌超0天数
             }
-            if (dayItem.percent < -2) {
+            if (dayItem.percent < -5) {
                 nDayLow2Count = nDayLow2Count + 1 //前五日跌超-2的天数
             }
             logDay5.push(dayItem.percent)
@@ -186,14 +156,62 @@ function backTest(dataName, dayDatas) {
         //前五日下跌幅度
         day5percent = (currentDayList[currentDayList.length - 2].close - currentDayList[currentDayList.length - 6].open) / currentDayList[currentDayList.length - 6].open * 100
         logDay5percent = day5percent
-        if (((nDayLow0Count >= 3) || (nDayLow2Count >= 1) || (day5percent <= -3)) && (currentDay.percent >= 0.2)) {
+        if (   ( (nDayLow0Count >= 3) || (nDayLow2Count >= 1) || (day5percent <= -5) ) 
+            && (day5percent < -0.5) 
+            && (currentDay.percent >= 0.2) 
+            && (getDayPercent(currentDay)>= 0.2)
+        ){
             dayNlowM = true
         }
 
     }
 
+    function testDay2(currentDayList) {
+
+        let preDay = currentDayList[currentDayList.length - 2]
+        let currentDay = currentDayList[currentDayList.length - 1]
+        if ((preDay.K < preDay.D) && (currentDay.K >= currentDay.D) && currentDay.D <= 50) {
+            dayCross = true //日低位金叉
+        }
+
+        let nDayLow_5 = false
+        let nDayUp5 = false
+        for (let i = 1; i <= 10; i++) { //包括当日
+            let dayItem = currentDayList[currentDayList.length - i]
+            if (dayItem.percent <= -5) {
+                nDayLow_5 = true
+            }
+            if (dayItem.percent >= 3) {
+                nDayUp5 = true
+            }
+            logDay5.push(dayItem.percent)
+        }
+        logDay5.reverse()
+        day5percent = (currentDayList[currentDayList.length - 2].close - currentDayList[currentDayList.length - 8].open) / currentDayList[currentDayList.length - 6].open * 100
+        logDay5percent = day5percent //不包括当日    东方财富2010-03-19   同花顺2009-12-25
+
+
+        if (nDayLow_5 && nDayUp5 && (day5percent < -0.5) && (currentDay.percent >= 0.3) && (currentDayList.length > 300)) {
+            dayNlowM = true
+        }
+    }
+
     function testWeek(currentWeekList) {
+
+        let prePreWeek = currentWeekList[currentWeekList.length - 3]
+        let preWeek = currentWeekList[currentWeekList.length - 2]
+        let currentWeek = currentWeekList[currentWeekList.length - 1]
+
         weekJup = true //周J向上 
+
+        if ((preWeek.K >= preWeek.D) && (currentWeek.K < currentWeek.D) && preWeek.K > 65) {
+            weekJup = false //周高位死叉
+        }
+        if ((prePreWeek.K >= prePreWeek.D) && (preWeek.K < preWeek.D) && prePreWeek.K > 65) {
+            weekJup = false //周高位死叉
+        }
+
+
     }
 
     function testMonth(currentMonthList) {
@@ -212,18 +230,21 @@ function backTest(dataName, dayDatas) {
                 monthLowMa = true //上月小于80均线
             }
         }
-        if (stockCountry == "us") {
-            if (currentMonth.ma30) {
-                if (currentMonth.ma30 > currentMonth.low)
-                    monthLowMa = true //小于月30均线
+
+        if (["东方财富", "恒生电子", "同花顺"].includes(dataName.split("_")[0])) {
+            if (currentMonth.ma60) {
+                if (currentMonth.ma60 > currentMonth.low)
+                    monthLowMa = true //小于月80均线
+            } else if (currentMonth.ma60) {
+                if (currentMonth.ma60 > currentMonth.low)
+                    monthLowMa = true //小于月40均线
             }
             if (!monthLowMa) {
-                if (preMonth.ma30 && (preMonth.ma30 > preMonth.low)) {
-                    monthLowMa = true //上月小于30均线
+                if (preMonth.ma60 && (preMonth.ma60 > preMonth.low)) {
+                    monthLowMa = true //上月小于80均线
                 }
             }
         }
-
 
         if (preMonth.J < currentMonth.J) {
             monthJup = true //月J向上
@@ -231,6 +252,8 @@ function backTest(dataName, dayDatas) {
         if (pre5Month && (pre5Month.J < currentMonth.J)) {
             monthJup = true //月J向上
         }
+
+
         if (currentMonth.J <= 12) {
             monthJlow5 = true //月j小于10,12
         }
@@ -243,12 +266,12 @@ function backTest(dataName, dayDatas) {
         }
     }
 
-    function log(currentDayList, currentWeekList, currentMonthList) {
+    function myLog(currentDayList, currentWeekList, currentMonthList) {
 
         let currentDayIndex = currentDayList.length - 1
         let currentDay = currentDayList[currentDayIndex]
 
-        console.log("ok", currentDay.date, logDay5, logDay5percent.toFixed(2), getDayPercent(currentDay))
+        console.log("ok", currentDay.date, logDay5, logDay5percent.toFixed(2), currentDay.percent, getDayPercent(currentDay))
         logDates.push([currentDay.date, getDayPercent(currentDay)])
 
         if (currentDayIndex + 70 <= dayDatas.length) {
@@ -267,21 +290,39 @@ function backTest(dataName, dayDatas) {
             let profile70 = (next70DayData.close - nextDayData.close) / nextDayData.close * 100
             log70.push([dataName, currentDay.date, next70DayData.date, profile70])
         }
-    }
+    } //logend
 
     //等效setInterval循环
     for (var currentDayIndex = 70; currentDayIndex <= dayDatas.length; currentDayIndex++) {
 
         let currentDayList = dayDatas.slice(0, currentDayIndex).calKdj()
         let currentWeekList = dayToPeriod(currentDayList, "week").calKdj()
-        let currentMonthList = dayToPeriod(currentDayList, "month").calKdj().maN(40, 'close').maN(80, 'close')
+        let currentMonthList = dayToPeriod(currentDayList, "month").calKdj().maN(40, 'close').maN(60, 'close').maN(80, 'close')
 
-        testDay(currentDayList)
+        if (["东方财富", "恒生电子", "同花顺"].includes(dataName.split("_")[0])) {
+            testDay2(currentDayList)
+        } else {
+            testDay(currentDayList)
+        }
+
         testWeek(currentWeekList)
         testMonth(currentMonthList)
 
-        let lastResult = dayCross && dayNlowM && weekJup && monthLowMa && monthJup && monthJlow5 && monthPre5Jlow0
-        if (lastResult) log(currentDayList, currentWeekList, currentMonthList)
+
+        let currentDayDate = currentDayList[currentDayList.length - 1].date
+        if (currentDayDate == "2018-10-191") {
+            console.log(dataName, currentDayDate, logDay5, dayCross, dayNlowM, weekJup, monthLowMa, monthJup, monthJlow5, monthPre5Jlow0)
+        }
+
+
+        let lastResult = false
+        if (["东方财富", "恒生电子", "同花顺"].includes(dataName.split("_")[0])) {
+            lastResult = dayCross && dayNlowM && weekJup && (monthLowMa || monthJup && monthJlow5 && monthPre5Jlow0)
+        } else {
+            lastResult = dayCross && dayNlowM && weekJup && monthLowMa && monthJup && monthJlow5 && monthPre5Jlow0
+        }
+
+        if (lastResult) myLog(currentDayList, currentWeekList, currentMonthList)
         restAction()
     }
     //等效setInterval循环
@@ -307,22 +348,43 @@ let browser;
 (async () => {
     browser = await puppeteer.launch({ headless: false, });
     let nameCodes = [
-        { name: "上证指数_xueqiu_day", code: "SH000001" },
-        { name: "沪深300_xueqiu_day", code: "SH000300" },
-    ]
+        { name: "中信证券_xueqiu_day", code: "SH600030" },
+        { name: "光大证券_xueqiu_day", code: "SH601788" },
 
+        { name: "国泰君安_xueqiu_day", code: "SH601211" },
+        { name: "中信建投_xueqiu_day", code: "SH601066" },
+
+        { name: "招商证券_xueqiu_day", code: "SH600999" },
+        { name: "广发证券_xueqiu_day", code: "SZ000776" },
+       
+       
+        { name: "东方财富_xueqiu_day", code: "SZ300059" },
+        { name: "同花顺_xueqiu_day", code: "SZ300033" },
+        { name: "恒生电子_xueqiu_day", code: "SH600570" },
+    ]   
+        
+
+    let quantName = "券商策略"
     let logAllDates = ""
-    
+
     for (var i = 0; i < nameCodes.length; i++) {
         await getDataBack(nameCodes[i].name, nameCodes[i].code)
         logAllDates += `var ${nameCodes[i].name.split("_")[0]}策略 = ` + JSON.stringify(logDates, null, 0) + "\r\n"
-        logDates=[]
+        logDates = []
     }
 
-    fs.writeFile(`${folder}指数策略.json`, logAllDates, 'utf8', (err) => {
-        if (err) console.log(`指数策略写入失败${err}`);
-        else console.log(`指数策略写入成功`);
+    fs.writeFile(`${folder}${quantName}.json`, logAllDates, 'utf8', (err) => {
+        if (err) console.log(`${quantName}写入失败${err}`);
+        else console.log(`${quantName}写入成功`);
     })
+
+
+    /*
+       大盘       nodeXq
+      传统券商    nodeXq2中光
+
+      科技券商    nodeXq2恒同
+    */
 
 
 })()

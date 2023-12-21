@@ -3,6 +3,90 @@
 
 <head>
     <meta charset="utf-8">
+
+
+    <script type="text/javascript" src="data/xqStocks/指数策略.json"></script>
+    <script type="text/javascript" src="data/xqStocks/券商策略.json"></script>
+    <script type="text/javascript" src="data/xqStocks/上证指数_xueqiu_day.json"></script>
+    <script>
+    function xueqiuFormatDate(stamp, period = "month") {
+        var date = new Date(stamp);
+        var y = date.getFullYear(),
+            m = date.getMonth() + 1,
+            d = date.getDate();
+        if (m < 10)
+            m = '0' + m;
+        if (d < 10)
+            d = '0' + d;
+
+        if (period == "month") {
+            var current_date = new Date();
+            var current_y = current_date.getFullYear(),
+                current_m = current_date.getMonth() + 1,
+                current_d = current_date.getDate();
+            if (current_m < 10)
+                current_m = '0' + current_m;
+            if (current_d < 10)
+                current_d = '0' + current_d;
+
+            if ((y + '-' + m) == (current_y + '-' + current_m)) { //当月不处理
+                var t = y + '-' + m + '-' + d;
+            } else {
+                var t = y + '-' + m + '-28';
+            }
+        }
+
+        if (period == "day") {
+            var t = y + '-' + m + '-' + d;
+        }
+
+
+        return t;
+    }
+
+    function sectorIndexToObj(ele, period = "month") {
+        let newItem = {}
+        newItem.stamp = ele[0]
+        newItem.date = xueqiuFormatDate(ele[0], period)
+        newItem.open = ele[2] //open
+        newItem.high = ele[3] //open
+        newItem.low = ele[4] //open
+        newItem.close = ele[5] //close
+        return newItem
+    }
+
+    function sectorIndexYoY(ele, index, datasArr) {
+
+        const preItem = datasArr.find(element => {
+            let preYear = '' + (parseInt(ele.date.slice(0, 4)) - 1) + ele.date.substring(4, 10)
+            return element.date == preYear
+        })
+        if (preItem) {
+            let openYoY = (ele.open - preItem.open) / preItem.open
+            let closeYoY = (ele.close - preItem.close) / preItem.close
+            let highYoY = (ele.high - preItem.high) / preItem.high
+            let lowYoY = (ele.low - preItem.low) / preItem.low
+            ele.openYoY = openYoY
+            ele.closeYoY = closeYoY
+            ele.highYoY = highYoY
+            ele.lowYoY = lowYoY
+        } else {
+            ele.openYoY = ""
+            ele.closeYoY = ""
+            ele.highYoY = ""
+            ele.lowYoY = ""
+        }
+        return ele
+
+    }
+
+    上证指数_xueqiu_day = 上证指数_xueqiu_day.map((ele, index, arr) => {
+        return sectorIndexYoY(ele, index, arr)
+    })
+    console.log(上证指数_xueqiu_day)
+    </script>
+
+
     <script type="text/javascript" src="../eco5/cn/data/同花顺策略/同花顺策略统计.js"></script>
     <script type="text/javascript">
     function countStat(json, name = "kdj日周月", Period = "day") {
@@ -92,87 +176,6 @@
     console.log(技术指标统计)
     </script>
     
-
-    <script type="text/javascript" src="data/xqStocks/指数策略.json"></script>
-
-    <script type="text/javascript" src="data/xqStocks/上证指数_xueqiu_day.json"></script>
-    <script>
-    function xueqiuFormatDate(stamp, period = "month") {
-        var date = new Date(stamp);
-        var y = date.getFullYear(),
-            m = date.getMonth() + 1,
-            d = date.getDate();
-        if (m < 10)
-            m = '0' + m;
-        if (d < 10)
-            d = '0' + d;
-
-        if (period == "month") {
-            var current_date = new Date();
-            var current_y = current_date.getFullYear(),
-                current_m = current_date.getMonth() + 1,
-                current_d = current_date.getDate();
-            if (current_m < 10)
-                current_m = '0' + current_m;
-            if (current_d < 10)
-                current_d = '0' + current_d;
-
-            if ((y + '-' + m) == (current_y + '-' + current_m)) { //当月不处理
-                var t = y + '-' + m + '-' + d;
-            } else {
-                var t = y + '-' + m + '-28';
-            }
-        }
-
-        if (period == "day") {
-            var t = y + '-' + m + '-' + d;
-        }
-
-
-        return t;
-    }
-
-    function sectorIndexToObj(ele, period = "month") {
-        let newItem = {}
-        newItem.stamp = ele[0]
-        newItem.date = xueqiuFormatDate(ele[0], period)
-        newItem.open = ele[2] //open
-        newItem.high = ele[3] //open
-        newItem.low = ele[4] //open
-        newItem.close = ele[5] //close
-        return newItem
-    }
-
-    function sectorIndexYoY(ele, index, datasArr) {
-
-        const preItem = datasArr.find(element => {
-            let preYear = '' + (parseInt(ele.date.slice(0, 4)) - 1) + ele.date.substring(4, 10)
-            return element.date == preYear
-        })
-        if (preItem) {
-            let openYoY = (ele.open - preItem.open) / preItem.open
-            let closeYoY = (ele.close - preItem.close) / preItem.close
-            let highYoY = (ele.high - preItem.high) / preItem.high
-            let lowYoY = (ele.low - preItem.low) / preItem.low
-            ele.openYoY = openYoY
-            ele.closeYoY = closeYoY
-            ele.highYoY = highYoY
-            ele.lowYoY = lowYoY
-        } else {
-            ele.openYoY = ""
-            ele.closeYoY = ""
-            ele.highYoY = ""
-            ele.lowYoY = ""
-        }
-        return ele
-
-    }
-
-    上证指数_xueqiu_day = 上证指数_xueqiu_day.map((ele, index, arr) => {
-        return sectorIndexYoY(ele, index, arr)
-    })
-    console.log(上证指数_xueqiu_day)
-    </script>
 </head>
 
 <body style="height: 100%; margin: 0">
@@ -435,7 +438,7 @@
 
 
             {
-                name: '上证策略',
+                name: '上证指数策略',
                 type: 'scatter',
                 xAxisIndex: 0,
                 yAxisIndex: 0,
@@ -455,7 +458,7 @@
 
 
             {
-                name: '沪深策略',
+                name: '沪深指数策略',
                 type: 'scatter',
                 xAxisIndex: 0,
                 yAxisIndex: 0,
@@ -475,8 +478,54 @@
             },
 
 
+
             {
-                name: '策略总数',
+                name: '券商策略',
+                type: 'scatter',
+                xAxisIndex: 0,
+                yAxisIndex: 0,
+                symbol: "pin",
+                itemStyle: {
+                    normal: {
+                        opacity: 1,
+                        color: "blue"
+                    }
+                },
+                symbolSize: function(val) {
+                    return 10
+                },
+                zlevel: 3,
+                data: [
+                    ...中信证券策略, ...光大证券策略, ...国泰君安策略, ...中信建投策略, 
+                    ...招商证券策略, ...广发证券策略,
+                    ...东方财富策略, ...同花顺策略, ...恒生电子策略
+                ].filterAndAddStartEnd()
+            },
+
+            // {
+            //     name: '券商策略2',
+            //     type: 'scatter',
+            //     xAxisIndex: 0,
+            //     yAxisIndex: 0,
+            //     symbol: "pin",
+            //     itemStyle: {
+            //         normal: {
+            //             opacity: 1,
+            //             color: "blue"
+            //         }
+            //     },
+            //     symbolSize: function(val) {
+            //         return 10
+            //     },
+            //     zlevel: 3,
+            //     data: [
+            //        ...东方财富策略, ...同花顺策略, ...恒生电子策略
+            //     ].filterAndAddStartEnd()
+            // },
+
+
+            {
+                name: '同花顺策略总数',
                 type: 'scatter',
                 xAxisIndex: 1,
                 yAxisIndex: 1,
@@ -498,7 +547,7 @@
             },
 
             {
-                name: '策略数',
+                name: '同花顺策略数',
                 type: 'scatter',
                 xAxisIndex: 1,
                 yAxisIndex: 1,
