@@ -44,6 +44,7 @@ async function getDataFromFile(dataName, dataCode) {
 }
 async function getDataFromUrl(dataName, dataCode) {
 
+
     let task_xueqiu = async (datasInfo) => {
         //先访问页面?
         const page = await browser.newPage();
@@ -55,7 +56,6 @@ async function getDataFromUrl(dataName, dataCode) {
         let task_xueqiu_data = async (datasInfo) => {
             let nowTimestamp = new Date().getTime();
             let pageUrl = `https://stock.xueqiu.com/v5/stock/chart/kline.json?symbol=${datasInfo.symbol}&begin=${nowTimestamp}&period=${datasInfo.period}&type=before&count=-30000&indicator=kline`
-            
             const page2 = await browser.newPage();
             await page2.setRequestInterception(true)
             page2.on('request', (request) => { request.continue() })
@@ -101,9 +101,9 @@ let log20 = []
 let log30 = []
 let log70 = []
 
+
 function backTest(dataName, dayDatas) {
 
-    let showChart = false
 
     let dayCross = false
     let dayNlowM = false
@@ -125,6 +125,7 @@ function backTest(dataName, dayDatas) {
         logDay5 = []
         logDay5percent = ""
     }
+
 
     function testDay(currentDayList) {
 
@@ -154,9 +155,10 @@ function backTest(dataName, dayDatas) {
         day5percent = (currentDayList[currentDayList.length - 2].close - currentDayList[currentDayList.length - 6].open) / currentDayList[currentDayList.length - 6].open * 100
         logDay5percent = day5percent
         if (
-               ((nDayLow0Count >= 3) || (nDayLow2Count >= 1) || (day5percent <= -3)) 
-            && (currentDay.percent >= 0.2)
-        ){
+            ((nDayLow0Count >= 3) || (nDayLow2Count >= 1) || (day5percent <= -3)) &&
+            (day5percent <= 0) &&
+            (currentDay.percent >= 0.2)
+        ) {
             dayNlowM = true
         }
 
@@ -170,18 +172,18 @@ function backTest(dataName, dayDatas) {
         let pre5Month = currentMonthList[currentMonthList.length - 3]
         let preMonth = currentMonthList[currentMonthList.length - 2]
         let currentMonth = currentMonthList[currentMonthList.length - 1]
-        if (currentMonth.ma80) {
-            if (currentMonth.ma80 > currentMonth.low)
-                monthLowMa = true //小于月80均线
-        } else if (currentMonth.ma40) {
-            if (currentMonth.ma40 > currentMonth.low)
-                monthLowMa = true //小于月40均线
+
+
+        if (currentMonth.ma30) {
+            if (currentMonth.ma30 > currentMonth.low)
+                monthLowMa = true //小于月30均线
         }
         if (!monthLowMa) {
-            if (preMonth.ma80 && (preMonth.ma80 > preMonth.low)) {
-                monthLowMa = true //上月小于80均线
+            if (preMonth.ma30 && (preMonth.ma30 > preMonth.low)) {
+                monthLowMa = true //上月小于30均线
             }
         }
+
 
         if (preMonth.J < currentMonth.J) {
             monthJup = true //月J向上
@@ -189,9 +191,16 @@ function backTest(dataName, dayDatas) {
         if (pre5Month && (pre5Month.J < currentMonth.J)) {
             monthJup = true //月J向上
         }
+
+        if( currentMonth.ma80 && (currentMonth.ma80 > currentMonth.low) ){
+            if(monthJup==false)
+                monthJup = true //月J向上
+        }
+
         if (currentMonth.J <= 12) {
             monthJlow5 = true //月j小于10,12
         }
+
         for (var i = 1; i < 6; i++) {
             let monthItem = currentMonthList[currentMonthList.length - i]
             if (monthItem && monthItem.J < 10) {
@@ -232,11 +241,33 @@ function backTest(dataName, dayDatas) {
 
         let currentDayList = dayDatas.slice(0, currentDayIndex).calKdj()
         let currentWeekList = dayToPeriod(currentDayList, "week").calKdj()
-        let currentMonthList = dayToPeriod(currentDayList, "month").calKdj().maN(40, 'close').maN(80, 'close')
+        let currentMonthList = dayToPeriod(currentDayList, "month").calKdj().maN(30, 'close').maN(80, 'close')
 
         testDay(currentDayList)
         testWeek(currentWeekList)
         testMonth(currentMonthList)
+
+
+        let currentDayDate = currentDayList[currentDayList.length - 1].date
+        if (currentDayDate.includes("2009-0311")) {
+            /*道琼斯
+            2009-03-04 true true true true false true true                                                                                                                               
+            2009-03-05 false false true true false true true                                                                                                                             
+            2009-03-06 true true true true false true true                                                                                                                               
+            2009-03-09 false false true true false true true                                                                                                                             
+            2009-03-10 false true true true true true true
+
+
+            纳指                           monthJup
+            2009-03-04 true true true true false true true                                                                                                                               
+            2009-03-05 false false true true false true true                                                                                                                             
+            2009-03-06 false false true true false true true                                                                                                                             
+            2009-03-09 false false true true false true true                                                                                                                             
+            2009-03-10 true true true true false true true    
+
+            */
+            console.log(currentDayDate, dayCross, dayNlowM, weekJup, monthLowMa, monthJup, monthJlow5, monthPre5Jlow0)
+        }
 
         let lastResult = dayCross && dayNlowM && weekJup && monthLowMa && monthJup && monthJlow5 && monthPre5Jlow0
         if (lastResult) log(currentDayList, currentWeekList, currentMonthList)
@@ -261,12 +292,15 @@ async function getDataBack(dataName, dataCode) {
 }
 
 
+
+
 let browser;
 (async () => {
     browser = await puppeteer.launch({ headless: false, });
     let nameCodes = [
-        { name: "上证指数_xueqiu_day", code: "SH000001" },
-        { name: "沪深300_xueqiu_day", code: "SH000300" },
+        { name: "标普500_xueqiu_day", code: ".INX" },
+        { name: "道琼斯_xueqiu_day", code: ".DJI" },
+        { name: "纳指_xueqiu_day", code: ".IXIC" },
     ]
 
     let logAllDates = ""
@@ -277,9 +311,9 @@ let browser;
         logDates = []
     }
 
-    fs.writeFile(`${folder}指数策略.json`, logAllDates, 'utf8', (err) => {
-        if (err) console.log(`指数策略写入失败${err}`);
-        else console.log(`指数策略写入成功`);
+    fs.writeFile(`${folder}美股指数策略.json`, logAllDates, 'utf8', (err) => {
+        if (err) console.log(`美股指数策略写入失败${err}`);
+        else console.log(`美股指数策略写入成功`);
     })
 
 

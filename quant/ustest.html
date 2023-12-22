@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="zh-CN" style="height: 100%">
+
+<head>
+    <meta charset="utf-8">
+
+
+    <script type="text/javascript" src="data/xqStocks/美股指数策略.json"></script>
+    <script type="text/javascript" src="data/xqStocks/标普500_xueqiu_day.json"></script>
+    <script>
+    function xueqiuFormatDate(stamp, period = "month") {
+        var date = new Date(stamp);
+        var y = date.getFullYear(),
+            m = date.getMonth() + 1,
+            d = date.getDate();
+        if (m < 10)
+            m = '0' + m;
+        if (d < 10)
+            d = '0' + d;
+
+        if (period == "month") {
+            var current_date = new Date();
+            var current_y = current_date.getFullYear(),
+                current_m = current_date.getMonth() + 1,
+                current_d = current_date.getDate();
+            if (current_m < 10)
+                current_m = '0' + current_m;
+            if (current_d < 10)
+                current_d = '0' + current_d;
+
+            if ((y + '-' + m) == (current_y + '-' + current_m)) { //当月不处理
+                var t = y + '-' + m + '-' + d;
+            } else {
+                var t = y + '-' + m + '-28';
+            }
+        }
+
+        if (period == "day") {
+            var t = y + '-' + m + '-' + d;
+        }
+
+
+        return t;
+    }
+
+    function sectorIndexToObj(ele, period = "month") {
+        let newItem = {}
+        newItem.stamp = ele[0]
+        newItem.date = xueqiuFormatDate(ele[0], period)
+        newItem.open = ele[2] //open
+        newItem.high = ele[3] //open
+        newItem.low = ele[4] //open
+        newItem.close = ele[5] //close
+        return newItem
+    }
+
+    function sectorIndexYoY(ele, index, datasArr) {
+
+        const preItem = datasArr.find(element => {
+            let preYear = '' + (parseInt(ele.date.slice(0, 4)) - 1) + ele.date.substring(4, 10)
+            return element.date == preYear
+        })
+        if (preItem) {
+            let openYoY = (ele.open - preItem.open) / preItem.open
+            let closeYoY = (ele.close - preItem.close) / preItem.close
+            let highYoY = (ele.high - preItem.high) / preItem.high
+            let lowYoY = (ele.low - preItem.low) / preItem.low
+            ele.openYoY = openYoY
+            ele.closeYoY = closeYoY
+            ele.highYoY = highYoY
+            ele.lowYoY = lowYoY
+        } else {
+            ele.openYoY = ""
+            ele.closeYoY = ""
+            ele.highYoY = ""
+            ele.lowYoY = ""
+        }
+        return ele
+
+    }
+
+    标普500_xueqiu_day = 标普500_xueqiu_day.map((ele, index, arr) => {
+        return sectorIndexYoY(ele, index, arr)
+    })
+    //console.log(标普500_xueqiu_day)
+    </script>
+
+    
+</head>
+
+<body style="height: 100%; margin: 0">
+    <div id="container" style="height: 100%"></div>
+    <script type="text/javascript" src="https://fastly.jsdelivr.net/npm/echarts@5.3.2/dist/echarts.min.js"></script>
+    <script type="text/javascript">
+    Array.prototype.filterAndAddStartEnd = function() {
+        let arr = this
+
+        arr = arr.filter(item => {
+            return parseFloat(item[0].substring(0, 4)) >= 1971
+        })
+
+        let start = [
+            ["1971-01-01", ""]
+        ]
+        arr = start.concat(arr)
+
+        //当天 或 hs300最后一天 
+        let currentDay = new Date()
+        currentDay = currentDay.getFullYear() + "-" + (currentDay.getMonth() + 1) + "-" + currentDay.getDate()
+        arr.push([currentDay, ""])
+
+        return arr
+    }
+    var dom = document.getElementById('container');
+    var myChart = echarts.init(dom, "#fff", {
+        renderer: 'canvas',
+        useDirtyRect: false
+    });
+    var app = {};
+    var option;
+    option = {
+        title: {},
+        tooltip: {
+            trigger: "axis", //item cross,
+            show: true,
+            position: ['30%', '80%'],
+            order: 'seriesDesc',
+            axisPointer: {
+                type: "cross",
+                show: true,
+                crossStyle: {
+                    width: 1,
+                    color: "black", // 鼠标十字横轴
+                },
+            },
+            formatter: function(params, ticket, callback) {
+                return null;
+            },
+        },
+
+        legend: {
+            left: 53,
+            top: 700
+        },
+        toolbox: {},
+        axisPointer: {
+            link: [{
+                xAxisIndex: 'all'
+            }],
+            lineStyle: {
+                color: "black", // 鼠标十字竖轴
+            },
+        },
+        dataZoom: [{
+                show: true,
+                realtime: true,
+                start: 0,
+                end: 100,
+                bottom: -10,
+                xAxisIndex: [0, 1, 2, 3, 4, 5],
+            },
+            {
+                type: 'inside',
+                realtime: true,
+                start: 0,
+                end: 100,
+                xAxisIndex: [0, 1, 2, 3, 4, 5]
+            }
+        ],
+        grid: [
+
+            { //
+                left: 60,
+                right: 80,
+                top: "0%",
+                height: '30%',
+                backgroundColor: '#fafffd',
+                show: true,
+            },
+
+            { //
+                left: 60,
+                right: 80,
+                top: "31%",
+                height: '30%',
+                backgroundColor: '#faf1f2',
+                show: true,
+            },
+
+
+            { //
+                left: 60,
+                right: 80,
+                top: "62%",
+                height: '35%',
+                backgroundColor: '#fafffd',
+            },
+
+
+            { //
+                left: 60,
+                right: 80,
+                top: "0%",
+                height: '97%',
+
+                //backgroundColor: '#fafffd',
+                show: true,
+            },
+
+
+        ],
+        xAxis: [{
+                gridIndex: 0,
+                type: 'time',
+                splitNumber: 20,
+                splitLine: {
+                    show: true,
+                    lineStyle: {
+
+                    }
+                },
+                axisPointer: {
+                    show: true,
+                    label: {
+                        show: false,
+                    },
+                },
+                axisLabel: {
+                    show: false
+                }
+            },
+
+            {
+                gridIndex: 1,
+                type: 'time',
+                splitNumber: 20,
+                splitLine: {
+                    show: true,
+                    lineStyle: {
+                        color: ['#bdbdbd']
+                    }
+                },
+                axisPointer: {
+                    show: true,
+                    label: {
+                        show: false,
+                    },
+                },
+                axisLabel: {
+                    show: false
+                }
+            },
+
+            {
+                gridIndex: 2,
+                type: 'time',
+                splitNumber: 20,
+                splitLine: {
+                    show: true,
+                    lineStyle: {
+                        color: ['#bdbdbd']
+                    }
+                },
+                axisPointer: {
+                    show: true,
+                    label: {
+                        show: false,
+                    },
+                },
+                axisLabel: {
+                    show:false
+                },
+            },
+
+
+            {
+                gridIndex: 3,
+                type: 'time',
+                splitNumber: 20,
+                splitLine: {
+                    show: true,
+                    lineStyle: {
+                        color: ['#bdbdbd']
+                    }
+                },
+                axisPointer: {
+                    show: true,
+                    label: {
+                        show: true,
+                    },
+                },
+                axisLabel: {
+                    fontSize: 10,
+                    formatter: "{yyyy}",
+                    padding: [0, -60, 0, 0],
+                },
+            },
+
+
+        ],
+        yAxis: [
+            //默认
+            {
+                gridIndex: 0,
+                type: 'value',
+                splitLine: {
+                    "show": false
+                },
+                min: -20
+            },
+
+            {
+                gridIndex: 1, //
+                type: 'value',
+
+                splitLine: {
+                    show: false
+                },
+                show: true,
+                //max: 35
+                // inverse:true
+            },
+
+            {
+                gridIndex: 2, // 
+                name: '',
+                type: 'value',
+
+                splitLine: {
+                    show: false
+                },
+                show: true,
+            },
+
+            {
+                gridIndex: 3,
+                name: '',
+                type: 'value',
+                splitLine: {
+                    show: false
+                },
+                show: true,
+                position: "right"
+            },
+        ],
+
+        series: [
+
+
+            {
+                name: '标普500策略',
+                type: 'scatter',
+                xAxisIndex: 0,
+                yAxisIndex: 0,
+                 symbol: "path://M12.0002 3.58569L19.4144 10.9999L18.0002 12.4141L13.0002 7.41412V19.9999H11.0002V7.41412L6.00015 12.4141L4.58594 10.9999L12.0002 3.58569Z",
+                itemStyle: {
+                    normal: {
+                        opacity: 1,
+                        color: "red"
+                    }
+                },
+                symbolSize: function(val) {
+                    return 15
+                },
+                zlevel: 3,
+                data: 标普500策略.filterAndAddStartEnd()
+            },
+
+
+            {
+                name: '纳指策略',
+                type: 'scatter',
+                xAxisIndex: 1,
+                yAxisIndex: 1,
+                symbol: "path://M12.0002 3.58569L19.4144 10.9999L18.0002 12.4141L13.0002 7.41412V19.9999H11.0002V7.41412L6.00015 12.4141L4.58594 10.9999L12.0002 3.58569Z",
+                itemStyle: {
+                    normal: {
+                        opacity: 1,
+                        color: "red"
+                    }
+                },
+                symbolSize: function(val) {
+                    return 15
+                },
+                zlevel: 3,
+                data: 纳指策略.filterAndAddStartEnd()
+
+            },
+
+
+            {
+                name: '道琼斯策略',
+                type: 'scatter',
+                xAxisIndex: 1,
+                yAxisIndex: 1,
+                symbol: "path://M12.0002 3.58569L19.4144 10.9999L18.0002 12.4141L13.0002 7.41412V19.9999H11.0002V7.41412L6.00015 12.4141L4.58594 10.9999L12.0002 3.58569Z",
+                itemStyle: {
+                    normal: {
+                        opacity: 1,
+                        color: "#00bfff"
+                    }
+                },
+                symbolSize: function(val) {
+                    return 10
+                },
+                zlevel: 3,
+                data: 道琼斯策略.filterAndAddStartEnd()
+
+            },
+
+
+        
+    
+            {
+                name: "标普500同比", //
+                type: "line",
+                xAxisIndex: 2,
+                yAxisIndex: 2,
+                showSymbol: false,
+                smooth: true,
+                lineStyle: {
+                    width: 1.5,
+                },
+                itemStyle: {
+                    normal: {
+                        color: {
+                            type: "linear",
+                            x: 0,
+                            y: 0,
+                            x2: 0,
+                            y2: 1,
+                            colorStops: [{
+                                    offset: 0.45, //大 下
+                                    color: "red",
+                                },
+                                {
+                                    offset: 0.6,
+                                    color: "orange",
+                                },
+
+                                {
+                                    offset: 0.8, //小 上
+                                    color: "green",
+                                },
+                            ],
+                            globalCoord: true,
+                        },
+                    },
+                },
+                markLine: {
+                    symbol: ["none", "none"],
+                    data: [{
+                            lineStyle: {
+                                width: 0.5,
+                                color: "green",
+                            },
+                            label: {
+                                formatter: "-20低估",
+                                color: "green",
+                                fontSize: "10",
+                                position: "insideStartBottom",
+                            },
+                            yAxis: -20, // 标线值
+                            //x: "6.5%", //固定起点的 x 像素位置
+                        },
+                        {
+                            lineStyle: {
+                                width: 0.5,
+                                color: "red",
+                            },
+                            label: {
+                                formatter: "30高估",
+                                color: "red",
+                                fontSize: "10",
+                                position: "insideStartTop",
+                            },
+                            yAxis: 30, // 标线值
+                            // x: "6.5%",
+                        },
+                        {
+                            lineStyle: {
+                                width: 0.5,
+                                color: "gray",
+                                //type: "solid" // 实线，不写默认虚线
+                            },
+                            label: {
+                                formatter: "30高估",
+                                color: "red",
+                                fontSize: "0",
+                                position: "start",
+                            },
+                            yAxis: 0, // 标线值
+                        },
+                    ],
+                },
+                data: 标普500_xueqiu_day.map(item => {
+                    let tmp = []
+                    tmp[0] = item.date
+                    tmp[1] = item.closeYoY ? item.closeYoY * 100 : ""
+                    return tmp
+                }).filterAndAddStartEnd()
+            },
+
+
+            {
+                name: '标普500',
+                type: 'candlestick',
+                xAxisIndex: 3,
+                yAxisIndex: 3,
+                showSymbol: false,
+                silent: true,
+                data: 标普500_xueqiu_day.map((item) => {
+                    let tmp = []
+                    tmp[0] = item.date
+                    tmp[1] = item.open ? item.open : ""
+                    tmp[2] = item.close ? item.close : ""
+                    tmp[3] = item.low ? item.low : ""
+                    tmp[4] = item.high ? item.high : ""
+                    return tmp
+                }).filterAndAddStartEnd()
+            },
+
+        ]
+    };
+
+
+    if (option && typeof option === 'object') {
+        myChart.setOption(option);
+    }
+    window.addEventListener('resize', myChart.resize)
+    </script>
+</body>
+
+</html>

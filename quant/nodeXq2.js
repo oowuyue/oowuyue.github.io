@@ -141,7 +141,7 @@ function backTest(dataName, dayDatas) {
         let nDayLow2Count = 0
         let day5percent = 0
 
-        for (let i = 2; i < 7; i++) {
+        for (let i = 2; i <= 6; i++) {
             let dayItem = currentDayList[currentDayList.length - i]
             if (dayItem.percent < 0) {
                 nDayLow0Count = nDayLow0Count + 1 //前五日跌超0天数

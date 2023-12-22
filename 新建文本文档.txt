@@ -1372,8 +1372,17 @@ go   c++
   与自动机
   pc组成原理     
 
+git revert 放弃某次提交git revert 之前的提交仍会保留在git log中，而此次撤销会做为一次新的提交。
+git reset 是回滚到某次提交git reset --soft此次提交之后的修改会被退回到暂存区git reset --hard此次提交之后的修改不做任何保留，git status干净的工作区。
+git rebase 改编基底提交，进行合并，一般用的比较少，因为可能会改编提交记录顺序，通常直接使用merge进行合并就行了 原来没上面说的那么复杂, 就是当前的工作重新基于(rebase)另一个commit而已
 
 
 
+  https://stock.xueqiu.com/v5/stock/chart/kline.json?symbol=.INX&begin=1703296939602&period=day&type=before&count=-284&indicator=kline,pe,pb,ps,pcf,market_capital,agt,ggt,balance
 
-  
+  https://stock.xueqiu.com/v5/stock/chart/kline.json?symbol=.INX&begin=727632000000&end=1703210462535&period=day&type=before&indicator=kline
+
+  https://stock.xueqiu.com/v5/stock/chart/kline.json?symbol=.INX&begin=31813200000&end=1703210462535&period=day&type=before&indicator=kline
+  1971-01-04  -  2023-12-22
+
+
