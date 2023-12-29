@@ -3,10 +3,12 @@
 
 <head>
     <meta charset="utf-8">
-
-
+    <script type="text/javascript" src="data/VIX波动率指数.json"></script>
+    <script type="text/javascript" src="data/全球股市大于200日均线比例.json"></script>
     <script type="text/javascript" src="data/xqStocks/美股指数策略.json"></script>
     <script type="text/javascript" src="data/xqStocks/标普500_xueqiu_day.json"></script>
+    <script type="text/javascript" src="data/股Insider_trading.js"></script>
+     <script type="text/javascript" src="data/股债相关性.js"></script>
     <script>
     function xueqiuFormatDate(stamp, period = "month") {
         var date = new Date(stamp);
@@ -56,10 +58,15 @@
 
     function sectorIndexYoY(ele, index, datasArr) {
 
-        const preItem = datasArr.find(element => {
-            let preYear = '' + (parseInt(ele.date.slice(0, 4)) - 1) + ele.date.substring(4, 10)
-            return element.date == preYear
-        })
+        let preItem
+
+        // preItem = datasArr.find(element => {
+        //     let preYear = '' + (parseInt(ele.date.slice(0, 4)) - 1) + ele.date.substring(4, 10)
+        //     return element.date == preYear
+        // })
+
+        preItem = datasArr[index-250]
+
         if (preItem) {
             let openYoY = (ele.open - preItem.open) / preItem.open
             let closeYoY = (ele.close - preItem.close) / preItem.close
@@ -82,7 +89,7 @@
     标普500_xueqiu_day = 标普500_xueqiu_day.map((ele, index, arr) => {
         return sectorIndexYoY(ele, index, arr)
     })
-    //console.log(标普500_xueqiu_day)
+
     </script>
 
     
@@ -140,7 +147,7 @@
 
         legend: {
             left: 53,
-            top: 700
+            top: 0
         },
         toolbox: {},
         axisPointer: {
@@ -181,8 +188,8 @@
             { //
                 left: 60,
                 right: 80,
-                top: "31%",
-                height: '30%',
+                top: "30%",
+                height: '35%',
                 backgroundColor: '#faf1f2',
                 show: true,
             },
@@ -191,8 +198,8 @@
             { //
                 left: 60,
                 right: 80,
-                top: "62%",
-                height: '35%',
+                top: "65%",
+                height: '30%',
                 backgroundColor: '#fafffd',
             },
 
@@ -201,7 +208,7 @@
                 left: 60,
                 right: 80,
                 top: "0%",
-                height: '97%',
+                height: '95%',
 
                 //backgroundColor: '#fafffd',
                 show: true,
@@ -306,7 +313,7 @@
                 splitLine: {
                     "show": false
                 },
-                min: -20
+                
             },
 
             {
@@ -330,6 +337,7 @@
                     show: false
                 },
                 show: true,
+                max: 20
             },
 
             {
@@ -347,11 +355,100 @@
         series: [
 
 
+          {
+                name: "股Insider_trading", //
+                type: "line",
+                xAxisIndex: 0,
+                yAxisIndex: 0,
+                showSymbol: false,
+                smooth: true,
+               lineStyle: {
+                    width: 0.7,
+                    // color:"gray"
+                },
+                // itemStyle: {
+                //     normal: {
+                //         areaStyle: {
+                //            // color: "gray" // "#57aacb",
+                //         },
+                //     },
+                //     emphasis: {
+                //         areaStyle: {
+                //           //  color: "gray",
+                //         },
+                //     },
+                // },
+                data: 股Insider_trading
+                .filterAndAddStartEnd()
+
+            },
+
+
+
+            {
+                name: "VIX波动率指数", //
+                type: "line",
+                xAxisIndex: 1,
+                yAxisIndex: 1,
+                showSymbol: false,
+                smooth: true,
+               lineStyle: {
+                    width: 0.5,
+                    color:"gray"
+                },
+                itemStyle: {
+                    normal: {
+                        areaStyle: {
+                            color: "gray" // "#57aacb",
+                        },
+                    },
+                    emphasis: {
+                        areaStyle: {
+                            color: "gray",
+                        },
+                    },
+                },
+                data: VIX波动率指数.map( item => {
+                    item[1] = "-"+item[1] 
+                    return item
+                })
+                .filterAndAddStartEnd()
+
+            },
+
+
+             {
+                name: "全球股市大于200日均线比例", //
+                type: "line",
+                xAxisIndex: 1,
+                yAxisIndex: 1,
+                showSymbol: false,
+                smooth: true,
+               lineStyle: {
+                    width: 0,
+                },
+                itemStyle: {
+                    normal: {
+                        areaStyle: {
+                            color: "#87c5cf" // "#57aacb",
+                        },
+                    },
+                    emphasis: {
+                        areaStyle: {
+                            color: "#87c5cf",
+                        },
+                    },
+                },
+                data: 全球股市大于200日均线比例.filterAndAddStartEnd()
+
+            },
+
+
             {
                 name: '标普500策略',
                 type: 'scatter',
-                xAxisIndex: 0,
-                yAxisIndex: 0,
+                xAxisIndex: 2,
+                yAxisIndex: 2,
                  symbol: "path://M12.0002 3.58569L19.4144 10.9999L18.0002 12.4141L13.0002 7.41412V19.9999H11.0002V7.41412L6.00015 12.4141L4.58594 10.9999L12.0002 3.58569Z",
                 itemStyle: {
                     normal: {
@@ -370,17 +467,17 @@
             {
                 name: '纳指策略',
                 type: 'scatter',
-                xAxisIndex: 1,
-                yAxisIndex: 1,
+                xAxisIndex: 2,
+                yAxisIndex: 2,
                 symbol: "path://M12.0002 3.58569L19.4144 10.9999L18.0002 12.4141L13.0002 7.41412V19.9999H11.0002V7.41412L6.00015 12.4141L4.58594 10.9999L12.0002 3.58569Z",
                 itemStyle: {
                     normal: {
                         opacity: 1,
-                        color: "red"
+                        color: "#00bfff"
                     }
                 },
                 symbolSize: function(val) {
-                    return 15
+                    return 12
                 },
                 zlevel: 3,
                 data: 纳指策略.filterAndAddStartEnd()
@@ -391,13 +488,13 @@
             {
                 name: '道琼斯策略',
                 type: 'scatter',
-                xAxisIndex: 1,
-                yAxisIndex: 1,
+                xAxisIndex: 2,
+                yAxisIndex: 2,
                 symbol: "path://M12.0002 3.58569L19.4144 10.9999L18.0002 12.4141L13.0002 7.41412V19.9999H11.0002V7.41412L6.00015 12.4141L4.58594 10.9999L12.0002 3.58569Z",
                 itemStyle: {
                     normal: {
                         opacity: 1,
-                        color: "#00bfff"
+                        color: "black"
                     }
                 },
                 symbolSize: function(val) {
@@ -414,12 +511,12 @@
             {
                 name: "标普500同比", //
                 type: "line",
-                xAxisIndex: 2,
-                yAxisIndex: 2,
+                xAxisIndex: 1,
+                yAxisIndex: 1,
                 showSymbol: false,
                 smooth: true,
                 lineStyle: {
-                    width: 1.5,
+                    width: 1,
                 },
                 itemStyle: {
                     normal: {
@@ -509,6 +606,7 @@
                 yAxisIndex: 3,
                 showSymbol: false,
                 silent: true,
+                zlevel: 2,
                 data: 标普500_xueqiu_day.map((item) => {
                     let tmp = []
                     tmp[0] = item.date

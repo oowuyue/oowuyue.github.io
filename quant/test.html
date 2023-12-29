@@ -21,7 +21,21 @@
             var log70AllRes = log70All.filter(ele => ele[4] > 0)
         }
 
-        logContact = [...log50AllRes]
+
+        function hasSameNameStart(testItem) {
+            let res = false
+            for (var i = 0; i < resultArr.length; i++) {
+                if ((resultArr[i][0] + resultArr[i][1]) == (testItem[0] + testItem[1])) {
+                    res = true
+                }
+            }
+            return res
+        }
+
+
+
+
+        logContact = [...log20AllRes, ...log50AllRes]
         logContact.sort(function(a, b) {
             if (a[0] === b[0]) { //name
                 if (a[4] > b[4]) { //percnet
@@ -43,15 +57,7 @@
 
         let resultArr = []
 
-        function hasSameNameStart(testItem) {
-            let res = false
-            for (var i = 0; i < resultArr.length; i++) {
-                if ((resultArr[i][0] + resultArr[i][1]) == (testItem[0] + testItem[1])) {
-                    res = true
-                }
-            }
-            return res
-        }
+
         for (var i = 0; i < logContact.length; i++) {
             if (hasSameNameStart(logContact[i])) continue
             resultArr.push(logContact[i])
@@ -70,12 +76,57 @@
     }
 
 
-    console.log(
-        ttt("low", "name"),
-        ttt("low", "percent"),
-        ttt("up", "name"),
-        ttt("up", "percent")
-    )
+
+    function returnSameNameStart(logAll, testItem) {
+        let res = false
+        for (var i = 0; i < logAll.length; i++) {
+            if ((logAll[i][0] + logAll[i][1]) == (testItem[0] + testItem[1])) {
+                res = logAll[i]
+            }
+        }
+        return res
+    }
+
+
+
+
+    var zhisun = []
+    var chiyoudao = []
+
+    function test() {
+
+        for (let i = 0; i < log10All.length; i++) {
+            if (log10All[i][4] < 0) 
+            {
+                zhisun.push(log10All[i])
+            } 
+            else 
+            {
+                let same30 = returnSameNameStart(log30All, log10All[i])
+                if( same30[4] < 0 )
+                {
+                   zhisun.push(same30)
+                }
+                else
+                {
+                    let same50 = returnSameNameStart(log50All, log10All[i])
+                    chiyoudao.push(same50)
+                }
+                
+            }
+        }
+    }
+    test()
+
+    console.log(zhisun.sort((a, b) => a[4] - b[4]), chiyoudao.sort((a, b) => b[4] - a[4]))
+
+
+    // console.log(
+    //     ttt("low", "name"),
+    //     ttt("low", "percent"),
+    //     ttt("up", "name"),
+    //     ttt("up", "percent")
+    // )
     </script>
 </head>
 

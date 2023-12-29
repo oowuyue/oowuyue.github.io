@@ -1378,11 +1378,6 @@ git rebase 改编基底提交，进行合并，一般用的比较少，因为可
 
 
 
-  https://stock.xueqiu.com/v5/stock/chart/kline.json?symbol=.INX&begin=1703296939602&period=day&type=before&count=-284&indicator=kline,pe,pb,ps,pcf,market_capital,agt,ggt,balance
-
-  https://stock.xueqiu.com/v5/stock/chart/kline.json?symbol=.INX&begin=727632000000&end=1703210462535&period=day&type=before&indicator=kline
-
-  https://stock.xueqiu.com/v5/stock/chart/kline.json?symbol=.INX&begin=31813200000&end=1703210462535&period=day&type=before&indicator=kline
-  1971-01-04  -  2023-12-22
-
-
+    cpi           p 工业盈亏
+gdp               q 地产出口       股债    技术
+    失业率        mv 

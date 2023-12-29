@@ -19,7 +19,7 @@
     let dataName = decodeURI(getQueryVariable("name")) + "_xueqiu_day"
     let edate = getQueryVariable("edate") //总回测数据 0开始  endate结束
     let backday = getQueryVariable("backday") //回测开始点 结束往前天数
-    let showChart = getQueryVariable("showChart") //默认 全部 逐天 命令行  ?name=不锈钢连续&date=2020-03-01&noMock=1&showChart=1
+    let showChart = getQueryVariable("showChart") //默认 
     let chartDay = klinecharts.init('chartDay')
     let chartWeek = klinecharts.init('chartWeek')
     let chartMonth = klinecharts.init('chartMonth')

@@ -103,10 +103,11 @@ async function getDataFromUrl(dataName, dataCode) {
 
 let logDay5 = []
 let logDay5percent = ""
+let log10 = []
 let log20 = []
 let log30 = []
 let log50 = []
-let log70 = []
+let log60 = []
 
 function backTest2(dataName, dayDatas) {
 
@@ -181,8 +182,65 @@ function backTest2(dataName, dayDatas) {
         }
     }
 
+    function testDay2(currentDayList) {
+
+        let preDay = currentDayList[currentDayList.length - 2]
+        let currentDay = currentDayList[currentDayList.length - 1]
+        if ((preDay.K < preDay.D) && (currentDay.K >= currentDay.D) && currentDay.D <= 50) {
+            dayCross = true //日低位金叉
+        }
+
+        let nDayLow_5 = false
+        let nDayUp5 = false
+        for (let i = 1; i <= 10; i++) { //包括当日
+            let dayItem = currentDayList[currentDayList.length - i]
+            if (dayItem.percent <= -5) {
+                nDayLow_5 = true
+            }
+            if (dayItem.percent >= 3) {
+                nDayUp5 = true
+            }
+            logDay5.push(dayItem.percent)
+        }
+        logDay5.reverse()
+        day5percent = (currentDayList[currentDayList.length - 2].close - currentDayList[currentDayList.length - 8].open) / currentDayList[currentDayList.length - 6].open * 100
+        logDay5percent = day5percent //不包括当日    东方财富2010-03-19   同花顺2009-12-25
+
+
+        if ( 
+                nDayLow_5 
+            && nDayUp5 
+            && (day5percent < -0.5) 
+            && (currentDay.percent >= 0.3) 
+            && (getDayPercent(currentDay) >= 0.2)
+            //&& (currentDayList.length > 300)
+        ){
+            dayNlowM = true
+        }
+    }
+
     function testWeek(currentWeekList) {
+        let prePreWeek = currentWeekList[currentWeekList.length - 3]
+        let preWeek = currentWeekList[currentWeekList.length - 2]
+        let currentWeek = currentWeekList[currentWeekList.length - 1]
+
         weekJup = true //周J向上 
+
+        if ((preWeek.K >= preWeek.D) && (currentWeek.K < currentWeek.D) && preWeek.K > 65) {
+            weekJup = false //周高位死叉
+        }
+        if ((prePreWeek.K >= prePreWeek.D) && (preWeek.K < preWeek.D) && prePreWeek.K > 65) {
+            weekJup = false //周高位死叉
+        }
+
+        if (    (preWeek.K >= preWeek.D) 
+             && (currentWeek.K >= currentWeek.D) 
+             && ((currentWeek.K-currentWeek.D)<0.5) 
+             && (preWeek.K > currentWeek.K)  
+             && (preWeek.K > 65)
+        ){
+            weekJup = false //周高位即将死叉
+        }
     }
 
     function testMonth(currentMonthList) {
@@ -233,23 +291,28 @@ function backTest2(dataName, dayDatas) {
         let currentDay = currentDayList[currentDayIndex]
         console.log("ok", currentDay.date, logDay5, logDay5percent.toFixed(2), getDayPercent(currentDay))
         if (currentDayIndex + 70 <= dayDatas.length) {
-            nextDayData = dayDatas[currentDayIndex]
+            currentDayData = dayDatas[currentDayIndex]
+            next10DayData = dayDatas[currentDayIndex + 10]
             next20DayData = dayDatas[currentDayIndex + 20]
             next30DayData = dayDatas[currentDayIndex + 30]
             next50DayData = dayDatas[currentDayIndex + 50]
-            next70DayData = dayDatas[currentDayIndex + 70]
+            next60DayData = dayDatas[currentDayIndex + 60]
 
-            let profile20 = (next20DayData.close - nextDayData.close) / nextDayData.close * 100
+
+            let profile10 = (next10DayData.close - currentDayData.close) / currentDayData.close * 100
+            log10.push([dataName, currentDay.date, next10DayData.date, "10day", profile10])
+
+            let profile20 = (next20DayData.close - currentDayData.close) / currentDayData.close * 100
             log20.push([dataName, currentDay.date, next20DayData.date, "20day", profile20])
 
-            let profile30 = (next30DayData.close - nextDayData.close) / nextDayData.close * 100
+            let profile30 = (next30DayData.close - currentDayData.close) / currentDayData.close * 100
             log30.push([dataName, currentDay.date, next30DayData.date, "30day", profile30])
 
-            let profile50 = (next50DayData.close - nextDayData.close) / nextDayData.close * 100
+            let profile50 = (next50DayData.close - currentDayData.close) / currentDayData.close * 100
             log50.push([dataName, currentDay.date, next50DayData.date, "50day", profile50])
 
-            let profile70 = (next70DayData.close - nextDayData.close) / nextDayData.close * 100
-            log70.push([dataName, currentDay.date, next70DayData.date, "70day", profile70])
+            let profile60 = (next60DayData.close - currentDayData.close) / currentDayData.close * 100
+            log60.push([dataName, currentDay.date, next60DayData.date, "60day", profile60])
         }
     }
 
@@ -367,30 +430,35 @@ let browser;
         // { name: "沥青连续", code: "BU0" },
     ]
 
-
+    
+    let log10All = []
     let log20All = []
     let log30All = []
     let log50All = []
-    let log70All = []
+    let log60All = []
     for (var i = 0; i < nameCodes.length; i++) {
         await start(nameCodes[i].name, nameCodes[i].code)
 
-        console.log(log20, log30, log50, log70)
+        console.log(log10 , log20, log30, log50, )
+
+        log10All = log20All.concat(log10)
         log20All = log20All.concat(log20)
         log30All = log30All.concat(log30)
         log50All = log50All.concat(log50)
-        log70All = log50All.concat(log70)
+        log60All = log60All.concat(log60)
+        log10 = []
         log20 = []
         log30 = []
         log50 = []
-        log70 = []
+        log60 = []
     }
 
     let logAll = ""
+    logAll += `var log10All = ` + JSON.stringify(log10All, null, 0) + "\r\n"
     logAll += `var log20All = ` + JSON.stringify(log20All, null, 0) + "\r\n"
     logAll += `var log30All = ` + JSON.stringify(log30All, null, 0) + "\r\n"
     logAll += `var log50All = ` + JSON.stringify(log50All, null, 0) + "\r\n"
-    logAll += `var log70All = ` + JSON.stringify(log70All, null, 0) + "\r\n"
+    logAll += `var log60All = ` + JSON.stringify(log60All, null, 0) + "\r\n"
     fs.writeFile(`${folder}logAll.json`, logAll, 'utf8', (err) => {
         if (err) console.log(`logAll写入失败${err}`);
         else console.log(`logAll写入成功`);

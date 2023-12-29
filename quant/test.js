@@ -1,3 +1,6 @@
+const fs = require('fs');
+const path = require('path');
+
 let a = `
 1
 600210
@@ -1174,3 +1177,18 @@ let abcSame = abSame.filter(item => bcSame.includes(item))
 console.log(abSame, acSame, bcSame, abcSame)
 
 
+
+
+// fs.watch("data", (eventType, filename) => { 
+//     console.log("\nThe file", filename, "was modified!"); 
+//     console.log("The type of change was:", eventType); 
+// }); 
+
+
+// fs.renameSync("data/test.txt" , `testnew.txt`)
+
+
+
+console.log(aaa)
+
+let aaa = "ffff"

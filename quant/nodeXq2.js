@@ -159,7 +159,7 @@ function backTest(dataName, dayDatas) {
         if (   ( (nDayLow0Count >= 3) || (nDayLow2Count >= 1) || (day5percent <= -5) ) 
             && (day5percent < -0.5) 
             && (currentDay.percent >= 0.2) 
-            && (getDayPercent(currentDay)>= 0.2)
+            && (getDayPercent(currentDay) >= 0.1)
         ){
             dayNlowM = true
         }
@@ -191,7 +191,14 @@ function backTest(dataName, dayDatas) {
         logDay5percent = day5percent //不包括当日    东方财富2010-03-19   同花顺2009-12-25
 
 
-        if (nDayLow_5 && nDayUp5 && (day5percent < -0.5) && (currentDay.percent >= 0.3) && (currentDayList.length > 300)) {
+        if ( 
+                nDayLow_5 
+            && nDayUp5 
+            && (day5percent < -0.5) 
+            && (currentDay.percent >= 0.3) 
+            && (getDayPercent(currentDay) >= 0.2)
+            && (currentDayList.length > 300)
+        ){
             dayNlowM = true
         }
     }
@@ -209,6 +216,15 @@ function backTest(dataName, dayDatas) {
         }
         if ((prePreWeek.K >= prePreWeek.D) && (preWeek.K < preWeek.D) && prePreWeek.K > 65) {
             weekJup = false //周高位死叉
+        }
+
+        if (    (preWeek.K >= preWeek.D) 
+             && (currentWeek.K >= currentWeek.D) 
+             && ((currentWeek.K-currentWeek.D)<0.5) 
+             && (preWeek.K > currentWeek.K)  
+             && (preWeek.K > 65)
+        ){
+            weekJup = false //周高位即将死叉
         }
 
 
@@ -317,7 +333,7 @@ function backTest(dataName, dayDatas) {
 
         let lastResult = false
         if (["东方财富", "恒生电子", "同花顺"].includes(dataName.split("_")[0])) {
-            lastResult = dayCross && dayNlowM && weekJup && (monthLowMa || monthJup && monthJlow5 && monthPre5Jlow0)
+            lastResult = dayCross && dayNlowM && weekJup && ( monthLowMa || (monthJup && monthJlow5 && monthPre5Jlow0) )
         } else {
             lastResult = dayCross && dayNlowM && weekJup && monthLowMa && monthJup && monthJlow5 && monthPre5Jlow0
         }
