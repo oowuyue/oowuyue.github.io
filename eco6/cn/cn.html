@@ -267,7 +267,7 @@
             return arr;
         };
         let currentDay = new Date()
-        currentDay = currentDay.getFullYear() + "-" + (currentDay.getMonth() + 1) + "-" + currentDay.getDate()
+        currentDay = currentDay.getFullYear()+1 + "-" + (currentDay.getMonth() + 1) + "-" + currentDay.getDate()
 
         let justForAlignmentTime = PPI.map((item) => {
             let newItem = []
@@ -287,7 +287,8 @@
         var app = {};
         var option;
 
-
+        let gridbackgroundColor = "#f7f9fa"
+        let splitLineColor = "#d8d8d8"
         option = {
             title: {},
             tooltip: {
@@ -404,7 +405,7 @@
                     splitLine: {
                         show: true,
                         lineStyle: {
-                            //color: ['#aaa']
+                            color: [splitLineColor]
                         }
                     },
                     axisPointer: {
@@ -428,7 +429,7 @@
                     splitLine: {
                         show: true,
                         lineStyle: {
-                            color: ['#bdbdbd']
+                            color: [splitLineColor]
                         }
                     },
                     axisPointer: {
@@ -450,7 +451,7 @@
                     splitLine: {
                         show: true,
                         lineStyle: {
-                            color: ['#bdbdbd']
+                           color: [splitLineColor]
                         }
                     },
                     axisPointer: {
@@ -471,7 +472,7 @@
                     splitLine: {
                         show: true,
                         lineStyle: {
-                            color: ['#bdbdbd']
+                            color: [splitLineColor]
                         }
                     },
                     axisPointer: {
@@ -492,7 +493,7 @@
                     splitLine: {
                         show: true,
                         lineStyle: {
-                            color: ['#bdbdbd']
+                           color: [splitLineColor]
                         }
                     },
                     axisPointer: {
@@ -513,7 +514,7 @@
                     splitLine: {
                         show: true,
                         lineStyle: {
-                            color: ['#bdbdbd']
+                            color: [splitLineColor]
                         }
                     },
                     axisPointer: {

@@ -1,6 +1,8 @@
-const puppeteer = require('puppeteer-extra') //https://www.npmjs.com/package/puppeteer-extra
-const StealthPlugin = require('puppeteer-extra-plugin-stealth')
-puppeteer.use(StealthPlugin())
+// const puppeteer = require('puppeteer-extra') //https://www.npmjs.com/package/puppeteer-extra
+// const StealthPlugin = require('puppeteer-extra-plugin-stealth')
+// puppeteer.use(StealthPlugin())
+
+const puppeteer = require('puppeteer')
 
 const http = require('http');
 const fs = require('fs');
@@ -202,8 +204,27 @@ function backTest(dataName, dayDatas) {
 
     }
 
+
+    let startDayIndex = 70
+    try{
+        let 美股指数策略str = fs.readFileSync(`${folder}美股指数策略.js`, {encoding:'utf8', flag:'r'})
+        if(美股指数策略str){
+            eval(美股指数策略str)
+            if(dataName=="标普500_xueqiu_day") logDates=标普500策略 ?? []
+            if(dataName=="道琼斯_xueqiu_day") logDates=道琼斯策略 ?? []
+            if(dataName=="纳指_xueqiu_day") logDates=纳指策略 ?? []
+            if(logDates.length>0){
+                let lastDay = logDates[logDates.length-1][0]
+                let lastDayIndexIn = dayDatas.findIndex(ele=>{return ele.date == lastDay})
+                if(lastDayIndexIn>-1) startDayIndex = lastDayIndexIn+2
+            }
+        }
+    }catch(e){
+        //console.log(e)
+    }
+
     //等效setInterval循环
-    for (var currentDayIndex = 70; currentDayIndex <= dayDatas.length; currentDayIndex++) {
+    for (var currentDayIndex = startDayIndex; currentDayIndex <= dayDatas.length; currentDayIndex++) {
 
         let currentDayList = dayDatas.slice(0, currentDayIndex).calKdj()
         let currentWeekList = dayToPeriod(currentDayList, "week").calKdj()
@@ -265,12 +286,14 @@ let browser;
         { name: "纳指_xueqiu_day", code: ".IXIC" },
     ]
 
+    console.time("timelog")
     let logAllDates = ""
     for (var i = 0; i < nameCodes.length; i++) {
         await getDataBack(nameCodes[i].name, nameCodes[i].code)
         logAllDates += `var ${nameCodes[i].name.split("_")[0]}策略 = ` + JSON.stringify(logDates, null, 0) + "\r\n"
         logDates = []
     }
+    console.timeEnd("timelog")
 
     fs.writeFile(`${folder}美股指数策略.js`, logAllDates, 'utf8', (err) => {
         if (err) console.log(`美股指数策略写入失败${err}`);

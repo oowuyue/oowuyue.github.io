@@ -591,8 +591,11 @@ const path = require('path');
 
         let task_xueqiu_data = async (datasInfo) => {
 
+            let startTime = 31813200000;
             let nowTimestamp = new Date().getTime();
             let pageUrl = `https://stock.xueqiu.com/v5/stock/chart/kline.json?symbol=${datasInfo.symbol}&begin=${nowTimestamp}&period=${datasInfo.period}&type=before&count=-30000&indicator=kline`
+            if(datasInfo.name.includes("恒生指数"))
+                pageUrl = `https://stock.xueqiu.com/v5/stock/chart/kline.json?symbol=${datasInfo.symbol}&begin=${startTime}&end=${nowTimestamp}&period=day&type=before&indicator=kline`
 
             const page2 = await browser.newPage();
             await page2.setRequestInterception(true)

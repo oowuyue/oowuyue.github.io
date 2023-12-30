@@ -134,7 +134,7 @@
             let countArr = []
             for (var key of Object.keys(countJson)) {
                 startTime = Period == "month" ? key + "-28" : key //month day
-                countArr.push([startTime, countJson[key].count, name])
+                countArr.push( [startTime, countJson[key].count, name, countJson[key].detail] )
             }
 
             return countArr
@@ -180,7 +180,8 @@
             return {
                 date: ele[0],
                 count: ele[1],
-                quanName: ele[2]
+                quanName: ele[2],
+                detail:ele[3]
             }
         })
 
@@ -203,7 +204,7 @@
             //                  日期   总数 策略数已经单个策略数的总数
             技术指标统计.push([dateKey, sum, 统计byDate[dateKey]])
         }
-        console.log(技术指标统计)
+        console.log(统计byDate)
 
 
         if (typeof (smallDown) == "undefined") smallDown = []
@@ -232,7 +233,7 @@
 
             //当天 或 hs300最后一天 
             let currentDay = new Date()
-            currentDay = currentDay.getFullYear() + "-" + (currentDay.getMonth() + 1) + "-" + currentDay.getDate()
+            currentDay = currentDay.getFullYear()+1 + "-" + (currentDay.getMonth() + 1) + "-" + currentDay.getDate()
             arr.push([currentDay, ""])
 
             return arr
@@ -247,7 +248,7 @@
         option = {
             title: {},
             tooltip: {
-                trigger: "item", //item cross,
+                trigger: "item", //axis,item 
                 show: true,
                 //position: ['30%', '80%'],
                 order: 'seriesDesc',
@@ -260,8 +261,24 @@
                     },
                 },
                 formatter: function (params, ticket, callback) {
-                    if (params.seriesName && params.seriesName.includes("策略")) {
-                        return params.seriesName + params.data
+                    //trigger: "item", 时候才有效
+
+                    if (params.seriesName && params.seriesName.includes("策略")) { 
+                        if(params.data[2]){console.log(params.data[2])
+                               let objArr = params.data[2]
+                               let resStr = ""
+                               for (let i = 0; i < objArr.length; i++) {
+                                   resStr += objArr[i].quanName + "<br>"
+                                   for (let ii = 0; ii < objArr[i].detail.length; ii++) {
+                                       resStr = resStr+ "&nbsp&nbsp"+ objArr[i].detail[ii]  + "<br>"
+                                   }
+                                   resStr += "<br>"
+                               }
+                               return resStr
+                        }
+                        else {
+                            return params.seriesName + params.data
+                        }
                     }
                 },
             },

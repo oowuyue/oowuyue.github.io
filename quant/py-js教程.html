@@ -86,6 +86,31 @@ print(my_line.__closure__[0].cell_contents)
 
 
 
+原始类型 定义了表示在语言最低层面的不可变值。我们将这些值称为原始值。
+原始类型    typeof返回值    对象包装器  
+Undefined   "undefined"    不适用    undefined   未声明或未初始化    非人   表示值的缺失 Undefined类型只有一个值：undefined  
+Boolean     "boolean"      Boolean   false
+Number      "number"       Number    0,NaN       0.1+0.2!==0.3  用(arg1 - arg2) < Number.EPSILON 或 decimal.js
+BigInt      "bigint"       BigInt    0,NaN
+String      "string"       String     ""
+Symbol      "symbol"       Symbol
+Null        "object"       不适用     null       明确声明初始化null 非中国人 表示对象的缺失空指针 Null类型只有一个值：null
+                                                 这也可以说明 typeof null === "object" 的原因  原型相关
+
+对象（object）是指内存中的可以被标识符引用的一块区域。在 JavaScript 中，对象是唯一可变的值。事实上，函数也是具有额外可调用能力的对象。
+
+                                    其值不是 undefined 或 null 的
+                                    任何对象在传递给条件语句时都将计算为 true
+                                    包括其值为 false 的布尔对象 空数组（[]）或字符串 "false"
+                                    
+                                    if(x==true) truthy（真值）指的是在布尔值上下文中，转换后的值为 true 的值 
+
+
+?.   在引用为 null 或者 undefined 时，该表达式短路返回值是 undefined。与函数调用一起使用时，如果给定的函数不存在，则返回 undefined。
+??   当左侧的操作数为 null 或者 undefined 时，返回其右侧操作数，否则返回左侧操作数。
+
+
+
 
 一切皆对象          对象间有关系结构原型链[[Prototype]]   实例类对象
 
@@ -93,6 +118,8 @@ print(my_line.__closure__[0].cell_contents)
 
 自定义函数是对象    是有prototype属性的实例对象(prototype互指constructor)是可以new新实例对象的类对象 
                    内置函数不一定有prototype  即便有prototype也不一定能new   明希豪森三难困境互指无穷自指  37%原则
+
+
 
 
 组合 交叉
@@ -213,56 +240,3 @@ n     v         adv     v     v      n
 
 class people{ construct(n个单子) }
 class 单子
-
-
-
- { name: "热卷连续", code: "HC0" }, 
-        { name: "燃油连续", code: "FU0" },
-        { name: "黄金连续", code: "AU0" },
-        { name: "白银连续", code: "AG0" },
-        { name: "沪铜连续", code: "CU0" },
-        { name: "沪锌连续", code: "ZN0" },
-        { name: "沪镍连续", code: "NI0" },
-        { name: "橡胶连续", code: "RU0" },
-        { name: "20号胶连续", code: "NR0" },
-        { name: "纸浆连续", code: "SP0" },
-        { name: "氧化铝连续", code: "AO0" },
-        { name: "航运连续", code: "EC0" },
-
-        { name: "烧碱连续", code: "SH0" },
-        { name: "对二甲苯连续", code: "PX0" },
-        { name: "红枣连续", code: "CJ0" },
-        { name: "甲醇连续", code: "MA0" },
-        { name: "PTA连续", code: "TA0" },
-        { name: "尿素连续", code: "UR0" },
-        { name: "菜粕连续", code: "RM0" },
-        { name: "菜油连续", code: "OI0" },
-        { name: "苹果连续", code: "AP0" },
-        { name: "棉花连续", code: "CF0" },
-        { name: "锰硅连续", code: "SM0" },
-        { name: "白糖连续", code: "SR0" },
-        { name: "玻璃连续", code: "FG0" },
-        { name: "纯碱连续", code: "SA0" },
-        { name: "花生连续", code: "PK0" },
-        { name: "短纤连续", code: "PF0" },
-
-
-        { name: "铁矿石连续", code: "I0" },
-        { name: "焦炭连续", code: "J0" },
-        { name: "焦煤连续", code: "JM0" },
-        { name: "塑料连续", code: "L0" },
-        { name: "豆粕连续", code: "M0" },
-        { name: "豆一连续", code: "A0" },
-        { name: "豆二连续", code: "B0" },
-        { name: "豆油连续", code: "Y0" },
-        { name: "棕榈油连续", code: "P0" },
-        { name: "鸡蛋连续", code: "JD0" },
-        { name: "玉米连续", code: "C0" },
-        { name: "PVC连续", code: "V0" },
-        { name: "生猪连续", code: "LH0" },
-        { name: "乙二醇连续", code: "EG0" },
-        { name: "苯乙烯连续", code: "EB0" },
-        { name: "液化气连续", code: "PG0" },
-
-        { name: "沪深300指数期货", code: "IF0" },
-        { name: "上证50指数期货", code: "IH0" },

@@ -34,10 +34,26 @@
    -->
 
     <script>
-        function formatDate(site, date) {
+
+        function formatDate(site, date, period = "month") {
+
+            var current_date = new Date();
+            var current_y = current_date.getFullYear(),
+                current_m = current_date.getMonth() + 1,
+                current_d = current_date.getDate();
+            if (current_m < 10)
+                current_m = '0' + current_m;
+            if (current_d < 10)
+                current_d = '0' + current_d;
+
+
             if (site.includes("macromicro")) {
-                return date.substring(0, 8) + "28"
+                if (date.substring(0, 7) == (current_y + '-' + current_m))
+                    return date.substring(0, 8) + (parseInt(current_d) - 1)
+                else
+                    return date.substring(0, 8) + "28"
             }
+
             if (site.includes("woniu500")) {
                 return date.slice(0, 4) + "-" + date.slice(4, 6) + '-28';
             }
@@ -51,17 +67,31 @@
                 if (d < 10)
                     d = '0' + d;
 
-                if (d >= 28)
-                    var t = y + '-' + m + '-28';
-                else
+                if ((y + '-' + m) == (current_y + '-' + current_m)) { //当月不处理
                     var t = y + '-' + m + '-' + d;
+                }
+                else if (period == "day") { //日度数据
+                    var t = y + '-' + m + '-' + d;
+                }
+                else {
+                    var t = y + '-' + m + '-28';
+                }
                 return t;
 
             }
             if (site.includes("value500")) {
-                if (date.includes("日"))
-                    return date.slice(0, 4) + "-" + date.slice(5, 7) + "-" + date.substring(8, 10);
-                return date.slice(0, 4) + "-" + date.slice(5, 7) + '-28';
+                if (date.includes("日")) return date.slice(0, 4) + "-" + date.split("年")[1].split("月")[0] + "-" + date.substring(8, 10)
+                if (date.includes("年")) {
+                    let month = date.split("年")[1].split("月")[0]
+                    if (month.length == 1) month = '0' + month
+                    return date.slice(0, 4) + "-" + month + '-28';
+                }
+
+                if (date.includes("/")) { //2023/8/21
+
+                    return date.replaceAll('/', '-')
+                }
+
             }
         }
         function xueqiuFormatDate(stamp, period = "month") {
@@ -220,20 +250,28 @@
         var app = {};
         var option;
         ////仅为了对齐时间
-        Array.prototype.filterAndAddStartEnd = function () {
+        Array.prototype.filterAndAddStartEnd = function (isformatDate=true) {
             let arr = this
             arr = arr.filter(item => {
                 return parseFloat(item[0].substring(0, 4)) >= 1991
             })
+
+            //macromicro investing usfred 格式时间  指数 铜金比 按天不格式 
+            if(isformatDate)
+                arr = arr.map(item => {
+                    item[0] = formatDate("macromicro", item[0])
+                    return item
+                })
+
 
             let start = [
                 ["1991-01-01", ""]
             ]
             arr = start.concat(arr)
 
-            //当天 或 hs300最后一天 
+            //当天 或 hs300最后一天
             let currentDay = new Date()
-            currentDay = currentDay.getFullYear() + "-" + (currentDay.getMonth() + 1) + "-" + currentDay.getDate()
+            currentDay = currentDay.getFullYear()+1 + "-" + (currentDay.getMonth() + 1) + "-" + currentDay.getDate()
             arr.push([currentDay, ""])
 
             return arr
@@ -563,7 +601,7 @@
                     showSymbol: false,
                     xAxisIndex: 0,
                     yAxisIndex: 0,
-                    data: 恒生指数.filterAndAddStartEnd()
+                    data: 恒生指数.filterAndAddStartEnd(false)
                 },
 
                 {
@@ -705,7 +743,7 @@
                     data: 铜金比.map(item => {
                         item[1] = parseFloat(item[1]) * 10
                         return item
-                    }).filterAndAddStartEnd()
+                    }).filterAndAddStartEnd(false)
                 },
                 {
                     name: "油糖比",
@@ -774,7 +812,7 @@
                     showSymbol: false,
                     xAxisIndex: 2,
                     yAxisIndex: 2,
-                    data: 标普500.filterAndAddStartEnd(),
+                    data: 标普500.filterAndAddStartEnd(false),
 
                 },
 
@@ -844,10 +882,7 @@
                         width: 1.3,
                         color: "black"
                     },
-                    data: Rate.filterAndAddStartEnd().map((item) => {
-                        item[0] = formatDate("macromicro", item[0])
-                        return item
-                    })
+                    data: Rate.filterAndAddStartEnd()
                 },
                 {
                     name: 'Assets',
@@ -861,7 +896,7 @@
                         color: "#d23f37"
                     },
                     data: Assets.filterAndAddStartEnd().map((item) => {
-                        item[0] = formatDate("macromicro", item[0])
+                        //item[0] = formatDate("macromicro", item[0])
                         item[1] = item[1] ? item[1] - 0.7 : item[1]
                         return item
                     })

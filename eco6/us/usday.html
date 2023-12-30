@@ -117,7 +117,7 @@
 
             //当天 或 hs300最后一天 
             let currentDay = new Date()
-            currentDay = currentDay.getFullYear() + "-" + (currentDay.getMonth() + 1) + "-" + currentDay.getDate()
+            currentDay = currentDay.getFullYear()+1 + "-" + (currentDay.getMonth() + 1) + "-" + currentDay.getDate()
             arr.push([currentDay, ""])
 
             return arr
@@ -132,7 +132,7 @@
         option = {
             title: {},
             tooltip: {
-                trigger: "axis", //item cross,
+                trigger: "item", //axis item cross,
                 show: true,
                 position: ['30%', '80%'],
                 order: 'seriesDesc',
@@ -145,7 +145,10 @@
                     },
                 },
                 formatter: function (params, ticket, callback) {
-                    return null;
+                    //trigger: "item", 时候才有效
+                    if (params.seriesName && params.seriesName.includes("策略")) {
+                        return params.seriesName + params.data
+                    }
                 },
             },
 
