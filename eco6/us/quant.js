@@ -206,20 +206,20 @@ function backTest(dataName, dayDatas) {
 
 
     let startDayIndex = 70
-    try{
-        let 美股指数策略str = fs.readFileSync(`${folder}美股指数策略.js`, {encoding:'utf8', flag:'r'})
-        if(美股指数策略str){
+    try {
+        let 美股指数策略str = fs.readFileSync(`${folder}美股指数策略.js`, { encoding: 'utf8', flag: 'r' })
+        if (美股指数策略str) {
             eval(美股指数策略str)
-            if(dataName=="标普500_xueqiu_day") logDates=标普500策略 ?? []
-            if(dataName=="道琼斯_xueqiu_day") logDates=道琼斯策略 ?? []
-            if(dataName=="纳指_xueqiu_day") logDates=纳指策略 ?? []
-            if(logDates.length>0){
-                let lastDay = logDates[logDates.length-1][0]
-                let lastDayIndexIn = dayDatas.findIndex(ele=>{return ele.date == lastDay})
-                if(lastDayIndexIn>-1) startDayIndex = lastDayIndexIn+2
+            if (dataName == "标普500_xueqiu_day") logDates = 标普500策略 ?? []
+            if (dataName == "道琼斯_xueqiu_day") logDates = 道琼斯策略 ?? []
+            if (dataName == "纳指_xueqiu_day") logDates = 纳指策略 ?? []
+            if (logDates.length > 0) {
+                let lastDay = logDates[logDates.length - 1][0]
+                let lastDayIndexIn = dayDatas.findIndex(ele => { return ele.date == lastDay })
+                if (lastDayIndexIn > -1) startDayIndex = lastDayIndexIn + 2
             }
         }
-    }catch(e){
+    } catch (e) {
         //console.log(e)
     }
 

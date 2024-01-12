@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en-US">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <script type="text/javascript" src="jslib/my.js"></script>
+    <script type="text/javascript" src="data/sinaFutures/logAllday2.js"></script>
+    <script type="text/javascript">
+
+        function flitSort(filterType = "low", sortType = "name", period = 20) {
+
+            let low = 0
+            let up = 0.1
+            var logRes = filterType == "low" ? logAll.filter(ele => ele[`day${period}`] < low) : logAll.filter(ele => ele[`day${period}`] > up)
+
+            function hasSameNameStart(testItem) {
+                let res = false
+                for (var i = 0; i < resultArr.length; i++) {
+                    if ((resultArr[i][0] + resultArr[i][1]) == (testItem[0] + testItem[1])) {
+                        res = true
+                    }
+                }
+                return res
+            }
+
+            logRes.sort(function (a, b) {
+                if (a.name === b.name) { //name
+                    if (a[`day${period}`] > b[`day${period}`]) { //percnet
+                        return 1;
+                    } else if (a[`day${period}`] < b[`day${period}`]) {
+                        return -1;
+                    } else {
+                        return 0;
+                    }
+                } else {
+                    if (a.name > b.name) {
+                        return 1;
+                    } else {
+                        return -1;
+                    }
+                }
+            })
+            let resultArr = []
+            for (var i = 0; i < logRes.length; i++) {
+                if (hasSameNameStart(logRes[i])) continue
+                resultArr.push(logRes[i])
+            }
+
+
+            let resultArrSortName = resultArr
+            let resultArrSortPercent = [...resultArrSortName]
+            if (filterType == "up") resultArrSortPercent = resultArrSortPercent.sort((a, b) => b[`day${period}`] - a[`day${period}`])
+            if (filterType == "low") resultArrSortPercent = resultArrSortPercent.sort((a, b) => a[`day${period}`] - b[`day${period}`])
+            let resultArrSortDate = [...resultArrSortName]
+            resultArrSortDate = resultArrSortDate.sort((a, b) => Date.parse(a.trigDate) - Date.parse(b.trigDate))
+
+
+            if (sortType == "name") return resultArrSortName
+            if (sortType == "percent") return resultArrSortPercent
+            if (sortType == "date") return resultArrSortDate
+        }
+
+        let mapShow = (item, index) => {
+
+            let low0count = 0
+            let curtMa5 = 0
+
+            let day6 = item.trigDay6.maN(2, "close").map((item, i) => {
+                if (curtPercent(item) < 0) low0count += 1
+                if (i == 5) {
+                    curtMa5 = item.ma2
+                    return "Curt:" + curtPercent(item)
+                }
+                return curtPercent(item)
+            })
+
+
+
+            day5Allpercent = (item.trigDay6[item.trigDay6.length - 2].close - item.trigDay6[item.trigDay6.length - 6].close)
+                / item.trigDay6[item.trigDay6.length - 6].close * 100
+
+            let retArr = [
+                item.name,
+                item.trigDate,
+
+                item.day10,
+                item.day20,
+
+                item.day100 ? item.day100 : item.daylastDay,
+                item.day200 ? item.day200 : item.daylastDay,
+
+                //item.trigDay6[item.trigDay6.length - 1].close - curtMa5
+                // day6.sort((a, b) => { return a - b }) + "",
+                // +day5Allpercent.toFixed(2),
+                // item.trigDay6[item.trigDay6.length - 1].bar
+                // +item.trigMonth4[item.trigMonth4.length - 1].D.toFixed(2),
+                // +(item.trigMonth4[item.trigMonth4.length - 2].D - item.trigMonth4[item.trigMonth4.length - 1].D).toFixed(2)
+            ]
+            return retArr
+        }
+
+        console.log(
+            flitSort("low", "date", 20).map(mapShow),//.sort((a, b) => { return a[4] - b[4] }),
+            flitSort("up", "date", 20).map(mapShow)//.sort((a, b) => { return a[4] - b[4] }),
+        )
+
+
+        function 胜率(logAll, period = 20) {
+
+            let up = 0
+            let down = 0
+            let profile = 0
+            let loss = 0
+
+            logAll = logAll.filter((item) => {
+                if (item[`day${period}`]) return item
+            })
+
+            for (let index = 0; index < logAll.length; index++) {
+                let ele = logAll[index]
+                if (ele[`day${period}`] > 0.1) { up += 1; profile += ele[`day${period}`] }
+                if (ele[`day${period}`] < 0) { down += 1; loss += ele[`day${period}`] }
+
+            }
+            return [up / logAll.length * 100 + "%", profile / -loss * 100 + "%", up, down, logAll.length]
+        }
+
+        console.log(
+            胜率(logAll, 20),
+            胜率(logAll, 100),
+            胜率(logAll, 200),
+        )
+    </script>
+</head>
+
+<body>
+</body>
+
+</html>

@@ -23,424 +23,451 @@
     <script type="text/javascript" src="./m2.js"></script>
     -->
     <script type="text/javascript">
-    function isSameWeek(d1, d2) {
-        if (d1 == "" || d2 == "") return false
+        function isSameWeek(d1, d2) {
+            if (d1 == "" || d2 == "") return false
 
-        const ONE_DAY = 1000 * 60 * 60 * 24
-        const difftime = Math.abs(d2 - d1)
-        let bigDay = (d1 > d2 ? d1.getDay() : d2.getDay()) || 7
-        let smallDay = (d1 < d2 ? d1.getDay() : d2.getDay()) || 7
-        return !(difftime >= ONE_DAY * 7 || bigDay < smallDay || (bigDay === smallDay && difftime > ONE_DAY))
-    }
+            const ONE_DAY = 1000 * 60 * 60 * 24
+            const difftime = Math.abs(d2 - d1)
+            let bigDay = (d1 > d2 ? d1.getDay() : d2.getDay()) || 7
+            let smallDay = (d1 < d2 ? d1.getDay() : d2.getDay()) || 7
+            return !(difftime >= ONE_DAY * 7 || bigDay < smallDay || (bigDay === smallDay && difftime > ONE_DAY))
+        }
 
-    function dayToPeriod(dayIndexList, period) {
+        function dayToPeriod(dayIndexList, period) {
 
-        let open, high, low, close, volume
-        let preDayIndexDate = ""
-        let periodIndexList = []
-        let dayIndexListLastIndex = dayIndexList.length - 1
+            let open, high, low, close, volume
+            let preDayIndexDate = ""
+            let periodIndexList = []
+            let dayIndexListLastIndex = dayIndexList.length - 1
 
-        dayIndexList.forEach((dayIndex, i, dayIndexList) => {
+            dayIndexList.forEach((dayIndex, i, dayIndexList) => {
 
-            currentDate = dayIndex.d
-            currentOpen = parseFloat(dayIndex.o)
-            currentHigh = parseFloat(dayIndex.h)
-            currentLow = parseFloat(dayIndex.l)
-            currentClose = parseFloat(dayIndex.c)
-            currentVolume = parseFloat(dayIndex.v)
+                currentDate = dayIndex.d
+                currentOpen = parseFloat(dayIndex.o)
+                currentHigh = parseFloat(dayIndex.h)
+                currentLow = parseFloat(dayIndex.l)
+                currentClose = parseFloat(dayIndex.c)
+                currentVolume = parseFloat(dayIndex.v)
 
-            let samePeriod
-            if (period == "week")
-                samePeriod = isSameWeek(new Date(preDayIndexDate), new Date(currentDate))
-            if (period == "month")
-                samePeriod = preDayIndexDate.substring(0, 7) == currentDate.substring(0, 7) ? true : false
+                let samePeriod
+                if (period == "week")
+                    samePeriod = isSameWeek(new Date(preDayIndexDate), new Date(currentDate))
+                if (period == "month")
+                    samePeriod = preDayIndexDate.substring(0, 7) == currentDate.substring(0, 7) ? true : false
 
-            if (!samePeriod) {
-                let prPeriodIndex = {
-                    "d": preDayIndexDate,
-                    "o": open,
-                    "h": high,
-                    "l": low,
-                    "c": close,
-                    "v": volume,
+                if (!samePeriod) {
+                    let prPeriodIndex = {
+                        "d": preDayIndexDate,
+                        "o": open,
+                        "h": high,
+                        "l": low,
+                        "c": close,
+                        "v": volume,
+                    }
+                    periodIndexList.push(prPeriodIndex)
+
+                    open = currentOpen
+                    high = currentHigh
+                    low = currentLow
+                    close = currentClose
+                    volume = currentVolume
+                    preDayIndexDate = currentDate
                 }
-                periodIndexList.push(prPeriodIndex)
 
-                open = currentOpen
-                high = currentHigh
-                low = currentLow
-                close = currentClose
-                volume = currentVolume
-                preDayIndexDate = currentDate
-            }
-
-            if (samePeriod) {
-                high = currentHigh > high ? currentHigh : high
-                low = currentLow < low ? currentLow : low
-                close = currentClose
-                volume = volume + currentVolume
-                preDayIndexDate = currentDate
-            }
-            if (dayIndexListLastIndex == i) {
-                let currentPeriodIndex = {
-                    "d": currentDate,
-                    "o": open,
-                    "h": high,
-                    "l": low,
-                    "c": close,
-                    "v": volume,
+                if (samePeriod) {
+                    high = currentHigh > high ? currentHigh : high
+                    low = currentLow < low ? currentLow : low
+                    close = currentClose
+                    volume = volume + currentVolume
+                    preDayIndexDate = currentDate
                 }
-                periodIndexList.push(currentPeriodIndex)
-            }
-        })
+                if (dayIndexListLastIndex == i) {
+                    let currentPeriodIndex = {
+                        "d": currentDate,
+                        "o": open,
+                        "h": high,
+                        "l": low,
+                        "c": close,
+                        "v": volume,
+                    }
+                    periodIndexList.push(currentPeriodIndex)
+                }
+            })
 
-        return periodIndexList
-    }
+            return periodIndexList
+        }
 
 
 
 
 
 
-    //cn白糖week = dayToPeriod(cn白糖day, "week")
-    cn白糖month = dayToPeriod(cn白糖day, "month")
-        .map((element, index) => {
+        //cn白糖week = dayToPeriod(cn白糖day, "week")
+        cn白糖month = dayToPeriod(cn白糖day, "month")
+            .map((element, index) => {
+                return [new Date(element.d).getTime(), parseFloat(element.o) / 1, parseFloat(element.h) / 1, parseFloat(element.l) / 1, parseFloat(element.c) / 1, 0]
+            })
+        cn白糖month.shift()
+
+        //cn原油week = dayToPeriod(cn原油day, "week")
+        cn原油month = dayToPeriod(cn原油day, "month").map((element, index) => {
             return [new Date(element.d).getTime(), parseFloat(element.o) / 1, parseFloat(element.h) / 1, parseFloat(element.l) / 1, parseFloat(element.c) / 1, 0]
         })
-    cn白糖month.shift()
-
-    //cn原油week = dayToPeriod(cn原油day, "week")
-    cn原油month = dayToPeriod(cn原油day, "month").map((element, index) => {
-        return [new Date(element.d).getTime(), parseFloat(element.o) / 1, parseFloat(element.h) / 1, parseFloat(element.l) / 1, parseFloat(element.c) / 1, 0]
-    })
-    cn原油month.shift()
+        cn原油month.shift()
     </script>
 </head>
 
 <body style="margin: 0;height: 100%">
     <div id="chart" style="height: 100%"></div>
     <script>
-    window.onload = loaddata("us原油", us原油, "us白糖", us白糖)
+        window.onload = loaddata("us原油", us原油, "us白糖", us白糖)
 
-    function loaddata(k1Name, k1, k2Name, k2) {
+        function loaddata(k1Name, k1, k2Name, k2) {
 
-        if (k1.length >= k2.length) {
-            let startTimeStamp = k2[0][0]
-            let endTimeStamp = k2[k2.length - 1][0]
-            k1 = k1.filter((data) => {
-                return startTimeStamp <= data[0] && data[0] <= endTimeStamp
-            })
-        } else {
-            let startTimeStamp = k1[0][0]
-            let endTimeStamp = k1[k1.length - 1][0]
-            k2 = k2.filter((data) => {
-                return startTimeStamp <= data[0] && data[0] <= endTimeStamp
-            })
-        }
-
-        klinecharts.registerIndicator({
-            name: k2Name,
-            figures: [
-                { key: "cl", title: "", type: "line" }, //closeLine ????
-                { key: "open", title: "Open", type: "" },
-                { key: "high", title: "High", type: "" },
-                { key: "low", title: "Low", type: "" },
-                { key: "close", title: "Close", type: "" },
-            ],
-            styles: {
-                lines: [{
-                    // 'solid' | 'dashed'
-                    style: 'dashed',
-                    smooth: false,
-                    size: 0.5,
-                    dashedValue: [2, 2],
-                    color: 'red'
-                }, ]
-            },
-            calc: (kLineDataList, { calcParams, figures }) => {
-                const closeSums = []
-                return kLineDataList.map((kLineData, i) => {
-                    return {
-                        "cl": k2[k2.length - 1][4],
-                        "open": k2[i][1],
-                        "high": k2[i][2],
-                        "low": k2[i][3],
-                        "close": k2[i][4],
-                    }
+            if (k1.length >= k2.length) {
+                let startTimeStamp = k2[0][0]
+                let endTimeStamp = k2[k2.length - 1][0]
+                k1 = k1.filter((data) => {
+                    return startTimeStamp <= data[0] && data[0] <= endTimeStamp
                 })
-            },
-            draw: ({
-                ctx,
-                kLineDataList,
-                barSpace,
-                visibleRange,
-                indicator,
-                xAxis,
-                yAxis
-            }) => {
-                const { from, to } = visibleRange
-                ctx.font = barSpace.gapBar + 'px' + 'Helvetica Neue'
-                ctx.textAlign = 'center'
-                const result = indicator.result
-
-
-                for (let i = from; i < to; i++) {
-                    let data = result[i]
-
-
-                    ctx.beginPath(); // Start a new path
-
-                    if (data.close >= data.open) { ctx.strokeStyle = "red" } else { ctx.strokeStyle = "green"; }
-                    ctx.moveTo(xAxis.convertToPixel(i), yAxis.convertToPixel(data.high)); // Move the pen to (30, 50)
-                    ctx.lineTo(xAxis.convertToPixel(i), yAxis.convertToPixel(data.low)); // Draw a line to (150, 100)
-                    ctx.stroke(); // Render the path
-
-
-                    let x = xAxis.convertToPixel(i) - barSpace.halfGapBar
-                    let y
-                    let height
-                    if (data.close >= data.open) {
-                        ctx.fillStyle = "red"
-                        y = yAxis.convertToPixel(data.close)
-                    }
-
-                    if (data.close < data.open) {
-                        ctx.fillStyle = "green"
-                        y = yAxis.convertToPixel(data.open)
-                    }
-
-                    ctx.fillRect(x, y, barSpace.gapBar, Math.abs(yAxis.convertToPixel(data.open) - yAxis.convertToPixel(data.close)))
-                }
-                return false
-            },
-
-        })
-
-        klinecharts.registerIndicator({
-            name: '价格比',
-            figures: [
-                { key: '价格比', title: '价2格比: ', type: 'line' },
-            ],
-
-            styles: {
-                lines: [{
-                    // 'solid' | 'dashed'
-                    style: 'solid',
-                    smooth: false,
-                    size: 1,
-                    dashedValue: [2, 2],
-                    color: 'blue'
-                }, ]
-            },
-
-            // 计算结果
-            calc: (kLineDataList, { calcParams, figures }) => {
-                // 注意：返回数据个数需要和kLineDataList的数据个数一致，如果无值，用{}代替即可。
-                // 计算参数最好取回调参数calcParams，如果不是，后续计算参数发生变化的时候，这里计算不能及时响应
-                const closeSums = []
-                return kLineDataList.map((kLineData, i) => {
-                    if (kLineData.close > 0 && k2[i][4] > 0)
-                        return { "价格比": kLineData.close / k2[i][4] }
-                    else
-                        return { "价格比": 0 }
+            } else {
+                let startTimeStamp = k1[0][0]
+                let endTimeStamp = k1[k1.length - 1][0]
+                k2 = k2.filter((data) => {
+                    return startTimeStamp <= data[0] && data[0] <= endTimeStamp
                 })
             }
-        })
 
-        klinecharts.registerIndicator({
-            name: '价格差',
-            shortName: '价格差',
-            calcParams: [],
-            figures: [
-                { key: '价格差', title: '价格差: ', type: 'line' },
-            ],
-            styles: {
-                lines: [{
-                    // 'solid' | 'dashed'
-                    style: 'solid',
-                    smooth: false,
-                    size: 1,
-                    dashedValue: [2, 2],
-                    color: 'gray'
-                }, ]
-            },
-            // 计算结果
-            calc: (kLineDataList, { calcParams, figures }) => {
-                // 注意：返回数据个数需要和kLineDataList的数据个数一致，如果无值，用{}代替即可。
-                // 计算参数最好取回调参数calcParams，如果不是，后续计算参数发生变化的时候，这里计算不能及时响应
-                const closeSums = []
-                return kLineDataList.map((kLineData, i) => {
-
-                    return { "价格差": kLineData.close - k2[i][4] }
-                })
-            }
-        })
-
-        //初始化图表
-        var chart = klinecharts.init('chart')
-        chart.setStyles({
-            grid: {
-                show: true,
-                horizontal: {
-                    show: true,
-                    size: 0.35,
-                    color: 'black',
-                    style: 'dashed',
-                    // dashedValue: [0.5, 0.5]
-                },
-                vertical: {
-                    show: true,
-                    size: 0.35,
-                    color: '#EDEDED',
-                    style: 'dashed',
-                    dashedValue: [2, 2]
+            registerOverlay({
+                name: 'circle',
+                needDefaultPointFigure: true,
+                needDefaultXAxisFigure: true,
+                needDefaultYAxisFigure: true,
+                totalStep: 3,
+                createPointFigures: ({ coordinates }) => {
+                    if (coordinates.length === 2) {
+                        const xDis = Math.abs(coordinates[0].x - coordinates[1].x)
+                        const yDis = Math.abs(coordinates[0].y - coordinates[1].y)
+                        const radius = Math.sqrt(xDis * xDis + yDis * yDis)
+                        return {
+                            key: 'circle',
+                            type: 'circle',
+                            attrs: {
+                                ...coordinates[0],
+                                r: radius
+                            },
+                            styles: {
+                                style: 'stroke_fill'
+                            }
+                        }
+                    }
+                    return []
                 }
-            },
-            priceMark: {
-                show: false,
-                // 最高价标记
-                high: {
-                    show: false,
-                    color: '#D9D9D9',
-                    textOffset: 5,
-                    textSize: 0,
-                    textFamily: 'Helvetica Neue',
-                    textWeight: 'normal'
-                },
-                // 最低价标记
-                low: {
-                    show: false,
-                    color: '#D9D9D9',
-                    textOffset: 5,
-                    textSize: 0,
-                    textFamily: 'Helvetica Neue',
-                    textWeight: 'normal',
-                },
-                // 最新价标记
-                last: {
-                    show: false,
-                    upColor: '#2DC08E',
-                    downColor: '#F92855',
-                    noChangeColor: '#888888',
-                    line: {
-                        show: false,
+            })
+
+            klinecharts.registerIndicator({
+                name: k2Name,
+                figures: [
+                    { key: "cl", title: "", type: "line" }, //closeLine ????
+                    { key: "open", title: "Open", type: "" },
+                    { key: "high", title: "High", type: "" },
+                    { key: "low", title: "Low", type: "" },
+                    { key: "close", title: "Close", type: "" },
+                ],
+                styles: {
+                    lines: [{
                         // 'solid' | 'dashed'
                         style: 'dashed',
-                        dashedValue: [4, 4],
-                        size: 0
+                        smooth: false,
+                        size: 0.5,
+                        dashedValue: [2, 2],
+                        color: 'red'
+                    },]
+                },
+                calc: (kLineDataList, { calcParams, figures }) => {
+                    const closeSums = []
+                    return kLineDataList.map((kLineData, i) => {
+                        return {
+                            "cl": k2[k2.length - 1][4],
+                            "open": k2[i][1],
+                            "high": k2[i][2],
+                            "low": k2[i][3],
+                            "close": k2[i][4],
+                        }
+                    })
+                },
+                draw: ({
+                    ctx,
+                    kLineDataList,
+                    barSpace,
+                    visibleRange,
+                    indicator,
+                    xAxis,
+                    yAxis
+                }) => {
+                    const { from, to } = visibleRange
+                    ctx.font = barSpace.gapBar + 'px' + 'Helvetica Neue'
+                    ctx.textAlign = 'center'
+                    const result = indicator.result
+
+
+                    for (let i = from; i < to; i++) {
+                        let data = result[i]
+
+
+                        ctx.beginPath(); // Start a new path
+
+                        if (data.close >= data.open) { ctx.strokeStyle = "red" } else { ctx.strokeStyle = "green"; }
+                        ctx.moveTo(xAxis.convertToPixel(i), yAxis.convertToPixel(data.high)); // Move the pen to (30, 50)
+                        ctx.lineTo(xAxis.convertToPixel(i), yAxis.convertToPixel(data.low)); // Draw a line to (150, 100)
+                        ctx.stroke(); // Render the path
+
+
+                        let x = xAxis.convertToPixel(i) - barSpace.halfGapBar
+                        let y
+                        let height
+                        if (data.close >= data.open) {
+                            ctx.fillStyle = "red"
+                            y = yAxis.convertToPixel(data.close)
+                        }
+
+                        if (data.close < data.open) {
+                            ctx.fillStyle = "green"
+                            y = yAxis.convertToPixel(data.open)
+                        }
+
+                        ctx.fillRect(x, y, barSpace.gapBar, Math.abs(yAxis.convertToPixel(data.open) - yAxis.convertToPixel(data.close)))
+                    }
+                    return false
+                },
+
+            })
+
+            klinecharts.registerIndicator({
+                name: '价格比',
+                figures: [
+                    { key: '价格比', title: '价2格比: ', type: 'line' },
+                ],
+
+                styles: {
+                    lines: [{
+                        // 'solid' | 'dashed'
+                        style: 'solid',
+                        smooth: false,
+                        size: 1,
+                        dashedValue: [2, 2],
+                        color: 'blue'
+                    },]
+                },
+
+                // 计算结果
+                calc: (kLineDataList, { calcParams, figures }) => {
+                    // 注意：返回数据个数需要和kLineDataList的数据个数一致，如果无值，用{}代替即可。
+                    // 计算参数最好取回调参数calcParams，如果不是，后续计算参数发生变化的时候，这里计算不能及时响应
+                    const closeSums = []
+                    return kLineDataList.map((kLineData, i) => {
+                        if (kLineData.close > 0 && k2[i][4] > 0)
+                            return { "价格比": kLineData.close / k2[i][4] }
+                        else
+                            return { "价格比": 0 }
+                    })
+                }
+            })
+
+            klinecharts.registerIndicator({
+                name: '价格差',
+                shortName: '价格差',
+                calcParams: [],
+                figures: [
+                    { key: '价格差', title: '价格差: ', type: 'line' },
+                ],
+                styles: {
+                    lines: [{
+                        // 'solid' | 'dashed'
+                        style: 'solid',
+                        smooth: false,
+                        size: 1,
+                        dashedValue: [2, 2],
+                        color: 'gray'
+                    },]
+                },
+                // 计算结果
+                calc: (kLineDataList, { calcParams, figures }) => {
+                    // 注意：返回数据个数需要和kLineDataList的数据个数一致，如果无值，用{}代替即可。
+                    // 计算参数最好取回调参数calcParams，如果不是，后续计算参数发生变化的时候，这里计算不能及时响应
+                    const closeSums = []
+                    return kLineDataList.map((kLineData, i) => {
+
+                        return { "价格差": kLineData.close - k2[i][4] }
+                    })
+                }
+            })
+
+            //初始化图表
+            var chart = klinecharts.init('chart')
+            chart.setStyles({
+                grid: {
+                    show: true,
+                    horizontal: {
+                        show: true,
+                        size: 0.35,
+                        color: 'black',
+                        style: 'dashed',
+                        // dashedValue: [0.5, 0.5]
                     },
-                    text: {
+                    vertical: {
+                        show: true,
+                        size: 0.35,
+                        color: '#EDEDED',
+                        style: 'dashed',
+                        dashedValue: [2, 2]
+                    }
+                },
+                priceMark: {
+                    show: false,
+                    // 最高价标记
+                    high: {
                         show: false,
+                        color: '#D9D9D9',
+                        textOffset: 5,
+                        textSize: 0,
+                        textFamily: 'Helvetica Neue',
+                        textWeight: 'normal'
+                    },
+                    // 最低价标记
+                    low: {
+                        show: false,
+                        color: '#D9D9D9',
+                        textOffset: 5,
+                        textSize: 0,
+                        textFamily: 'Helvetica Neue',
+                        textWeight: 'normal',
+                    },
+                    // 最新价标记
+                    last: {
+                        show: false,
+                        upColor: '#2DC08E',
+                        downColor: '#F92855',
+                        noChangeColor: '#888888',
+                        line: {
+                            show: false,
+                            // 'solid' | 'dashed'
+                            style: 'dashed',
+                            dashedValue: [4, 4],
+                            size: 0
+                        },
+                        text: {
+                            show: false,
+                            // 'fill' | 'stroke' | 'stroke_fill'
+                            style: 'fill',
+                            size: 0,
+                            paddingLeft: 4,
+                            paddingTop: 4,
+                            paddingRight: 4,
+                            paddingBottom: 4,
+                            // 'solid' | 'dashed'
+                            borderStyle: 'solid',
+                            borderSize: 0,
+                            borderColor: 'transparent',
+                            borderDashedValue: [2, 2],
+                            color: '#FFFFFF',
+                            family: 'Helvetica Neue',
+                            weight: 'normal',
+                            borderRadius: 2
+                        }
+                    }
+                },
+                candle: {
+                    // 蜡烛图类型 'candle_solid'|'candle_stroke'|'candle_up_stroke'|'candle_down_stroke'|'ohlc'|'area'
+                    type: 'candle_up_stroke',
+                    // 蜡烛柱
+                    bar: {
+                        upColor: '#f50000',
+                        downColor: '#009b3e',
+                        noChangeColor: '#888888',
+
+                        upBorderColor: '#f50000',
+                        downBorderColor: '#009b3e',
+                        noChangeBorderColor: '#888888',
+
+                        upWickColor: '#f50000',
+                        downWickColor: '#009b3e',
+                        noChangeWickColor: '#888888'
+                    },
+                },
+                indicator: {
+                    ohlc: {
+                        upColor: 'rgba(45, 192, 142, .7)',
+                        downColor: 'rgba(249, 40, 85, .7)',
+                        noChangeColor: '#888888'
+                    },
+                    bars: [{
                         // 'fill' | 'stroke' | 'stroke_fill'
                         style: 'fill',
-                        size: 0,
-                        paddingLeft: 4,
-                        paddingTop: 4,
-                        paddingRight: 4,
-                        paddingBottom: 4,
                         // 'solid' | 'dashed'
                         borderStyle: 'solid',
-                        borderSize: 0,
-                        borderColor: 'transparent',
+                        borderSize: 1,
                         borderDashedValue: [2, 2],
-                        color: '#FFFFFF',
-                        family: 'Helvetica Neue',
-                        weight: 'normal',
-                        borderRadius: 2
-                    }
+                        upColor: 'rgba(249, 40, 85, .7)',
+                        downColor: 'rgba(45, 192, 142, .7)',
+                        noChangeColor: '#888888'
+                    }],
+                    // lines: [{
+                    //         style: 'solid',
+                    //         smooth: false,
+                    //         size: 1,
+                    //         dashedValue: [2, 2],
+                    //         color: '#ff5e20'
+                    //     },
+
+                    //     {
+                    //         // 'solid' | 'dashed'
+                    //         style: 'solid',
+                    //         smooth: false,
+                    //         size: 1,
+                    //         dashedValue: [2, 2],
+                    //         color: '#0068cc'
+                    //     },
+                    //     {
+                    //         style: 'solid',
+                    //         smooth: false,
+                    //         size: 1,
+                    //         dashedValue: [2, 2],
+                    //         color: 'black'
+                    //     }, {
+                    //         style: 'solid',
+                    //         smooth: false,
+                    //         size: 1,
+                    //         dashedValue: [2, 2],
+                    //         color: '#00c784'
+                    //     }
+                    // ]
                 }
-            },
-            candle: {
-                // 蜡烛图类型 'candle_solid'|'candle_stroke'|'candle_up_stroke'|'candle_down_stroke'|'ohlc'|'area'
-                type: 'candle_up_stroke',
-                // 蜡烛柱
-                bar: {
-                    upColor: '#f50000',
-                    downColor: '#009b3e',
-                    noChangeColor: '#888888',
+            })
+            //chart.createIndicator({ name: "MA", calcParams: [1, 12] }, false, { id: 'candle_pane' })
 
-                    upBorderColor: '#f50000',
-                    downBorderColor: '#009b3e',
-                    noChangeBorderColor: '#888888',
+            chart.createIndicator({ name: k2Name })
 
-                    upWickColor: '#f50000',
-                    downWickColor: '#009b3e',
-                    noChangeWickColor: '#888888'
-                },
-            },
-            indicator: {
-                ohlc: {
-                    upColor: 'rgba(45, 192, 142, .7)',
-                    downColor: 'rgba(249, 40, 85, .7)',
-                    noChangeColor: '#888888'
-                },
-                bars: [{
-                    // 'fill' | 'stroke' | 'stroke_fill'
-                    style: 'fill',
-                    // 'solid' | 'dashed'
-                    borderStyle: 'solid',
-                    borderSize: 1,
-                    borderDashedValue: [2, 2],
-                    upColor: 'rgba(249, 40, 85, .7)',
-                    downColor: 'rgba(45, 192, 142, .7)',
-                    noChangeColor: '#888888'
-                }],
-                // lines: [{
-                //         style: 'solid',
-                //         smooth: false,
-                //         size: 1,
-                //         dashedValue: [2, 2],
-                //         color: '#ff5e20'
-                //     },
-
-                //     {
-                //         // 'solid' | 'dashed'
-                //         style: 'solid',
-                //         smooth: false,
-                //         size: 1,
-                //         dashedValue: [2, 2],
-                //         color: '#0068cc'
-                //     },
-                //     {
-                //         style: 'solid',
-                //         smooth: false,
-                //         size: 1,
-                //         dashedValue: [2, 2],
-                //         color: 'black'
-                //     }, {
-                //         style: 'solid',
-                //         smooth: false,
-                //         size: 1,
-                //         dashedValue: [2, 2],
-                //         color: '#00c784'
-                //     }
-                // ]
-            }
-        })
-        //chart.createIndicator({ name: "MA", calcParams: [1, 12] }, false, { id: 'candle_pane' })
-
-        chart.createIndicator({ name: k2Name })
-
-        chart.createIndicator('价格比')
-        chart.createIndicator('价格差')
-        chart.createIndicator('KDJ')
-        chart.createIndicator('BIAS')
+            chart.createIndicator('价格比')
+            chart.createIndicator('价格差')
+            chart.createIndicator('KDJ')
+            chart.createIndicator('BIAS')
 
 
-        var chartDataList = k1.map(function(data) {
-            return {
-                timestamp: +data[0],
-                open: +data[1],
-                high: +data[2],
-                low: +data[3],
-                close: +data[4],
-                percent: +0,
-                volume: Math.ceil(+data[5]),
-            }
-        })
-        chart.applyNewData(chartDataList)
-        let res = chart.getIndicatorByPaneId()
-    }
+            var chartDataList = k1.map(function (data) {
+                return {
+                    timestamp: +data[0],
+                    open: +data[1],
+                    high: +data[2],
+                    low: +data[3],
+                    close: +data[4],
+                    percent: +0,
+                    volume: Math.ceil(+data[5]),
+                }
+            })
+            chart.applyNewData(chartDataList)
+            let res = chart.getIndicatorByPaneId()
+        }
     </script>
 </body>
 

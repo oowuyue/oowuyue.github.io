@@ -10,280 +10,397 @@
 </head>
 
 <body style="margin: 0;height: 100%">
-    <div id="chartDay" style="height:0%"></div>
-    <div id="chartWeek" style="height:0%"></div>
-    <div id="chartMonth" style="height:100%"></div>
+    <div id="chartDay" style="height:80%"></div>
+    <div id="chartWeek" style="height:80%"></div>
+    <div id="chartMonth" style="height:80%"></div>
     <script type="text/javascript" src="jslib/my.js"></script>
     <script>
-    let dataName = decodeURI(getQueryVariable("name"))
-    let edate = getQueryVariable("edate") //总回测数据 0开始  endate结束
-    let backday = getQueryVariable("backday") //回测开始点 结束往前天数
-    let showChart = getQueryVariable("showChart") //默认 全部 逐天 命令行  ?name=不锈钢连续&date=2020-03-01&noMock=1&showChart=1
-    let chartDay = klinecharts.init('chartDay')
-    let chartWeek = klinecharts.init('chartWeek')
-    let chartMonth = klinecharts.init('chartMonth')
+        let dataName = decodeURI(getQueryVariable("name"))
+        let edate = getQueryVariable("edate") //总回测数据 70开始  endate结束
+        let backday = getQueryVariable("backday") //回测开始点 结束往前天数
+        let showChart = getQueryVariable("showChart") //默认 全部 逐天 命令行  ?name=不锈钢连续&edate=2023-05-04&showChart=1&backday=20
 
-    checkOrTryHttp(dataName, onLoadData)
-    function onLoadData() {
-        //统一数据
-        let dayDatas = window[dataName]
+        //等效for循环for1
+        let endIndex
+        let currentDayIndex
 
-        klinecharts.registerIndicator({
-            name: 'newKDJ',
-            shortName: 'newKDJ',
-            calcParams: [],
-            figures: [
-                { key: 'K', title: 'K: ', type: 'line' },
-                { key: 'D', title: 'D: ', type: 'line' },
-                { key: 'J', title: 'J: ', type: 'line' },
-            ],
-            styles: {},
-            calc: (kLineDataList, { calcParams, figures }) => {
-                return kLineDataList.map((kLineData, i) => {
-                    return {
-                        "K": kLineData.K,
-                        "D": kLineData.D,
-                        "J": kLineData.J
-                    }
-                })
-            }
-        })
-        klinecharts.registerIndicator({
-            name: 'newMACD',
-            shortName: 'newMACD',
-            calcParams: [],
-            figures: [
-                { key: 'diff', title: 'diff: ', type: 'line' },
-                { key: 'dea', title: 'dea: ', type: 'line' },
-                { key: 'bar', title: 'bar: ', type: 'line' },
-            ],
-            styles: {},
-            calc: (kLineDataList, { calcParams, figures }) => {
-                return kLineDataList.map((kLineData, i) => {
-                    return {
-                        "diff": kLineData.diff,
-                        "dea": kLineData.dea,
-                        "bar": kLineData.bar
-                    }
-                })
-            },
-        })
-        let normalStyle = {
-            grid: {
-                show: true,
-                horizontal: {
-                    show: true,
-                    size: 0.35,
-                    color: 'black',
-                    style: 'dashed',
-                    // dashedValue: [0.5, 0.5]
+        let chartDay = klinecharts.init('chartDay')
+        let chartWeek = klinecharts.init('chartWeek')
+        let chartMonth = klinecharts.init('chartMonth')
+
+        checkOrTryHttp(dataName, "sina", () => {
+
+            //统一数据
+            let dayDatas = window[dataName]
+
+            klinecharts.registerIndicator({
+                name: 'MyMa',
+                shortName: 'MyMa',
+                calcParams: [3],
+                figures: [
+                    { key: 'MyMa', title: 'MyMa: ', type: 'line' },
+                ],
+
+                styles: {
+                    lines: [{
+                        // 'solid' | 'dashed'
+                        style: 'dashed',
+                        smooth: false,
+                        size: 1,
+                        dashedValue: [2, 2],
+                        color: 'blue'
+                    },]
                 },
-                vertical: {
-                    show: true,
-                    size: 0.35,
-                    color: '#EDEDED',
-                    style: 'dashed',
-                    dashedValue: [2, 2]
+
+                calc: (kLineDataList, { calcParams, figures }) => {
+                    return kLineDataList.map(kLineData => {
+                        return { MyMa: kLineData.ma3 }
+                    })
                 }
-            },
-            candle: {
-                // 蜡烛图类型 'candle_solid'|'candle_stroke'|'candle_up_stroke'|'candle_down_stroke'|'ohlc'|'area'
-                type: 'candle_up_stroke',
-                // 蜡烛柱
-                bar: {
-                    upColor: '#f50000',
-                    downColor: '#009b3e',
-                    noChangeColor: '#888888',
-
-                    upBorderColor: '#f50000',
-                    downBorderColor: '#009b3e',
-                    noChangeBorderColor: '#888888',
-
-                    upWickColor: '#f50000',
-                    downWickColor: '#009b3e',
-                    noChangeWickColor: '#888888'
+            })
+            klinecharts.registerIndicator({
+                name: 'MyBOLL',
+                shortName: 'MyBOLL',
+                calcParams: [],
+                figures: [
+                    { key: 'ups', title: 'ups: ', type: 'line' },
+                    { key: 'mas', title: 'mas: ', type: 'line' },
+                    { key: 'lows', title: 'lows: ', type: 'line' },
+                ],
+                styles: {},
+                calc: (kLineDataList, { calcParams, figures }) => {
+                    return kLineDataList.map((kLineData, i) => {
+                        return {
+                            "ups": kLineData.ups,
+                            "mas": kLineData.mas,
+                            "lows": kLineData.lows
+                        }
+                    })
+                }
+            })
+            klinecharts.registerIndicator({
+                name: 'newKDJ',
+                shortName: 'newKDJ',
+                calcParams: [],
+                figures: [
+                    { key: 'K', title: 'K: ', type: 'line' },
+                    { key: 'D', title: 'D: ', type: 'line' },
+                    { key: 'J', title: 'J: ', type: 'line' },
+                ],
+                styles: {},
+                calc: (kLineDataList, { calcParams, figures }) => {
+                    return kLineDataList.map((kLineData, i) => {
+                        return {
+                            "K": kLineData.K,
+                            "D": kLineData.D,
+                            "J": kLineData.J
+                        }
+                    })
+                }
+            })
+            klinecharts.registerIndicator({
+                name: 'newMACD',
+                shortName: 'newMACD',
+                calcParams: [],
+                figures: [
+                    { key: 'diff', title: 'diff: ', type: 'line' },
+                    { key: 'dea', title: 'dea: ', type: 'line' },
+                    { key: 'bar', title: 'bar: ', type: 'line' },
+                ],
+                styles: {},
+                calc: (kLineDataList, { calcParams, figures }) => {
+                    return kLineDataList.map((kLineData, i) => {
+                        return {
+                            "diff": kLineData.diff,
+                            "dea": kLineData.dea,
+                            "bar": kLineData.bar
+                        }
+                    })
                 },
-            },
-        }
-        chartDay.setStyles(normalStyle)
-        chartWeek.setStyles(normalStyle)
-        chartMonth.setStyles(normalStyle)
-        let dayNewKdj = chartDay.createIndicator('newKDJ')
-        let weekNewKdj = chartWeek.createIndicator('newKDJ')
-        let monthNewKdj = chartMonth.createIndicator('newKDJ')
-        let monthMacd = chartMonth.createIndicator('MACD')
-        let monthNewBias = chartMonth.createIndicator('BIAS')
+            })
 
-        backTest(dataName, dayDatas)
-    }
+            let normalStyle = {
+                grid: {
+                    show: true,
+                    horizontal: {
+                        show: true,
+                        size: 0.35,
+                        color: 'black',
+                        style: 'dashed',
+                        // dashedValue: [0.5, 0.5]
+                    },
+                    vertical: {
+                        show: true,
+                        size: 0.35,
+                        color: '#EDEDED',
+                        style: 'dashed',
+                        dashedValue: [2, 2]
+                    }
+                },
+                candle: {
+                    // 蜡烛图类型 'candle_solid'|'candle_stroke'|'candle_up_stroke'|'candle_down_stroke'|'ohlc'|'area'
+                    type: 'candle_up_stroke',
+                    // 蜡烛柱
+                    bar: {
+                        upColor: '#f50000',
+                        downColor: '#009b3e',
+                        noChangeColor: '#888888',
 
-    let logDay5 = []
-    let logDay5percent = ""
-    let log20 = []
-    let log30 = []
-    let log70 = []
-    function backTest(dataName, dayDatas) {
+                        upBorderColor: '#f50000',
+                        downBorderColor: '#009b3e',
+                        noChangeBorderColor: '#888888',
 
-        let stockCountry = "cn"
-
-        let dayCross = false
-        let dayNlowM = false
-        let weekJup = false
-        let monthLowMa = false
-        let monthJup = false
-        let monthJlow5 = false
-        let monthPre5Jlow0 = false
-
-        function restAction() {
-            dayCross = false
-            dayNlowM = false
-            weekJup = false
-            monthLowMa = false
-            monthJup = false
-            monthJlow5 = false
-            monthPre5Jlow0 = false
-
-            logDay5 = []
-            logDay5percent = ""
-        }
-
-        function testDay(currentDayList) {
-
-            let preDay = currentDayList[currentDayList.length - 2]
-            let currentDay = currentDayList[currentDayList.length - 1]
-            if ((preDay.K < preDay.D) && (currentDay.K >= currentDay.D) && currentDay.D <= 50) {
-                dayCross = true //日低位金叉
+                        upWickColor: '#f50000',
+                        downWickColor: '#009b3e',
+                        noChangeWickColor: '#888888'
+                    },
+                },
             }
-
-
-            let nDayLow0Count = 0
-            let nDayLow2Count = 0
-            let day5percent = 0
-            for (let i = 2; i < 7; i++) {
-                let dayItem = currentDayList[currentDayList.length - i]
-                let dayPercnet = getDayPercent(dayItem)
-                if (dayPercnet < 0) {
-                    nDayLow0Count = nDayLow0Count + 1 //前五日跌超0天数
+            chartDay.setStyles(normalStyle)
+            chartWeek.setStyles(normalStyle)
+            chartMonth.setStyles(normalStyle)
+            klinecharts.registerOverlay({
+                name: 'circle',
+                needDefaultPointFigure: true,
+                needDefaultXAxisFigure: true,
+                needDefaultYAxisFigure: true,
+                totalStep: 3,
+                createPointFigures: ({ coordinates }) => {
+                    if (coordinates.length === 2) {
+                        const xDis = Math.abs(coordinates[0].x - coordinates[1].x)
+                        const yDis = Math.abs(coordinates[0].y - coordinates[1].y)
+                        const radius = Math.sqrt(xDis * xDis + yDis * yDis)
+                        return {
+                            key: 'circle',
+                            type: 'circle',
+                            attrs: {
+                                ...coordinates[0],
+                                r: radius
+                            },
+                            styles: {
+                                style: 'stroke_fill'
+                            }
+                        }
+                    }
+                    return []
                 }
-                if (dayPercnet < -2) {
-                    nDayLow2Count = nDayLow2Count + 1 //前五日跌超-2的天数
+            })
+
+            let dayNewKdj = chartDay.createIndicator('newKDJ')
+            let dayMacd = chartDay.createIndicator('MACD')
+
+            // let chartDayMyMa3 = chartDay.createIndicator({ name: "MyMa" }, true, { id: 'candle_pane' })
+            // let chartDayMyBOLL = chartDay.createIndicator({ name: "MyBOLL" }, true, { id: 'candle_pane' })
+
+            let weekNewKdj = chartWeek.createIndicator('newKDJ')
+            let weekMacd = chartWeek.createIndicator('MACD')
+
+            let monthNewKdj = chartMonth.createIndicator('newKDJ')
+            let monthMacd = chartMonth.createIndicator('MACD')
+
+            endIndex = dayDatas.length
+            if (edate) {
+                endIndex = dayDatas.findIndex(ele => ele.date == edate)
+                if (endIndex == -1) endIndex = dayDatas.length
+                else endIndex++
+            }
+            currentDayIndex = 70
+            if (backday) {
+                currentDayIndex = endIndex - backday
+            }
+
+            backTest(dataName, dayDatas)
+
+            document.addEventListener("keydown", function (event) {
+                if (event.keyCode === 37) endIndex--
+                if (event.keyCode === 39) endIndex++
+                currentDayIndex = endIndex
+                backTest(dataName, dayDatas)
+            })
+            document.addEventListener("keydown", function (event) {
+                if (event.keyCode === 88) chartDay.createOverlay("circle")  
+            })
+        
+            document.addEventListener('keydown', (e) => {
+                if (e.ctrlKey && e.keyCode === 88) { 
+                    // 创建一个新的 KeyboardEvent 对象 以Ctrl+X为例 注意：这里只能是ctrl、alt、shift 加一个普通键。
+                    const event = new KeyboardEvent('keydown', {
+                        key: 'n',
+                        code: 'KeyN',
+                        keyCode: 39,
+                        which: 39,
+                        shiftKey: false,
+                        ctrlKey: false,
+                        altKey: false,
+                        metaKey: false,
+                    });
+
+                    for (let index = 0; index <= 200; index++) {
+                        document.dispatchEvent(event);
+                    }
+                    // 触发事件
                 }
-                logDay5.push(dayPercnet)
-            }
-            logDay5.sort((a, b) => a - b)
-            //前五日下跌幅度
-            day5percent = (currentDayList[currentDayList.length - 2].close - currentDayList[currentDayList.length - 6].open) / currentDayList[currentDayList.length - 6].open * 100
-            logDay5percent = day5percent
+            })
+        })
 
-            if (
-                (
-                    (nDayLow0Count >= 2) ||
-                    (nDayLow2Count >= 1) ||
-                    (day5percent <= -3)
-                ) &&
-                (nDayLow0Count < 5) &&
-                (1 < nDayLow0Count) &&
-                (day5percent <= -0.5) //*
-                &&
-                (-0.43 < getDayPercent(currentDay)) //&
-            ) {
-                dayNlowM = true
-            }
-        }
 
-        function testWeek(currentWeekList) {
-            weekJup = true //周J向上 
-        }
+        let logDay5 = []
+        let logDay5percent = ""
+        let log20 = []
+        let log30 = []
+        let log70 = []
+        function backTest(dataName, dayDatas) {
 
-        function testMonth(currentMonthList) {
-            let pre5Month = currentMonthList[currentMonthList.length - 3]
-            let preMonth = currentMonthList[currentMonthList.length - 2]
-            let currentMonth = currentMonthList[currentMonthList.length - 1]
-            let monthJupVal = currentMonth.J - preMonth.J
-            if (monthJupVal >= 0.2) {
-                monthJup = true //月J向上 
+            let dayCross = false
+            let dayNlowM = false
+            let weekJup = false
+            let monthLowMa = false
+            let monthJup = false
+            let monthJlow5 = false
+            let monthPre5Jlow0 = false
+
+            function restAction() {
+                dayCross = false
+                dayNlowM = false
+                weekJup = false
+                monthLowMa = false
+                monthJup = false
+                monthJlow5 = false
+                monthPre5Jlow0 = false
+
+                logDay5 = []
+                logDay5percent = ""
             }
-            if (currentMonth.J <= 7) {
-                monthJlow5 = true //月j小于5 7 10 12
-            }
-            for (var i = 1; i < 6; i++) {
-                let monthItem = currentMonthList[currentMonthList.length - i]
-                if (monthItem && monthItem.J <= 2) {
-                    monthPre5Jlow0 = true //前五个月有月j小于0 2 3 5 7
-                    break
+
+            function testDay(currentDayList) {
+
+                let preDay = currentDayList[currentDayList.length - 2]
+                let currentDay = currentDayList[currentDayList.length - 1]
+                if ((preDay.K < preDay.D) && (currentDay.K >= currentDay.D) && currentDay.D <= 50) {
+                    dayCross = true //日低位金叉
+                }
+
+
+                let nDayLow0Count = 0
+                let nDayLow2Count = 0
+                let day5percent = 0
+                for (let i = 2; i < 7; i++) {
+                    let dayItem = currentDayList[currentDayList.length - i]
+                    let dayPercnet = getDayPercent(dayItem)
+                    if (dayPercnet < 0) {
+                        nDayLow0Count = nDayLow0Count + 1 //前五日跌超0天数
+                    }
+                    if (dayPercnet < -2) {
+                        nDayLow2Count = nDayLow2Count + 1 //前五日跌超-2的天数
+                    }
+                    logDay5.push(dayPercnet)
+                }
+                logDay5.sort((a, b) => a - b)
+                //前五日下跌幅度
+                day5percent = (currentDayList[currentDayList.length - 2].close - currentDayList[currentDayList.length - 6].open) / currentDayList[currentDayList.length - 6].open * 100
+                logDay5percent = day5percent
+
+                if (
+                    (
+                        (nDayLow0Count >= 2) ||
+                        (nDayLow2Count >= 1) ||
+                        (day5percent <= -3)
+                    ) &&
+                    (nDayLow0Count < 5) &&
+                    (1 < nDayLow0Count) &&
+                    (day5percent <= -0.5) //*
+                    &&
+                    (-0.43 < getDayPercent(currentDay)) //&
+                ) {
+                    dayNlowM = true
                 }
             }
-        }
 
-        function log(currentDayList, currentWeekList, currentMonthList) {
-
-
-            let currentDayIndex = currentDayList.length - 1
-            let currentDay = currentDayList[currentDayIndex]
-            console.log("ok", currentDay.date, logDay5, logDay5percent.toFixed(2), getDayPercent(currentDay))
-            if (currentDayIndex + 70 <= dayDatas.length) {
-
-                nextDayData = dayDatas[currentDayIndex]
-                next20DayData = dayDatas[currentDayIndex + 20]
-                next30DayData = dayDatas[currentDayIndex + 30]
-                next50DayData = dayDatas[currentDayIndex + 50]
-                next70DayData = dayDatas[currentDayIndex + 70]
-
-                let profile20 = (next20DayData.close - nextDayData.close) / nextDayData.close * 100
-                log20.push([dataName, currentDay.date, next20DayData.date, profile20])
-
-                let profile30 = (next30DayData.close - nextDayData.close) / nextDayData.close * 100
-                log30.push([dataName, currentDay.date, next30DayData.date, profile30])
-
-                let profile70 = (next70DayData.close - nextDayData.close) / nextDayData.close * 100
-                log70.push([dataName, currentDay.date, next70DayData.date, profile70])
-            }
-        }
-
-
-        //等效for循环
-        let endIndex = dayDatas.length
-        if (edate) {
-            endIndex = dayDatas.findIndex(ele => ele.date == edate)
-            if (endIndex == -1) endIndex = dayDatas.length
-            else endIndex++
-        }
-
-        let currentDayIndex = 70
-        if (backday) {
-            currentDayIndex = endIndex - backday //for1
-        }
-
-        let timer = setInterval(function() {
-            if (timer && currentDayIndex > endIndex) { //for2
-                log20.sort((a, b) => a[3] - b[3])
-                log30.sort((a, b) => a[3] - b[3])
-                log70.sort((a, b) => a[3] - b[3])
-                console.log(log20, log30, log70)
-                clearInterval(timer)
-                return
+            function testWeek(currentWeekList) {
+                weekJup = true //周J向上 
             }
 
-            let currentDayList = dayDatas.slice(0, currentDayIndex).calKdj()
-            let currentWeekList = dayToPeriod(currentDayList, "week").calKdj()
-            let currentMonthList = dayToPeriod(currentDayList, "month").calKdj()
-            if (showChart) {
-                chartDay.applyNewData(currentDayList)
-                chartWeek.applyNewData(currentWeekList)
-                chartMonth.applyNewData(currentMonthList)
+            function testMonth(currentMonthList) {
+                let pre5Month = currentMonthList[currentMonthList.length - 3]
+                let preMonth = currentMonthList[currentMonthList.length - 2]
+                let currentMonth = currentMonthList[currentMonthList.length - 1]
+                let monthJupVal = currentMonth.J - preMonth.J
+                if (monthJupVal >= 0.2) {
+                    monthJup = true //月J向上 
+                }
+                if (currentMonth.J <= 7) {
+                    monthJlow5 = true //月j小于5 7 10 12
+                }
+                for (var i = 1; i < 6; i++) {
+                    let monthItem = currentMonthList[currentMonthList.length - i]
+                    if (monthItem && monthItem.J <= 2) {
+                        monthPre5Jlow0 = true //前五个月有月j小于0 2 3 5 7
+                        break
+                    }
+                }
             }
-            testDay(currentDayList)
-            testWeek(currentWeekList)
-            testMonth(currentMonthList)
-            let lastResult = dayCross && dayNlowM && weekJup && monthJup && monthJlow5 && monthPre5Jlow0
-            if (lastResult) log(currentDayList, currentWeekList, currentMonthList)
-            restAction()
 
-            currentDayIndex++ //for3
+            function mylog(currentDayList, currentWeekList, currentMonthList) {
 
-        }, 1)
-        //等效for循环
-    }
+
+                let currentDayIndex = currentDayList.length - 1
+                let currentDay = currentDayList[currentDayIndex]
+                console.log("ok", currentDay.date, logDay5, logDay5percent.toFixed(2), getDayPercent(currentDay))
+                if (currentDayIndex + 70 <= dayDatas.length) {
+
+                    nextDayData = dayDatas[currentDayIndex]
+                    next20DayData = dayDatas[currentDayIndex + 20]
+                    next30DayData = dayDatas[currentDayIndex + 30]
+                    next50DayData = dayDatas[currentDayIndex + 50]
+                    next70DayData = dayDatas[currentDayIndex + 70]
+
+                    let profile20 = (next20DayData.close - nextDayData.close) / nextDayData.close * 100
+                    log20.push([dataName, currentDay.date, next20DayData.date, profile20])
+
+                    let profile30 = (next30DayData.close - nextDayData.close) / nextDayData.close * 100
+                    log30.push([dataName, currentDay.date, next30DayData.date, profile30])
+
+                    let profile70 = (next70DayData.close - nextDayData.close) / nextDayData.close * 100
+                    log70.push([dataName, currentDay.date, next70DayData.date, profile70])
+                }
+            }
+
+
+            let timer = setInterval(function () {
+                if (timer && currentDayIndex > endIndex) { //for2
+                    log20.sort((a, b) => a[3] - b[3])
+                    log30.sort((a, b) => a[3] - b[3])
+                    log70.sort((a, b) => a[3] - b[3])
+                    console.log(log20, log30, log70)
+                    clearInterval(timer)
+                    return
+                }
+
+                let currentDayList = dayDatas.slice(0, currentDayIndex).calKdj().calBoll().maN(3, "close")
+                let currentWeekList = dayToPeriod(currentDayList, "week").calKdj()
+                let currentMonthList = dayToPeriod(currentDayList, "month").calKdj()
+                if (showChart) {
+                    chartDay.applyNewData(currentDayList)
+                    chartWeek.applyNewData(currentWeekList)
+                    chartMonth.applyNewData(currentMonthList)
+                }
+                testDay(currentDayList)
+                testWeek(currentWeekList)
+                testMonth(currentMonthList)
+                let lastResult = dayCross && dayNlowM && weekJup && monthJup && monthJlow5 && monthPre5Jlow0
+                if (lastResult) {
+
+                    mylog(currentDayList, currentWeekList, currentMonthList)
+
+                }
+                restAction()
+
+                currentDayIndex++ //for3
+
+            }, 1)
+            //等效for循环
+        }
+
     </script>
 </body>
 

@@ -10,266 +10,277 @@
     <script type="text/javascript" src="data/xqStocks/上证指数_xueqiu_day.json"></script>
     <script type="text/javascript" src="data/xqStocks/沪深300_xueqiu_day.json"></script>
     <script>
-    function xueqiuFormatDate(stamp, period = "month") {
-        var date = new Date(stamp);
-        var y = date.getFullYear(),
-            m = date.getMonth() + 1,
-            d = date.getDate();
-        if (m < 10)
-            m = '0' + m;
-        if (d < 10)
-            d = '0' + d;
+        function xueqiuFormatDate(stamp, period = "month") {
+            var date = new Date(stamp);
+            var y = date.getFullYear(),
+                m = date.getMonth() + 1,
+                d = date.getDate();
+            if (m < 10)
+                m = '0' + m;
+            if (d < 10)
+                d = '0' + d;
 
-        if (period == "month") {
-            var current_date = new Date();
-            var current_y = current_date.getFullYear(),
-                current_m = current_date.getMonth() + 1,
-                current_d = current_date.getDate();
-            if (current_m < 10)
-                current_m = '0' + current_m;
-            if (current_d < 10)
-                current_d = '0' + current_d;
+            if (period == "month") {
+                var current_date = new Date();
+                var current_y = current_date.getFullYear(),
+                    current_m = current_date.getMonth() + 1,
+                    current_d = current_date.getDate();
+                if (current_m < 10)
+                    current_m = '0' + current_m;
+                if (current_d < 10)
+                    current_d = '0' + current_d;
 
-            if ((y + '-' + m) == (current_y + '-' + current_m)) { //当月不处理
-                var t = y + '-' + m + '-' + d;
-            } else {
-                var t = y + '-' + m + '-28';
+                if ((y + '-' + m) == (current_y + '-' + current_m)) { //当月不处理
+                    var t = y + '-' + m + '-' + d;
+                } else {
+                    var t = y + '-' + m + '-28';
+                }
             }
+
+            if (period == "day") {
+                var t = y + '-' + m + '-' + d;
+            }
+
+
+            return t;
         }
 
-        if (period == "day") {
-            var t = y + '-' + m + '-' + d;
+        function sectorIndexToObj(ele, period = "month") {
+            let newItem = {}
+            newItem.stamp = ele[0]
+            newItem.date = xueqiuFormatDate(ele[0], period)
+            newItem.open = ele[2] //open
+            newItem.high = ele[3] //open
+            newItem.low = ele[4] //open
+            newItem.close = ele[5] //close
+            return newItem
         }
 
-
-        return t;
-    }
-
-    function sectorIndexToObj(ele, period = "month") {
-        let newItem = {}
-        newItem.stamp = ele[0]
-        newItem.date = xueqiuFormatDate(ele[0], period)
-        newItem.open = ele[2] //open
-        newItem.high = ele[3] //open
-        newItem.low = ele[4] //open
-        newItem.close = ele[5] //close
-        return newItem
-    }
-
-    function sectorIndexYoY(ele, index, datasArr) {
-        
-        
-        let preItem 
-
-        // preItem = datasArr.find(element => {
-        //     let preYear = '' + (parseInt(ele.date.slice(0, 4)) - 1) + ele.date.substring(4, 10)
-        //     return element.date == preYear
-        // })
-        //A股一年平均有250个交易日
-        preItem = datasArr[index-240]
+        function sectorIndexYoY(ele, index, datasArr) {
 
 
-        let pre1_5Item = datasArr[index-470]
+            let preItem
 
-    
-        if (preItem) {
-            let openYoY = (ele.open - preItem.open) / preItem.open
-            var closeYoY = (ele.close - preItem.close) / preItem.close
-            let highYoY = (ele.high - preItem.high) / preItem.high
-            let lowYoY = (ele.low - preItem.low) / preItem.low
+            // preItem = datasArr.find(element => {
+            //     let preYear = '' + (parseInt(ele.date.slice(0, 4)) - 1) + ele.date.substring(4, 10)
+            //     return element.date == preYear
+            // })
+            //A股一年平均有250个交易日
+            preItem = datasArr[index - 240]
 
-            ele.openYoY = openYoY
-            ele.closeYoY = closeYoY
-            ele.highYoY = highYoY
-            ele.lowYoY = lowYoY
-        } else {
-            ele.openYoY = ""
-            ele.closeYoY = ""
-            ele.highYoY = ""
-            ele.lowYoY = ""
+
+            let pre1_5Item = datasArr[index - 470]
+
+
+            if (preItem) {
+                let openYoY = (ele.open - preItem.open) / preItem.open
+                var closeYoY = (ele.close - preItem.close) / preItem.close
+                let highYoY = (ele.high - preItem.high) / preItem.high
+                let lowYoY = (ele.low - preItem.low) / preItem.low
+
+                ele.openYoY = openYoY
+                ele.closeYoY = closeYoY
+                ele.highYoY = highYoY
+                ele.lowYoY = lowYoY
+            } else {
+                ele.openYoY = ""
+                ele.closeYoY = ""
+                ele.highYoY = ""
+                ele.lowYoY = ""
+            }
+
+            if (pre1_5Item) {
+                let closeYoY1_5 = (ele.close - pre1_5Item.close) / pre1_5Item.close
+                let highYoY1_5 = (ele.high - pre1_5Item.high) / pre1_5Item.high
+                let lowYoY1_5 = (ele.low - pre1_5Item.low) / pre1_5Item.low
+                ele.closeYoY1_5 = closeYoY1_5
+                ele.highYoY1_5 = highYoY1_5
+                ele.lowYoY1_5 = lowYoY1_5
+            } else {
+                ele.closeYoY1_5 = ""
+            }
+            return ele
+
         }
+        上证指数_xueqiu_day = 上证指数_xueqiu_day.map((ele, index, arr) => {
+            return sectorIndexYoY(ele, index, arr)
+        })
+        沪深300_xueqiu_day = 沪深300_xueqiu_day.map((ele, index, arr) => {
+            return sectorIndexYoY(ele, index, arr)
+        })
 
-         if(pre1_5Item){
-            let closeYoY1_5 = (ele.close - pre1_5Item.close) / pre1_5Item.close
-            let highYoY1_5 = (ele.high - pre1_5Item.high) / pre1_5Item.high
-            let lowYoY1_5 = (ele.low - pre1_5Item.low) / pre1_5Item.low
-            ele.closeYoY1_5 =  closeYoY1_5
-            ele.highYoY1_5 =  highYoY1_5
-            ele.lowYoY1_5 =  lowYoY1_5
-        }else{
-             ele.closeYoY1_5 = ""
-        }
-        return ele
-
-    }
-    上证指数_xueqiu_day = 上证指数_xueqiu_day.map((ele, index, arr) => {
-        return sectorIndexYoY(ele, index, arr)
-    })
-    沪深300_xueqiu_day = 沪深300_xueqiu_day.map((ele, index, arr) => {
-        return sectorIndexYoY(ele, index, arr)
-    })
-
-    let currentName = decodeURI(getQueryVariable("name"))== "上证指数" ? "上证指数_xueqiu_day" : "沪深300_xueqiu_day"
+        let currentName = decodeURI(getQueryVariable("name")) == "上证指数" ? "上证指数_xueqiu_day" : "沪深300_xueqiu_day"
     </script>
 
 
     <script type="text/javascript" src="data/同花顺策略/同花顺策略统计.js"></script>
     <script type="text/javascript">
-    function countStat(json, name = "kdj日周月", Period = "day") {
-        let countJson = {}
-        json.forEach((element) => {
-            let startTime = Period == "month" ? element[2].substring(0, 7) : element[2] //month day
-            if (countJson[startTime]) {
-                countJson[startTime].count += 1;
-                countJson[startTime].detail.push(element);
-            } else {
-                countJson[startTime] = { count: 1, detail: [element] }
+        function countStat(json, name = "kdj日周月", Period = "day") {
+            let countJson = {}
+            json.forEach((element) => {
+                let startTime = Period == "month" ? element[2].substring(0, 7) : element[2] //month day
+                if (countJson[startTime]) {
+                    countJson[startTime].count += 1;
+                    countJson[startTime].detail.push(element);
+                } else {
+                    countJson[startTime] = { count: 1, detail: [element] }
+                }
+            })
+
+            let countArr = []
+            for (var key of Object.keys(countJson)) {
+                startTime = Period == "month" ? key + "-28" : key //month day
+                countArr.push([startTime, countJson[key].count, name])
+            }
+
+            return countArr
+        }
+
+        let 左侧长短周期组合统计 = []
+        let 右侧长短周期组合统计 = []
+
+        let 日周信号组合统计 = []
+        let 日周信号组合2统计 = []
+
+        let 日买入信号组合统计 = []
+        let 日买入信号组合2统计 = []
+
+        let 技术指标Contact = []
+
+        if (typeof (左侧长短周期组合) != "undefined") {
+            左侧长短周期组合统计 = countStat(左侧长短周期组合, "左侧长短周期组合")
+        }
+        if (typeof (右侧长短周期组合) != "undefined") {
+            右侧长短周期组合统计 = countStat(右侧长短周期组合, "右侧长短周期组合")
+        }
+
+        if (typeof (日周信号组合) != "undefined") {
+            日周信号组合统计 = countStat(日周信号组合, "日周信号组合")
+        }
+        if (typeof (日周信号组合2) != "undefined") {
+            日周信号组合2统计 = countStat(日周信号组合2, "日周信号组合2")
+        }
+
+        if (typeof (日买入信号组合) != "undefined") {
+            日买入信号组合统计 = countStat(日买入信号组合, "日买入信号组合")
+        }
+        if (typeof (日买入信号组合2) != "undefined") {
+            日买入信号组合2统计 = countStat(日买入信号组合2, "日买入信号组合2")
+        }
+
+        统计Contact = [...左侧长短周期组合统计, ...右侧长短周期组合统计, ...日周信号组合统计, ...日周信号组合2统计, ...日买入信号组合统计, ...日买入信号组合2统计]
+        统计Contact.sort(function (a, b) {
+            return new Date(a[0]) - new Date(b[0])
+        })
+        统计Contact = 统计Contact.map((ele) => {
+            return {
+                date: ele[0],
+                count: ele[1],
+                quanName: ele[2]
             }
         })
 
-        let countArr = []
-        for (var key of Object.keys(countJson)) {
-            startTime = Period == "month" ? key + "-28" : key //month day
-            countArr.push([startTime, countJson[key].count, name])
+        function groupBy(objectArray, property) {
+            return objectArray.reduce((acc, obj) => {
+                const key = obj[property];
+                const curGroup = acc[key] ?? [];
+                return { ...acc, [key]: [...curGroup, obj] };
+            }, {});
         }
+        let 统计byDate = groupBy(统计Contact, "date")
+        let 统计byName = groupBy(统计Contact, "quanName");
 
-        return countArr
-    }
-
-    let 左侧长短周期组合统计 = []
-    let 右侧长短周期组合统计 = []
-
-    let 日周信号组合统计 = []
-    let 日周信号组合2统计 = []
-
-    let 日买入信号组合统计 = []
-    let 日买入信号组合2统计 = []
-
-    let 技术指标Contact = []
-
-    if (typeof(左侧长短周期组合) != "undefined") {
-        左侧长短周期组合统计 = countStat(左侧长短周期组合, "左侧长短周期组合")
-    }
-    if (typeof(右侧长短周期组合) != "undefined") {
-        右侧长短周期组合统计 = countStat(右侧长短周期组合, "右侧长短周期组合")
-    }
-
-    if (typeof(日周信号组合) != "undefined") {
-        日周信号组合统计 = countStat(日周信号组合, "日周信号组合")
-    }
-    if (typeof(日周信号组合2) != "undefined") {
-        日周信号组合2统计 = countStat(日周信号组合2, "日周信号组合2")
-    }
-
-    if (typeof(日买入信号组合) != "undefined") {
-        日买入信号组合统计 = countStat(日买入信号组合, "日买入信号组合")
-    }
-    if (typeof(日买入信号组合2) != "undefined") {
-        日买入信号组合2统计 = countStat(日买入信号组合2, "日买入信号组合2")
-    }
-
-    统计Contact = [...左侧长短周期组合统计, ...右侧长短周期组合统计, ...日周信号组合统计, ...日周信号组合2统计, ...日买入信号组合统计, ...日买入信号组合2统计]
-    统计Contact.sort(function(a, b) {
-        return new Date(a[0]) - new Date(b[0])
-    })
-    统计Contact = 统计Contact.map((ele) => {
-        return {
-            date: ele[0],
-            count: ele[1],
-            quanName: ele[2]
+        let 技术指标统计 = []
+        for (let dateKey in 统计byDate) {
+            let sum = 统计byDate[dateKey].reduce((acc, cruEle) => {
+                acc += cruEle.count
+                return acc
+            }, 0)
+            //                  日期   总数 策略数已经单个策略数的总数
+            技术指标统计.push([dateKey, sum, 统计byDate[dateKey]])
         }
-    })
-
-    function groupBy(objectArray, property) {
-        return objectArray.reduce((acc, obj) => {
-            const key = obj[property];
-            const curGroup = acc[key] ?? [];
-            return { ...acc, [key]: [...curGroup, obj] };
-        }, {});
-    }
-    let 统计byDate = groupBy(统计Contact, "date")
-    let 统计byName = groupBy(统计Contact, "quanName");
-
-    let 技术指标统计 = []
-    for (let dateKey in 统计byDate) {
-        let sum = 统计byDate[dateKey].reduce((acc, cruEle) => {
-            acc += cruEle.count
-            return acc
-        }, 0)
-        //                  日期   总数 策略数已经单个策略数的总数
-        技术指标统计.push([dateKey, sum, 统计byDate[dateKey]])
-    }
-    console.log(技术指标统计)
+        console.log(技术指标统计)
     </script>
-    
+
+    <script type="text/javascript" src="data/sinaFutures/logAllday2.js"></script>
+    <script>
+        let 大宗商品C1 = logAll.map((item) => {
+            return [item.trigDateCod1, item.day10]
+        })
+
+        let 大宗商品tr = logAll.map((item) => {
+            return [item.trigDate, item.day10]
+        })
+    </script>
+
 </head>
 
 <body style="height: 100%; margin: 0">
     <div id="container" style="height: 100%"></div>
     <script type="text/javascript" src="https://fastly.jsdelivr.net/npm/echarts@5.3.2/dist/echarts.min.js"></script>
     <script type="text/javascript">
-    Array.prototype.filterAndAddStartEnd = function() {
-        let arr = this
+        Array.prototype.filterAndAddStartEnd = function () {
+            let arr = this
 
-        arr = arr.filter(item => {
-            return parseFloat(item[0].substring(0, 4)) >= 1994
-        })
+            arr = arr.filter(item => {
+                return parseFloat(item[0].substring(0, 4)) >= 1994
+            })
 
-        let start = [
-            ["1994-01-01", ""]
-        ]
-        arr = start.concat(arr)
+            let start = [
+                ["1994-01-01", ""]
+            ]
+            arr = start.concat(arr)
 
-        //当天 或 hs300最后一天 
-        let currentDay = new Date()
-        currentDay = currentDay.getFullYear() + "-" + (currentDay.getMonth() + 1) + "-" + currentDay.getDate()
-        arr.push([currentDay, ""])
+            //当天 或 hs300最后一天 
+            let currentDay = new Date()
+            currentDay = currentDay.getFullYear() + "-" + (currentDay.getMonth() + 1) + "-" + currentDay.getDate()
+            arr.push([currentDay, ""])
 
-        return arr
-    }
-    var dom = document.getElementById('container');
-    var myChart = echarts.init(dom, "#fff", {
-        renderer: 'canvas',
-        useDirtyRect: false
-    });
-    var app = {};
-    var option;
-    option = {
-        title: {},
-        tooltip: {
-            trigger: "axis", //item cross,
-            show: true,
-            position: ['30%', '80%'],
-            order: 'seriesDesc',
-            axisPointer: {
-                type: "cross",
+            return arr
+        }
+        var dom = document.getElementById('container');
+        var myChart = echarts.init(dom, "#fff", {
+            renderer: 'canvas',
+            useDirtyRect: false
+        });
+        var app = {};
+        var option;
+        option = {
+            title: {},
+            tooltip: {
+                trigger: "axis", //item cross,
                 show: true,
-                crossStyle: {
-                    width: 1,
-                    color: "black", // 鼠标十字横轴
+                position: ['30%', '80%'],
+                order: 'seriesDesc',
+                axisPointer: {
+                    type: "cross",
+                    show: true,
+                    crossStyle: {
+                        width: 1,
+                        color: "black", // 鼠标十字横轴
+                    },
+                },
+                formatter: function (params, ticket, callback) {
+                    return null;
                 },
             },
-            formatter: function(params, ticket, callback) {
-                return null;
-            },
-        },
 
-        legend: {
-            left: 70,
-            top: 230,
-            width: 50,
-            backgroundColor:"gray"
-        },
-        toolbox: {},
-        axisPointer: {
-            link: [{
-                xAxisIndex: 'all'
-            }],
-            lineStyle: {
-                color: "black", // 鼠标十字竖轴
+            legend: {
+                left: 70,
+                top: 230,
+                width: 50,
+                backgroundColor: "gray"
             },
-        },
-        dataZoom: [{
+            toolbox: {},
+            axisPointer: {
+                link: [{
+                    xAxisIndex: 'all'
+                }],
+                lineStyle: {
+                    color: "black", // 鼠标十字竖轴
+                },
+            },
+            dataZoom: [{
                 show: true,
                 realtime: true,
                 start: 0,
@@ -284,50 +295,50 @@
                 end: 100,
                 xAxisIndex: [0, 1, 2, 3, 4, 5]
             }
-        ],
-        grid: [
+            ],
+            grid: [
 
-            { //
-                left: 60,
-                right: 80,
-                top: "0%",
-                height: '30%',
-               
-                show: true,
-            },
+                { //
+                    left: 60,
+                    right: 80,
+                    top: "0%",
+                    height: '30%',
 
-            { //
-                left: 60,
-                right: 80,
-                top: "30%",
-                height: '35%',
-                backgroundColor: '#faf1f2',
-                show: true,
-            },
+                    show: true,
+                },
 
-
-            { //
-                left: 60,
-                right: 80,
-                top: "65%",
-                height: '30%',
-               
-            },
+                { //
+                    left: 60,
+                    right: 80,
+                    top: "30%",
+                    height: '35%',
+                    backgroundColor: '#faf1f2',
+                    show: true,
+                },
 
 
-            { //
-                left: 60,
-                right: 80,
-                top: "0%",
-                height: '95%',
+                { //
+                    left: 60,
+                    right: 80,
+                    top: "65%",
+                    height: '30%',
 
-               
-                show: true,
-            },
+                },
 
 
-        ],
-        xAxis: [{
+                { //
+                    left: 60,
+                    right: 80,
+                    top: "0%",
+                    height: '95%',
+
+
+                    show: true,
+                },
+
+
+            ],
+            xAxis: [{
                 gridIndex: 0,
                 type: 'time',
                 splitNumber: 20,
@@ -415,228 +426,266 @@
             },
 
 
-        ],
-        yAxis: [
-            //默认
-            {
-                gridIndex: 0,
-                type: 'value',
-                splitLine: {
-                    "show": false
+            ],
+            yAxis: [
+                //默认
+                {
+                    gridIndex: 0,
+                    type: 'value',
+                    splitLine: {
+                        "show": false
+                    },
+                    //min: -20
                 },
-                //min: -20
-            },
 
-            {
-                gridIndex: 1, //
-                type: 'value',
+                {
+                    gridIndex: 1, //
+                    type: 'value',
 
-                splitLine: {
-                    show: false
+                    splitLine: {
+                        show: false
+                    },
+                    show: true,
+                    //max: 35
+                    // inverse:true
                 },
-                show: true,
-                //max: 35
-                // inverse:true
-            },
 
-            {
-                gridIndex: 2, // 
-                name: '',
-                type: 'value',
+                {
+                    gridIndex: 2, // 
+                    name: '',
+                    type: 'value',
 
-                splitLine: {
-                    show: false
+                    splitLine: {
+                        show: false
+                    },
+                    show: true,
+                    max: 17,
+                    // min:-70
                 },
-                show: true,
-                max: 17,
-                // min:-70
-            },
 
-            {
-                gridIndex: 3,
-                name: '',
-                type: 'value',
-                splitLine: {
-                    show: false
+                {
+                    gridIndex: 3,
+                    name: '',
+                    type: 'value',
+                    splitLine: {
+                        show: false
+                    },
+                    show: true,
+                    position: "right"
                 },
-                show: true,
-                position: "right"
-            },
-        ],
+            ],
 
-        series: [
+            series: [
 
-            {
-                name: '券商策略',
-                type: 'scatter',
-                xAxisIndex: 2,
-                yAxisIndex: 2,
-                symbol: "pin",
-                itemStyle: {
-                    normal: {
-                        opacity: 1,
-                        color: "#f28500"
-                    }
+                // {
+                //     name: '大宗商品C1',
+                //     type: 'scatter',
+                //     xAxisIndex: 0,
+                //     yAxisIndex: 0,
+                //     symbol: "path://M12.0002 3.58569L19.4144 10.9999L18.0002 12.4141L13.0002 7.41412V19.9999H11.0002V7.41412L6.00015 12.4141L4.58594 10.9999L12.0002 3.58569Z",
+                //     itemStyle: {
+                //         normal: {
+                //             opacity: 1,
+                //             color: "black"
+                //         }
+                //     },
+                //     symbolSize: function (val) {
+                //         return 10
+                //     },
+                //     zlevel: 3,
+                //     data: 大宗商品C1.filterAndAddStartEnd()
+                // },
+                
+                {
+                    name: '大宗商品tr',
+                    type: 'scatter',
+                    xAxisIndex: 0,
+                    yAxisIndex: 0,
+                    symbol: "path://M12.0002 3.58569L19.4144 10.9999L18.0002 12.4141L13.0002 7.41412V19.9999H11.0002V7.41412L6.00015 12.4141L4.58594 10.9999L12.0002 3.58569Z",
+                    itemStyle: {
+                        normal: {
+                            opacity: 1,
+                            color: "red"
+                        }
+                    },
+                    symbolSize: function (val) {
+                        return 10
+                    },
+                    zlevel: 3,
+                    data: 大宗商品tr.filterAndAddStartEnd()
                 },
-                symbolSize: function(val) {
-                    return 10
-                },
-                zlevel: 3,
-                data: [
-                    ...中信证券策略, ...光大证券策略, ...国泰君安策略, ...中信建投策略, 
-                    ...招商证券策略, ...广发证券策略,
-                    ...东方财富策略, ...同花顺策略, ...恒生电子策略
-                ].filterAndAddStartEnd()
-            },
 
-            {
-                name: '上证指数策略',
-                type: 'scatter',
-                xAxisIndex: 2,
-                yAxisIndex: 2,
-                 symbol: "path://M12.0002 3.58569L19.4144 10.9999L18.0002 12.4141L13.0002 7.41412V19.9999H11.0002V7.41412L6.00015 12.4141L4.58594 10.9999L12.0002 3.58569Z",
-                itemStyle: {
-                    normal: {
-                        opacity: 1,
-                        color: "#00bfff"
-                    }
+                {
+                    name: '券商策略',
+                    type: 'scatter',
+                    xAxisIndex: 2,
+                    yAxisIndex: 2,
+                    symbol: "pin",
+                    itemStyle: {
+                        normal: {
+                            opacity: 1,
+                            color: "#f28500"
+                        }
+                    },
+                    symbolSize: function (val) {
+                        return 10
+                    },
+                    zlevel: 3,
+                    data: [
+                        ...中信证券策略, ...光大证券策略, ...国泰君安策略, ...中信建投策略,
+                        ...招商证券策略, ...广发证券策略,
+                        ...东方财富策略, ...同花顺策略, ...恒生电子策略
+                    ].filterAndAddStartEnd()
                 },
-                symbolSize: function(val) {
-                    return 17
-                },
-                zlevel: 3,
-                data: 上证指数策略.filterAndAddStartEnd()
-            },
 
-            {
-                name: '沪深300策略',
-                type: 'scatter',
-                xAxisIndex: 2,
-                yAxisIndex: 2,
-                symbol: "path://M12.0002 3.58569L19.4144 10.9999L18.0002 12.4141L13.0002 7.41412V19.9999H11.0002V7.41412L6.00015 12.4141L4.58594 10.9999L12.0002 3.58569Z",
-                itemStyle: {
-                    normal: {
-                        opacity: 1,
-                        color: "red"
-                    }
+                {
+                    name: '上证指数策略',
+                    type: 'scatter',
+                    xAxisIndex: 2,
+                    yAxisIndex: 2,
+                    symbol: "path://M12.0002 3.58569L19.4144 10.9999L18.0002 12.4141L13.0002 7.41412V19.9999H11.0002V7.41412L6.00015 12.4141L4.58594 10.9999L12.0002 3.58569Z",
+                    itemStyle: {
+                        normal: {
+                            opacity: 1,
+                            color: "#00bfff"
+                        }
+                    },
+                    symbolSize: function (val) {
+                        return 17
+                    },
+                    zlevel: 3,
+                    data: 上证指数策略.filterAndAddStartEnd()
                 },
-                symbolSize: function(val) {
-                    return 10
-                },
-                zlevel: 3,
-                data: 沪深300策略.filterAndAddStartEnd()
-            },
 
-            {
-                name: '同花顺策略总数',
-                type: 'scatter',
-                xAxisIndex: 1,
-                yAxisIndex: 1,
-                symbol: "pin",
-                itemStyle: {
-                    normal: {
-                        opacity: 1,
-                        color: "#00bfff"
-                    }
+                {
+                    name: '沪深300策略',
+                    type: 'scatter',
+                    xAxisIndex: 2,
+                    yAxisIndex: 2,
+                    symbol: "path://M12.0002 3.58569L19.4144 10.9999L18.0002 12.4141L13.0002 7.41412V19.9999H11.0002V7.41412L6.00015 12.4141L4.58594 10.9999L12.0002 3.58569Z",
+                    itemStyle: {
+                        normal: {
+                            opacity: 1,
+                            color: "red"
+                        }
+                    },
+                    symbolSize: function (val) {
+                        return 10
+                    },
+                    zlevel: 3,
+                    data: 沪深300策略.filterAndAddStartEnd()
                 },
-                symbolSize: function(val) {
-                    return 13
-                },
-                zlevel: 3,
-                data: 技术指标统计.filter(ele => {
-                    return ele[1] >= 3 || ele[2].length >= 2
-                }).filterAndAddStartEnd()
 
-            },
+                {
+                    name: '同花顺策略总数',
+                    type: 'scatter',
+                    xAxisIndex: 1,
+                    yAxisIndex: 1,
+                    symbol: "pin",
+                    itemStyle: {
+                        normal: {
+                            opacity: 1,
+                            color: "#00bfff"
+                        }
+                    },
+                    symbolSize: function (val) {
+                        return 13
+                    },
+                    zlevel: 3,
+                    data: 技术指标统计.filter(ele => {
+                        return ele[1] >= 3 || ele[2].length >= 2
+                    }).filterAndAddStartEnd()
 
-            {
-                name: '同花顺策略个数',
-                type: 'scatter',
-                      xAxisIndex: 1,
-                yAxisIndex: 1,
-                symbol: "pin",
-                itemStyle: {
-                    normal: {
-                        opacity: 1,
-                        color: "#ed31cd" //"#ff69b4"
-                    }
                 },
-                symbolSize: function(val) {
-                    return 10
-                },
-                zlevel: 3,
-                data: 技术指标统计.filter(ele => {
-                    return ele[1] >= 3 || ele[2].length >= 2
-                }).map(ele => {
-                    return [ele[0], ele[2].length]
-                }).filterAndAddStartEnd()
 
-            },
+                {
+                    name: '同花顺策略个数',
+                    type: 'scatter',
+                    xAxisIndex: 1,
+                    yAxisIndex: 1,
+                    symbol: "pin",
+                    itemStyle: {
+                        normal: {
+                            opacity: 1,
+                            color: "#ed31cd" //"#ff69b4"
+                        }
+                    },
+                    symbolSize: function (val) {
+                        return 10
+                    },
+                    zlevel: 3,
+                    data: 技术指标统计.filter(ele => {
+                        return ele[1] >= 3 || ele[2].length >= 2
+                    }).map(ele => {
+                        return [ele[0], ele[2].length]
+                    }).filterAndAddStartEnd()
 
-            {
-                name: '小市值亏损',
-                type: 'scatter',
-                       xAxisIndex: 1,
-                yAxisIndex: 1,
-                symbol:'path://M12.0002 21.4142L17.4144 16L16.0002 14.5858L13.0002 17.5858V3H11.0002V17.5858L8.00015 14.5858L6.58594 16L12.0002 21.4142Z',
-                itemStyle: {
-                    normal: {
-                        opacity: 2,
-                        color: "black"
-                    }
                 },
-                symbolSize: function(val) {
-                    return 12
-                },
-                zlevel: 6,
-                data: smallDown.filter(ele => parseFloat(ele[6].substring(0, ele[6].length - 1)) < 0 ).map((item) => {
-                    return [item[3], parseFloat(item[6].substring(0, item[6].length - 1))]
-                }).filterAndAddStartEnd()
-            },
 
-            {
-                name: '大市值连亏',
-                type: 'scatter',
-                       xAxisIndex: 1,
-                yAxisIndex: 1,
-                symbol:'path://M12.0002 21.4142L17.4144 16L16.0002 14.5858L13.0002 17.5858V3H11.0002V17.5858L8.00015 14.5858L6.58594 16L12.0002 21.4142Z',
-                itemStyle: {
-                    normal: {
-                        opacity: 2,
-                        color: "blue"
-                    }
+                {
+                    name: '小市值亏损',
+                    type: 'scatter',
+                    xAxisIndex: 1,
+                    yAxisIndex: 1,
+                    symbol: 'path://M12.0002 21.4142L17.4144 16L16.0002 14.5858L13.0002 17.5858V3H11.0002V17.5858L8.00015 14.5858L6.58594 16L12.0002 21.4142Z',
+                    itemStyle: {
+                        normal: {
+                            opacity: 2,
+                            color: "black"
+                        }
+                    },
+                    symbolSize: function (val) {
+                        return 12
+                    },
+                    zlevel: 6,
+                    data: smallDown.filter(ele => parseFloat(ele[6].substring(0, ele[6].length - 1)) < 0).map((item) => {
+                        return [item[3], parseFloat(item[6].substring(0, item[6].length - 1))]
+                    }).filterAndAddStartEnd()
                 },
-                symbolSize: function(val) {
-                    return 12
+
+                {
+                    name: '大市值连亏',
+                    type: 'scatter',
+                    xAxisIndex: 1,
+                    yAxisIndex: 1,
+                    symbol: 'path://M12.0002 21.4142L17.4144 16L16.0002 14.5858L13.0002 17.5858V3H11.0002V17.5858L8.00015 14.5858L6.58594 16L12.0002 21.4142Z',
+                    itemStyle: {
+                        normal: {
+                            opacity: 2,
+                            color: "blue"
+                        }
+                    },
+                    symbolSize: function (val) {
+                        return 12
+                    },
+                    zlevel: 6,
+                    data: bigcontinueslow.filter((item, index, arr) => {
+                        let prePreItem = arr[index - 2]
+                        if (prePreItem)
+                            return (item[3] == 2) && (item[4] < -14) && (parseFloat(prePreItem[1].substring(0, prePreItem[1].length - 1)) < 30)
+                        else
+                            return (item[3] == 2) && (item[4] < -14)
+                    }).map((item) => {
+                        return [item[0], parseFloat(item[1].substring(0, item[1].length - 1))]
+                    }).filterAndAddStartEnd()
                 },
-                zlevel: 6,
-                data: bigcontinueslow.filter((item,index,arr) =>{ 
-                    let prePreItem = arr[index-2]
-                    if(prePreItem)
-                        return (item[3]==2)&&(item[4]<-14) &&  ( parseFloat(prePreItem[1].substring(0, prePreItem[1].length - 1)) < 30)
-                    else 
-                        return (item[3]==2)&&(item[4]<-14) 
-                }).map((item) => {
-                    return [item[0], parseFloat(item[1].substring(0, item[1].length - 1))]
-                }).filterAndAddStartEnd()
-            },
 
 
 
-            {
-                name: "同比", //
-                type: "line",
-                xAxisIndex: 1,
-                yAxisIndex: 1,
-                showSymbol: false,
-                smooth: true,
-                lineStyle: {
-                    width: 0.5,
-                    color:"green"
-                },
-                markLine: {
-                    symbol: ["none", "none"],
-                    data: [{
+                {
+                    name: "同比", //
+                    type: "line",
+                    xAxisIndex: 1,
+                    yAxisIndex: 1,
+                    showSymbol: false,
+                    smooth: true,
+                    lineStyle: {
+                        width: 0.5,
+                        color: "green"
+                    },
+                    markLine: {
+                        symbol: ["none", "none"],
+                        data: [{
                             lineStyle: {
                                 width: 0.5,
                                 color: "green",
@@ -665,32 +714,32 @@
                             // x: "6.5%",
                         },
 
-                    ],
-                },
-        
-                data: window[currentName].map(item => {
-                    let tmp = []
-                    tmp[0] = item.date
-                    tmp[1] = item.closeYoY ? item.closeYoY * 100 : ""
-                    return tmp
-                }).filterAndAddStartEnd()
-            },
+                        ],
+                    },
 
-            {
-                name: "同比2", //
-                type: "line",
-                xAxisIndex: 2,
-                yAxisIndex: 2,
-                showSymbol: false,
-                smooth: true,
-                lineStyle: {
-                    width: 0.5,
-                    color:"red"
+                    data: window[currentName].map(item => {
+                        let tmp = []
+                        tmp[0] = item.date
+                        tmp[1] = item.closeYoY ? item.closeYoY * 100 : ""
+                        return tmp
+                    }).filterAndAddStartEnd()
                 },
-                
-                markLine: {
-                    symbol: ["none", "none"],
-                    data: [{
+
+                {
+                    name: "同比2", //
+                    type: "line",
+                    xAxisIndex: 2,
+                    yAxisIndex: 2,
+                    showSymbol: false,
+                    smooth: true,
+                    lineStyle: {
+                        width: 0.5,
+                        color: "red"
+                    },
+
+                    markLine: {
+                        symbol: ["none", "none"],
+                        data: [{
                             lineStyle: {
                                 width: 0.5,
                                 color: "green",
@@ -719,44 +768,65 @@
                             // x: "6.5%",
                         },
 
-                    ],
+                        ],
+                    },
+
+                    data: window[currentName].map(item => {
+                        let tmp = []
+                        tmp[0] = item.date
+                        tmp[1] = item.closeYoY1_5 ? item.closeYoY1_5 * 100 : ""
+                        return tmp
+                    }).filterAndAddStartEnd()
                 },
-        
-                data: window[currentName].map(item => {
-                    let tmp = []
-                    tmp[0] = item.date
-                    tmp[1] = item.closeYoY1_5 ? item.closeYoY1_5 * 100 : ""
-                    return tmp
-                }).filterAndAddStartEnd()
-            },
 
-            {
-                name: currentName,
-                type: 'candlestick',
-                xAxisIndex: 3,
-                yAxisIndex: 3,
-                showSymbol: false,
-                silent: true,
-                 zlevel: 1,
-                data: window[currentName].map((item) => {
-                    let tmp = []
-                    tmp[0] = item.date
-                    tmp[1] = item.open ? item.open : ""
-                    tmp[2] = item.close ? item.close : ""
-                    tmp[3] = item.low ? item.low : ""
-                    tmp[4] = item.high ? item.high : ""
-                    return tmp
-                }).filterAndAddStartEnd()
-            },
-
-        ]
-    };
+                {
+                    name: currentName,
+                    type: 'candlestick',
+                    xAxisIndex: 3,
+                    yAxisIndex: 3,
+                    showSymbol: false,
+                    silent: true,
+                    zlevel: 1,
+                    data: window[currentName].map((item) => {
+                        let tmp = []
+                        tmp[0] = item.date
+                        tmp[1] = item.open ? item.open : ""
+                        tmp[2] = item.close ? item.close : ""
+                        tmp[3] = item.low ? item.low : ""
+                        tmp[4] = item.high ? item.high : ""
+                        return tmp
+                    }).filterAndAddStartEnd()
+                },
 
 
-    if (option && typeof option === 'object') {
-        myChart.setOption(option);
-    }
-    window.addEventListener('resize', myChart.resize)
+
+                //////////////////////justfor
+                {
+                    name: '',
+                    type: "line",
+                    xAxisIndex: 2,
+                    yAxisIndex: 2,
+                    showSymbol: false,
+                    smooth: true,
+                    lineStyle: {
+                        width: 0
+                    },
+                    data: window[currentName].map((item) => {
+                        let tmp = []
+                        tmp[0] = item.date
+                        tmp[1] = 0
+                        return tmp
+                    }).filterAndAddStartEnd()
+                },
+
+            ]
+        };
+
+
+        if (option && typeof option === 'object') {
+            myChart.setOption(option);
+        }
+        window.addEventListener('resize', myChart.resize)
     </script>
 </body>
 

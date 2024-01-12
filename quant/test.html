@@ -4,129 +4,238 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
-    <script type="text/javascript" src="data/sinaFutures/logAll.json"></script>
+    <script type="text/javascript" src="data/sinaFutures/logAllday11.js"></script>
     <script type="text/javascript">
-    function ttt(filterType = "low", sortType = "name") {
-        if (filterType == "low") {
-            var log20AllRes = log20All.filter(ele => ele[4] < 0)
-            var log30AllRes = log30All.filter(ele => ele[4] < 0)
-            var log50AllRes = log50All.filter(ele => ele[4] < 0)
-            var log70AllRes = log70All.filter(ele => ele[4] < 0)
+        function ttt(filterType = "low", sortType = "name") {
+            if (filterType == "low") {
+                let low = 0
+                var log20AllRes = log20All.filter(ele => ele[4] < low)
+                var log30AllRes = log30All.filter(ele => ele[4] < low)
+                var log50AllRes = log50All.filter(ele => ele[4] < low)
+            }
+
+            if (filterType == "up") {
+                let up = 0.1
+                var log20AllRes = log20All.filter(ele => ele[4] >= up)
+                var log30AllRes = log30All.filter(ele => ele[4] >= up)
+                var log50AllRes = log50All.filter(ele => ele[4] >= up)
+            }
+
+
+            function hasSameNameStart(testItem) {
+                let res = false
+                for (var i = 0; i < resultArr.length; i++) {
+                    if ((resultArr[i][0] + resultArr[i][1]) == (testItem[0] + testItem[1])) {
+                        res = true
+                    }
+                }
+                return res
+            }
+
+
+            logContact = [...log20AllRes]
+            logContact.sort(function (a, b) {
+                if (a[0] === b[0]) { //name
+                    if (a[4] > b[4]) { //percnet
+                        return 1;
+                    } else if (a[4] < b[4]) {
+                        return -1;
+                    } else {
+                        return 0;
+                    }
+                } else {
+                    if (a[0] > b[0]) {
+                        return 1;
+                    } else {
+                        return -1;
+                    }
+                }
+            })
+
+
+            let resultArr = []
+
+
+            for (var i = 0; i < logContact.length; i++) {
+                if (hasSameNameStart(logContact[i])) continue
+                resultArr.push(logContact[i])
+            }
+
+
+            let resultArrSortName = resultArr
+            let resultArrSortPercent = [...resultArrSortName]
+            if (filterType == "up") resultArrSortPercent = resultArrSortPercent.sort((a, b) => b[4] - a[4])
+            if (filterType == "low") resultArrSortPercent = resultArrSortPercent.sort((a, b) => a[4] - b[4])
+
+
+
+            if (sortType == "name") return resultArrSortName
+            if (sortType == "percent") return resultArrSortPercent
         }
 
-        if (filterType == "up") {
-            var log20AllRes = log20All.filter(ele => ele[4] > 0)
-            var log30AllRes = log30All.filter(ele => ele[4] > 0)
-            var log50AllRes = log50All.filter(ele => ele[4] > 0)
-            var log70AllRes = log70All.filter(ele => ele[4] > 0)
-        }
 
-
-        function hasSameNameStart(testItem) {
+        function returnSameNameStart(logAll, testItem) {
             let res = false
-            for (var i = 0; i < resultArr.length; i++) {
-                if ((resultArr[i][0] + resultArr[i][1]) == (testItem[0] + testItem[1])) {
-                    res = true
+            for (var i = 0; i < logAll.length; i++) {
+                if ((logAll[i][0] + logAll[i][1]) == (testItem[0] + testItem[1])) {
+                    res = logAll[i]
                 }
             }
             return res
         }
 
 
+        // var zhisun = []
+        // var chiyoudao = []
+        // function test() {
+
+        //     for (let i = 0; i < log10All.length; i++) {
+        //         if (log10All[i][4] < 0) {
+        //             zhisun.push(log10All[i])
+        //         }
+        //         else {
+        //             let same30 = returnSameNameStart(log30All, log10All[i])
+        //             if (same30[4] < 0) {
+        //                 zhisun.push(same30)
+        //             }
+        //             else {
+        //                 let same50 = returnSameNameStart(log50All, log10All[i])
+        //                 chiyoudao.push(same50)
+        //             }
+
+        //         }
+        //     }
+        // }
+        // test()
+        // console.log(zhisun.sort((a, b) => a[4] - b[4]), chiyoudao.sort((a, b) => b[4] - a[4]))
+        console.log(
+            //ttt("low", "name") ,
+            ttt("low", "percent").map((item) => {
+
+                // let less0 = 0
+                // item[6].forEach(ele => {
+                //     if (ele < 0) less0 += 1
+                // });
+
+                let retArr = [
+                    // less0,
+                    // item[6] + "",
+                    // +item[7].toFixed(2),
 
 
-        logContact = [...log20AllRes, ...log50AllRes]
-        logContact.sort(function(a, b) {
-            if (a[0] === b[0]) { //name
-                if (a[4] > b[4]) { //percnet
-                    return 1;
-                } else if (a[4] < b[4]) {
-                    return -1;
-                } else {
-                    return 0;
+
+
+
+                    Math.abs(item[6].current振幅my).toFixed(2),
+
+
+
+
+                    item[0],
+                    item[1],
+                    item[4],
+
+                    item[6].profile100,
+                    item[6].profile200,
+
+                    item[6].currendMDataK.toFixed(2) 
+                    ,item[6].currendMDataD.toFixed(2)
+                    ,item[6].currendMDataD.toFixed(2)
+
+                ]
+
+                if (
+                    (item[6].pre涨跌幅 > item[6].current涨跌幅)
+                    && (item[6].pre涨跌幅 < 0)
+                    && (item[6].current涨跌幅 < 0)
+                    && (+Math.abs(item[6].current振幅my).toFixed(2) > 60)
+                ) {
+                    retArr.push("ffff", item[6].pre涨跌幅.toFixed(2), item[6].current涨跌幅.toFixed(2)
+             
+                    
+                    )
                 }
-            } else {
-                if (a[0] > b[0]) {
-                    return 1;
-                } else {
-                    return -1;
+
+                return retArr
+
+            }),
+            //ttt("up", "name"),
+            ttt("up", "percent").map((item) => {
+                // let less0 = 0
+                // item[6].forEach(ele => {
+                //     if (ele <= 0) less0 += 1
+                // });
+                let retArr = [
+                    // less0,
+                    // item[6] + "",
+                    // +item[7].toFixed(2),
+
+
+                    Math.abs(item[6].current振幅my).toFixed(2),
+
+
+
+                    item[0],
+                    item[1],
+                    item[4],
+
+                    item[6].profile100,
+                    item[6].profile200,
+
+                    item[6].currendMDataK.toFixed(2) 
+                    ,item[6].currendMDataD.toFixed(2)
+                    ,item[6].currendMDataD.toFixed(2)
+
+                ]
+                if (
+                    (item[6].pre涨跌幅 > item[6].current涨跌幅)
+                    && (item[6].pre涨跌幅 < 0)
+                    && (item[6].current涨跌幅 < 0)
+                    && (+Math.abs(item[6].current振幅my).toFixed(2) > 60)
+                ) {
+                    retArr.push("ffff", item[6].pre涨跌幅.toFixed(2), item[6].current涨跌幅.toFixed(2))
                 }
+
+                return retArr
+            }),
+        )
+
+
+        function 胜率(logNAll) {
+
+
+            logNAll = logNAll.filter((item) => {
+                if ( item[6] 
+                    && (item[6].pre涨跌幅 > item[6].current涨跌幅)
+                    && (item[6].pre涨跌幅 < 0)
+                    && (item[6].current涨跌幅 < 0)
+                    && (+Math.abs(item[6].current振幅my).toFixed(2) > 60)
+                ) return false
+                else return true
+            })
+
+            let length = logNAll.length
+            let up = 0
+            let down = 0
+            let profile = 0
+            let loss = 0
+            for (let index = 0; index < length; index++) {
+                let element = logNAll[index]
+                let percentIndex = 4
+                element[percentIndex] = parseFloat(element[percentIndex])
+                if (element[percentIndex] > 0) { up += 1; profile += element[percentIndex] }
+                else { down += 1; loss += element[percentIndex] }
             }
-        })
-
-
-        let resultArr = []
-
-
-        for (var i = 0; i < logContact.length; i++) {
-            if (hasSameNameStart(logContact[i])) continue
-            resultArr.push(logContact[i])
+            return [up / length * 100 + "%", profile / -loss * 100 + "%", up, down, length]
         }
 
-
-        let resultArrSortName = resultArr
-        let resultArrSortPercent = [...resultArrSortName]
-        if (filterType == "up") resultArrSortPercent = resultArrSortPercent.sort((a, b) => b[4] - a[4])
-        if (filterType == "low") resultArrSortPercent = resultArrSortPercent.sort((a, b) => a[4] - b[4])
-
-
-
-        if (sortType == "name") return resultArrSortName
-        if (sortType == "percent") return resultArrSortPercent
-    }
-
-
-
-    function returnSameNameStart(logAll, testItem) {
-        let res = false
-        for (var i = 0; i < logAll.length; i++) {
-            if ((logAll[i][0] + logAll[i][1]) == (testItem[0] + testItem[1])) {
-                res = logAll[i]
-            }
-        }
-        return res
-    }
-
-
-
-
-    var zhisun = []
-    var chiyoudao = []
-
-    function test() {
-
-        for (let i = 0; i < log10All.length; i++) {
-            if (log10All[i][4] < 0) 
-            {
-                zhisun.push(log10All[i])
-            } 
-            else 
-            {
-                let same30 = returnSameNameStart(log30All, log10All[i])
-                if( same30[4] < 0 )
-                {
-                   zhisun.push(same30)
-                }
-                else
-                {
-                    let same50 = returnSameNameStart(log50All, log10All[i])
-                    chiyoudao.push(same50)
-                }
-                
-            }
-        }
-    }
-    test()
-
-    console.log(zhisun.sort((a, b) => a[4] - b[4]), chiyoudao.sort((a, b) => b[4] - a[4]))
-
-
-    // console.log(
-    //     ttt("low", "name"),
-    //     ttt("low", "percent"),
-    //     ttt("up", "name"),
-    //     ttt("up", "percent")
-    // )
+        console.log(
+            胜率(log10All),
+            胜率(log20All),
+            胜率(log30All),
+            胜率(log50All),
+            胜率(log60All),
+        )
     </script>
 </head>
 
