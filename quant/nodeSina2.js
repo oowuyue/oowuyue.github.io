@@ -1,6 +1,8 @@
-const puppeteer = require('puppeteer-extra') //https://www.npmjs.com/package/puppeteer-extra
-const StealthPlugin = require('puppeteer-extra-plugin-stealth')
-puppeteer.use(StealthPlugin())
+// const puppeteer = require('puppeteer-extra') //https://www.npmjs.com/package/puppeteer-extra
+// const StealthPlugin = require('puppeteer-extra-plugin-stealth')
+// puppeteer.use(StealthPlugin())
+
+ const puppeteer = require('puppeteer')
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
@@ -497,8 +499,13 @@ function backTest2(dataName, dayDatas) {
                 && PtPPercent(day5[2], day5[4]) < 0
                 && (nDayLow2Count >= 1 || nDayLow1pot3AndAmpUp70Count >= 1)
                 && (false
-                    || ((pre2Day.J - pre1Day.J > 20 || pre1Day.J - currentDay.J > 20) && currentDay.K > currentDay.J)
-                    || (currentDay.J < 3.5 && pre1Day.J - currentDay.J > 1.2 && currentDay.K > currentDay.J)
+                    || (  true
+                          && (myPtPPercent(pre1Day, currentDay) < 0 || myPtPPercent(pre2Day, pre1Day) < 0) 
+                          && (pre1Day.J - currentDay.J > 20 || pre2Day.J - pre1Day.J > 20)
+                          && currentDay.J < 90
+                       )
+                     || ((pre2Day.J - pre1Day.J > 20 || pre1Day.J - currentDay.J > 20) && currentDay.K > currentDay.J)
+                     || (currentDay.J < 3.5 && pre1Day.J - currentDay.J > 1.2 && currentDay.K > currentDay.J)
                 )
             ) {
                 console.log("绿绿绿")
@@ -579,7 +586,7 @@ let browser;
         { name: "生猪连续", code: "LH0" },
         { name: "棕榈油连续", code: "P0" },
         { name: "棉花连续", code: "CF0" },
-        { name: "沪镍连续", code: "NI0" },
+         { name: "沪镍连续", code: "NI0" },
         { name: "PVC连续", code: "V0" },
         { name: "豆油连续", code: "Y0" },
         { name: "豆二连续", code: "B0" },
@@ -605,18 +612,18 @@ let browser;
         { name: "铁矿石连续", code: "I0" },
         { name: "纯碱连续", code: "SA0" },
 
-        // //无
-        { name: "烧碱连续", code: "SH0" },
-        { name: "尿素连续", code: "UR0" },
-        { name: "苯乙烯连续", code: "EB0" },
-        { name: "原油连续", code: "SC0" },
-        { name: "氧化铝连续", code: "AO0" },
-        { name: "航运连续", code: "EC0" },
-        { name: "塑料连续", code: "L0" },
-        { name: "对二甲苯连续", code: "PX0" },
-        { name: "胶合板连续", code: "BB0" },
-        { name: "线材连续", code: "WR0" },
-        { name: "沥青连续", code: "BU0" },
+        // // //无
+        // { name: "烧碱连续", code: "SH0" },
+        // { name: "尿素连续", code: "UR0" },
+        // { name: "苯乙烯连续", code: "EB0" },
+        // { name: "原油连续", code: "SC0" },
+        // { name: "氧化铝连续", code: "AO0" },
+        // { name: "航运连续", code: "EC0" },
+        // { name: "塑料连续", code: "L0" },
+        // { name: "对二甲苯连续", code: "PX0" },
+        // { name: "胶合板连续", code: "BB0" },
+        // { name: "线材连续", code: "WR0" },
+        // { name: "沥青连续", code: "BU0" },
     ]
 
     let logAll = []
