@@ -94,6 +94,18 @@
         }).map((ele, index, arr) => {
             return sectorIndexYoY(ele, index, arr)
         })
+
+
+
+        标普500策略 = 标普500策略.map((item) => {
+            return [item.trigDate, item.trigDatePercent]
+        })
+        纳指策略 = 纳指策略.map((item) => {
+            return [item.trigDate, item.trigDatePercent]
+        })
+        道琼斯策略 = 道琼斯策略.map((item) => {
+            return [item.trigDate, item.trigDatePercent]
+        })
     </script>
 
 
@@ -117,7 +129,7 @@
 
             //当天 或 hs300最后一天 
             let currentDay = new Date()
-            currentDay = currentDay.getFullYear()+1 + "-" + (currentDay.getMonth() + 1) + "-" + currentDay.getDate()
+            currentDay = currentDay.getFullYear() + 1 + "-" + (currentDay.getMonth() + 1) + "-" + currentDay.getDate()
             arr.push([currentDay, ""])
 
             return arr
@@ -127,6 +139,10 @@
             renderer: 'canvas',
             useDirtyRect: false
         });
+
+
+        let gridbackgroundColor = "#f7f9fa";
+        let splitLineColor = "#d8d8d8";
         var app = {};
         var option;
         option = {
@@ -251,7 +267,7 @@
                 splitLine: {
                     show: true,
                     lineStyle: {
-                        color: ['#bdbdbd']
+                        color: [splitLineColor]
                     }
                 },
                 axisPointer: {
@@ -272,7 +288,7 @@
                 splitLine: {
                     show: true,
                     lineStyle: {
-                        color: ['#bdbdbd']
+                        color: [splitLineColor]
                     }
                 },
                 axisPointer: {
@@ -294,7 +310,7 @@
                 splitLine: {
                     show: true,
                     lineStyle: {
-                        color: ['#bdbdbd']
+                        color: [splitLineColor]
                     }
                 },
                 axisPointer: {

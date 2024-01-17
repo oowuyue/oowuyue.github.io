@@ -5,33 +5,23 @@ function getQueryVariable(variable) {
         var pair = vars[i].split("=");
         if (pair[0] == variable) { return pair[1]; }
     }
-    return (false);
+    return false;
 }
 
-function checkOrTryHttp(dataName, fuc) {
+function checkOrTryHttp(dataName, site, fuc,) {
     var head = document.head || document.getElementsByTagName("head")[0] || document.documentElement
     var JS1 = document.createElement("script")
-    JS1.src = `data/sinaFutures/${dataName}.json`
-    JS1.onload = function() { fuc() }
-    JS1.onerror = function(e) { console.log(e) }
-    head.insertBefore(JS1, head.firstChild);
-}
-
-function checkOrTryHttpXq(dataName, fuc) {
-    var head = document.head || document.getElementsByTagName("head")[0] || document.documentElement
-    var JS1 = document.createElement("script")
-    JS1.src = `data/xqStocks/${dataName}.json`
-    JS1.onload = function() { fuc() }
-    JS1.onerror = function(e) { console.log(e) }
-    head.insertBefore(JS1, head.firstChild);
-}
-
-function checkOrTryHttpThs(dataName, fuc) {
-    var head = document.head || document.getElementsByTagName("head")[0] || document.documentElement
-    var JS1 = document.createElement("script")
-    JS1.src = `data/thsStocks/${dataName}.json`
-    JS1.onload = function() { fuc() }
-    JS1.onerror = function(e) { console.log(e) }
+    if (site == "sina") {
+        JS1.src = `cn/data/新浪期货行情/${dataName}.js`
+    }
+    if (site == "xueqiu") {
+        JS1.src = `cn/data/雪球行情/${dataName}.js`
+    }
+    if (site == "ths") {
+        JS1.src = `cn/data/同花顺行情/${dataName}.js`
+    }
+    JS1.onload = function () { fuc() }
+    JS1.onerror = function (e) { console.log(e) }
     head.insertBefore(JS1, head.firstChild);
 }
 
@@ -149,14 +139,14 @@ function dayToPeriod(dayIndexList, period) {
     return periodIndexList
 }
 
-
-var ema = function(lastEma, closePrice, units) {
+//https://github.com/kimboqi/stock-indicators
+var ema = function (lastEma, closePrice, units) {
     return (lastEma * (units - 1) + closePrice * 2) / (units + 1);
 }
-var dea = function(lastDea, curDiff) {
+var dea = function (lastDea, curDiff) {
     return (lastDea * 8 + curDiff * 2) / 10;
 }
-Array.prototype.calMacd = function() {
+Array.prototype.calMacd = function () {
 
     var candleList = this;
 
@@ -189,11 +179,11 @@ Array.prototype.calMacd = function() {
         return ele
     })
     return candleList
-    //return { diffs: diffs, deas: deas, bars: bars };
+
 }
 
-Array.prototype.calKdj = function() {
-    var getMaxHighAndMinLow = function(ticks) {
+Array.prototype.calKdj = function () {
+    var getMaxHighAndMinLow = function (ticks) {
         var maxHigh = ticks[0].high,
             minLow = ticks[0].low;
         for (var i = 0; i < ticks.length; i++) {
@@ -216,6 +206,8 @@ Array.prototype.calKdj = function() {
     var lastK, lastD, curK, curD;
     var maxAndMin, max, min;
     for (var i = 0; i < candleList.length; i++) {
+
+        if (candleList[i].K instanceof Number) continue
 
         var t = candleList[i],
             close = t.close;
@@ -251,16 +243,46 @@ Array.prototype.calKdj = function() {
     return candleList;
 }
 
+Array.prototype.calBoll = function () {
+    let candleList = this
+    var maDays = 20, tickBegin = maDays - 1, maSum = 0, p = 0;
+    for (var i = 0; i < candleList.length; i++) {
 
-Array.prototype.maN = function(MA, Attribute) {
+        if (candleList[i].ups instanceof Number) continue
+
+        var c = candleList[i].close, ma, md, bstart, mdSum;
+        maSum += c;
+
+        if (i >= tickBegin) {
+            maSum = maSum - p;
+            ma = maSum / maDays;
+
+            candleList[i].mas = ma;
+
+            bstart = i - tickBegin;
+            p = candleList[bstart].close;
+            mdSum = candleList.slice(bstart, bstart + maDays).map((item) => { return item.close }).reduce(function (a, b) { return a + Math.pow(b - ma, 2); }, 0);
+            md = Math.sqrt(mdSum / maDays);
+
+            candleList[i].ups = ma + 2 * md;
+            candleList[i].lows = ma - 2 * md;
+        }
+        else {
+            candleList[i].ups = null
+            candleList[i].mas = null
+            candleList[i].lows = null
+        }
+    }
+    return candleList;
+}
+
+Array.prototype.maN = function (MA, Attribute) {
     let dataList = this
     dataList = dataList.map((item, index) => {
-        //const copyItem = [...item]
-        let copyItem = Object.assign({}, item)
-        if (index < MA) {
+        if (index < MA) return item
+        if (item[`ma${MA}`] instanceof Number) return item
 
-            return copyItem
-        }
+        let copyItem = Object.assign({}, item)
         let sum = 0
         for (let i = index - MA; i < index; i++) {
             sum += parseFloat(dataList[i][Attribute])
@@ -272,6 +294,7 @@ Array.prototype.maN = function(MA, Attribute) {
     })
     return dataList
 }
+
 
 function xueqiuFormatDate(stamp, period = "month") {
     var date = new Date(stamp);
@@ -308,8 +331,38 @@ function xueqiuFormatDate(stamp, period = "month") {
     return t;
 }
 
+//当期涨跌幅 阳线阴线
 function getDayPercent(dayItem) {
     return parseFloat(((dayItem.close - dayItem.open) / dayItem.open * 100).toFixed(2))
+}
+
+//当期涨跌幅 阳线阴线
+function curtPercent(periodItem) {
+    return parseFloat(((periodItem.close - periodItem.open) / periodItem.open * 100).toFixed(2))
+}
+
+//同比涨跌幅 今日最高-前日最低 = 差
+function myPtPPercent(prePeriodItem, currentPeriodItem) {
+    let preOCLow = prePeriodItem.close > prePeriodItem.open ? prePeriodItem.open : prePeriodItem.close
+    let curtOCHigh = currentPeriodItem.close > currentPeriodItem.open ? currentPeriodItem.close : currentPeriodItem.open
+    return curtOCHigh - preOCLow
+}
+
+//同比涨跌幅 昨收买-今收卖 / 昨收买   标准
+function PtPPercent(prePeriodItem, currentPeriodItem) {
+    return parseFloat(((currentPeriodItem.close - prePeriodItem.close) / prePeriodItem.close * 100).toFixed(2))
+}
+
+
+
+//当期振幅 开收/高低长度占比
+function curtAmp(periodItem) {
+    return +((periodItem.close - periodItem.open) / (periodItem.high - periodItem.low) * 100).toFixed(2)
+}
+
+//同比振幅 标准
+function PtPAmp(prePeriodItem, currentPeriodItem) {
+    return +((currentPeriodItem.high - currentPeriodItem.low) / prePeriodItem.close * 100).toFixed(2)
 }
 
 
@@ -320,6 +373,12 @@ if (typeof module !== "undefined" && module.exports) {
     exports.dayToPeriod = dayToPeriod
     exports.xueqiuFormatDate = xueqiuFormatDate
     exports.getDayPercent = getDayPercent
+
+    exports.curtPercent = curtPercent
+    exports.myPtPPercent = myPtPPercent
+    exports.PtPPercent = PtPPercent
+    exports.curtAmp = curtAmp
+    exports.PtPAmp = PtPAmp
 } else {
 
 }

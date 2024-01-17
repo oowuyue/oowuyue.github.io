@@ -1,8 +1,8 @@
-// const puppeteer = require('puppeteer-extra') ////防止被检测方式2：https://www.npmjs.com/package/puppeteer-extra
-// const StealthPlugin = require('puppeteer-extra-plugin-stealth')
-// puppeteer.use(StealthPlugin())
+const puppeteer = require('puppeteer-extra') ////防止被检测方式2：https://www.npmjs.com/package/puppeteer-extra
+const StealthPlugin = require('puppeteer-extra-plugin-stealth')
+puppeteer.use(StealthPlugin())
 
-const puppeteer = require('puppeteer')
+// const puppeteer = require('puppeteer')
 
 const http = require('http');
 const fs = require('fs');

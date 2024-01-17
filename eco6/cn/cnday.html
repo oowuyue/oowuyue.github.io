@@ -107,7 +107,7 @@
         let currentName = decodeURI(getQueryVariable("name")) == "上证指数" ? "上证指数_xueqiu_day" : "沪深300_xueqiu_day"
     </script>
 
-    <script type="text/javascript" src="data/雪球行情/指数策略.js"></script>
+    <script type="text/javascript" src="data/雪球行情/大盘策略.js"></script>
     <script type="text/javascript" src="data/雪球行情/证券策略.js"></script>
     <script>
         证券策略 = [
@@ -115,6 +115,19 @@
             ...招商证券策略, ...广发证券策略,
             ...东方财富策略, ...同花顺策略, ...恒生电子策略
         ]
+        证券策略 = 证券策略.map((item) => {
+            return [item.trigDate, item.trigDatePercent]
+        })
+
+
+        上证指数策略 = 上证指数策略.map((item) => {
+            return [item.trigDate, item.trigDatePercent]
+        })
+        沪深300策略 = 沪深300策略.map((item) => {
+            return [item.trigDate, item.trigDatePercent]
+        })
+
+        console.log(上证指数策略)
     </script>
 
     <script type="text/javascript" src="data/同花顺策略/同花顺策略统计.js"></script>
@@ -134,7 +147,7 @@
             let countArr = []
             for (var key of Object.keys(countJson)) {
                 startTime = Period == "month" ? key + "-28" : key //month day
-                countArr.push( [startTime, countJson[key].count, name, countJson[key].detail] )
+                countArr.push([startTime, countJson[key].count, name, countJson[key].detail])
             }
 
             return countArr
@@ -181,7 +194,7 @@
                 date: ele[0],
                 count: ele[1],
                 quanName: ele[2],
-                detail:ele[3]
+                detail: ele[3]
             }
         })
 
@@ -204,13 +217,25 @@
             //                  日期   总数 策略数已经单个策略数的总数
             技术指标统计.push([dateKey, sum, 统计byDate[dateKey]])
         }
-        console.log(统计byDate)
+        //console.log(统计byDate)
 
 
         if (typeof (smallDown) == "undefined") smallDown = []
         if (typeof (bigcontinueslow) == "undefined") bigcontinueslow = []
 
 
+    </script>
+
+
+
+    <script type="text/javascript" src="data/新浪期货行情/1大宗策略.js"></script>
+    <script>
+        大宗策略 = 大宗策略.map((item) => {
+            let mostLow100orLast = item.day100LowUp ? item.day100LowUp[1] : item[`day${item.lastDay}LowUp`][1]
+            let mostUp100orLast = item.day100LowUp ? item.day100LowUp[3] : item[`day${item.lastDay}LowUp`][3]
+            return [item.trigDateCod1, mostLow100orLast, mostUp100orLast, item.name]
+        })
+        console.log(大宗策略)
     </script>
 
 </head>
@@ -233,7 +258,7 @@
 
             //当天 或 hs300最后一天 
             let currentDay = new Date()
-            currentDay = currentDay.getFullYear()+1 + "-" + (currentDay.getMonth() + 1) + "-" + currentDay.getDate()
+            currentDay = currentDay.getFullYear() + 1 + "-" + (currentDay.getMonth() + 1) + "-" + currentDay.getDate()
             arr.push([currentDay, ""])
 
             return arr
@@ -262,23 +287,26 @@
                 },
                 formatter: function (params, ticket, callback) {
                     //trigger: "item", 时候才有效
+                    if (params.seriesName && params.seriesName.includes("策略")) {
+                        if (Array.isArray(params.data[2])) {//kdj
+                            let objArr = params.data[2]
+                            let resStr = ""
+                            for (let i = 0; i < objArr.length; i++) {
+                                resStr += objArr[i].quanName + "<br>"
+                                for (let ii = 0; ii < objArr[i].detail.length; ii++) {
+                                    resStr = resStr + "&nbsp&nbsp" + objArr[i].detail[ii] + "<br>"
+                                }
+                                resStr += "<br>"
+                            }
+                            return resStr
+                        }
 
-                    if (params.seriesName && params.seriesName.includes("策略")) { 
-                        if(params.data[2]){console.log(params.data[2])
-                               let objArr = params.data[2]
-                               let resStr = ""
-                               for (let i = 0; i < objArr.length; i++) {
-                                   resStr += objArr[i].quanName + "<br>"
-                                   for (let ii = 0; ii < objArr[i].detail.length; ii++) {
-                                       resStr = resStr+ "&nbsp&nbsp"+ objArr[i].detail[ii]  + "<br>"
-                                   }
-                                   resStr += "<br>"
-                               }
-                               return resStr
+                        if (params.data[5]) {//大宗
+                            return params.data[0] + ":" + params.data[5] + ":" + params.data[3] + ": " + params.data[4]
                         }
-                        else {
-                            return params.seriesName + params.data
-                        }
+
+                        return params.seriesName + params.data
+
                     }
                 },
             },
@@ -304,14 +332,14 @@
                 start: 0,
                 end: 100,
                 bottom: -10,
-                xAxisIndex: [0, 1, 2, 3]
+                xAxisIndex: [0, 1, 2, 3, 4]
             },
             {
                 type: 'inside',
                 realtime: true,
                 start: 0,
                 end: 100,
-                xAxisIndex: [0, 1, 2, 3]
+                xAxisIndex: [0, 1, 2, 3, 4]
             }
             ],
             grid: [
@@ -319,16 +347,26 @@
                     left: 60,
                     right: 80,
                     top: "0%",
-                    height: '30%',
+                    height: '25%',
                 },
 
                 { //
                     left: 60,
                     right: 80,
-                    top: "30%",
-                    height: '35%',
+                    top: "25%",
+                    height: '20%',
                     backgroundColor: '#f8fcf7',
                     show: true,
+                },
+
+
+                { //
+                    left: 60,
+                    right: 80,
+                    backgroundColor: '#f8fcf7',
+                    show: true,
+                    top: "45%",
+                    height: '20%',
                 },
 
 
@@ -437,6 +475,28 @@
                     },
                 },
 
+                {
+                    gridIndex: 4,
+                    type: 'time',
+                    splitNumber: 20,
+                    splitLine: {
+                        show: true,
+                        lineStyle: {
+                            color: ['#bdbdbd']
+                        }
+                    },
+                    axisPointer: {
+                        show: true,
+                        label: {
+                            show: true,
+                        },
+                    },
+                    axisLabel: {
+                        show: false
+                    },
+                },
+
+
 
             ],
             yAxis: [
@@ -486,6 +546,23 @@
 
                 {
                     gridIndex: 3,
+                    name: '',
+                    type: 'value',
+                    splitLine: {
+                        show: false
+                    },
+                    axisLabel: {
+                        formatter: (value, index) => {
+                            if (value > 2000) return value
+                            else return ""
+                        }
+                    },
+                    show: true,
+                },
+
+
+                {
+                    gridIndex: 4,
                     name: '',
                     type: 'value',
                     splitLine: {
@@ -638,17 +715,17 @@
                     itemStyle: {
                         normal: {
                             opacity: 1,
-                            color: "red"
+                            color: "#800000"
                         }
                     },
                     symbolSize: function (val) {
-                        return 10
+                        return 12
                     },
                     zlevel: 3,
                     data: 沪深300策略.filterAndAddStartEnd()
                 },
                 {
-                    name: "同比1", 
+                    name: "同比1",
                     type: "line",
                     xAxisIndex: 2,
                     yAxisIndex: 3,
@@ -807,11 +884,36 @@
                     }).filterAndAddStartEnd()
                 },
 
+
+
+
+
                 {
-                    name: currentName,
+                    name: '大宗策略',
                     type: 'candlestick',
                     xAxisIndex: 3,
                     yAxisIndex: 4,
+
+                    zlevel: 3,
+                    data: 大宗策略.map((item) => {
+                        let tmp = []
+                        tmp[0] = item[0]//date
+                        tmp[1] = 0
+                        tmp[2] = item[1] < -7 ? -0.00000000001 : 0
+                        tmp[3] = item[1] //low
+                        tmp[4] = item[2] //up
+                        tmp[5] = item[3] //name
+                        return tmp
+                    }).filterAndAddStartEnd()
+                },
+
+
+
+                {
+                    name: currentName,
+                    type: 'candlestick',
+                    xAxisIndex: 4,
+                    yAxisIndex: 5,
                     showSymbol: false,
                     silent: true,
                     zlevel: 1,

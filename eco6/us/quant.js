@@ -83,9 +83,8 @@ async function getDataFromUrl(dataName, dataCode) {
 }
 
 
-let logDay5 = []
-let logDay5percent = ""
-let logDates = []
+
+let logNameDateCondAtter = []
 
 function backTest(dataName, dayDatas) {
 
@@ -96,6 +95,7 @@ function backTest(dataName, dayDatas) {
     let monthJup = false
     let monthJlow5 = false
     let monthPre5Jlow0 = false
+    let volumeUp = false
 
     function restAction() {
         dayCross = false
@@ -105,11 +105,8 @@ function backTest(dataName, dayDatas) {
         monthJup = false
         monthJlow5 = false
         monthPre5Jlow0 = false
-
-        logDay5 = []
-        logDay5percent = ""
+        volumeUp = false
     }
-
 
     function testDay(currentDayList) {
 
@@ -131,13 +128,13 @@ function backTest(dataName, dayDatas) {
             if (dayItem.percent < -2) {
                 nDayLow2Count = nDayLow2Count + 1 //前五日跌超-2的天数
             }
-            logDay5.push(dayItem.percent)
+
         }
-        logDay5.sort((a, b) => a - b)
+
 
         //前五日下跌幅度
         day5percent = (currentDayList[currentDayList.length - 2].close - currentDayList[currentDayList.length - 6].open) / currentDayList[currentDayList.length - 6].open * 100
-        logDay5percent = day5percent
+
         if (
             ((nDayLow0Count >= 3) || (nDayLow2Count >= 1) || (day5percent <= -3)) &&
             (day5percent <= 0) &&
@@ -149,7 +146,43 @@ function backTest(dataName, dayDatas) {
     }
 
     function testWeek(currentWeekList) {
+        let prePreWeek = currentWeekList[currentWeekList.length - 3]
+        let preWeek = currentWeekList[currentWeekList.length - 2]
+        let currentWeek = currentWeekList[currentWeekList.length - 1]
+
         weekJup = true //周J向上 
+
+        if ((preWeek.K >= preWeek.D) && (currentWeek.K < currentWeek.D) && preWeek.K > 65) {
+            weekJup = false //周高位死叉
+        }
+        if ((prePreWeek.K >= prePreWeek.D) && (preWeek.K < preWeek.D) && prePreWeek.K > 65) {
+            weekJup = false //周高位死叉
+        }
+
+        if ((preWeek.K >= preWeek.D) &&
+            (currentWeek.K >= currentWeek.D) &&
+            ((currentWeek.K - currentWeek.D) < 0.5) &&
+            (preWeek.K > currentWeek.K) &&
+            (preWeek.K > 65)
+        ) {
+            weekJup = false //周高位即将死叉
+        }
+
+        if (preWeek.bar > 0 && currentWeek.bar < 0) {
+            weekJup = false //macd死叉
+        }
+        if (prePreWeek.bar > 0 && preWeek.bar < 0) {
+            weekJup = false //macd死叉
+        }
+
+        if (
+            (prePreWeek.bar > preWeek.bar)
+            && (preWeek.bar > currentWeek.bar)
+            && (preWeek.K > currentWeek.K)
+            && (preWeek.K >= 36) //36
+        ) {
+            weekJup = false //macd即将死叉
+        }
     }
 
     function testMonth(currentMonthList) {
@@ -194,14 +227,125 @@ function backTest(dataName, dayDatas) {
         }
     }
 
-    function mylog(currentDayList, currentWeekList, currentMonthList) {
+    function testVolume(currentDayList, currentWeekList, currentMonthList) {
+        // volumeUp = true
+        // return
+
+        let prePreDay = currentDayList[currentDayList.length - 3]
+        let preDay = currentDayList[currentDayList.length - 2]
+        let currentDay = currentDayList[currentDayList.length - 1]
+
+        let prePrePreWeek = currentWeekList[currentWeekList.length - 4]
+        let prePreWeek = currentWeekList[currentWeekList.length - 3]
+        let preWeek = currentWeekList[currentWeekList.length - 2]
+        let currentWeek = currentWeekList[currentWeekList.length - 1]
+
+        let shortDay = 3
+        let longDay = 6
+        let shortSum = 0
+        let longSum = 0
+        for (var i = 1; i <= longDay; i++) {
+            let currentDay = currentDayList[currentDayList.length - i]
+            if (i <= shortDay) shortSum += currentDay.volume
+            longSum += currentDay.volume
+        }
+        if (
+            ((longSum / longDay) < (shortSum / shortDay))
+            || ((prePreDay.volume < preDay.volume) && (preDay.volume < currentDay.volume))
+            || (preWeek.volume <= currentWeek.volume)
+            || ((prePrePreWeek.volume <= prePreWeek.volume) && (prePreWeek.volume <= preWeek.volume))
+            || (
+                currentMonthList[currentMonthList - 2] &&
+                (currentMonthList[currentMonthList - 1].volume >= currentMonthList[currentMonthList - 2].volume)
+            )
+        ) { volumeUp = true }
+
+    }
+
+    function mylog(dataName, dayDatas, currentDayList, currentWeekList, currentMonthList, cond1) {
 
         let currentDayIndex = currentDayList.length - 1
-        let currentDay = currentDayList[currentDayIndex]
+        let currentDayData = currentDayList[currentDayIndex]
 
-        console.log("ok", currentDay.date, logDay5, logDay5percent.toFixed(2), getDayPercent(currentDay))
-        logDates.push([currentDay.date, getDayPercent(currentDay)])
+        let logProfileN = {}
+        logProfileN.name = dataName
+        logProfileN.trigDateCod1 = cond1.date
+        logProfileN.trigDate = currentDayData.date
+        logProfileN.trigDatePercent = currentDayData.percent
 
+        let afterDays = [10, 20, 100, 200]
+        for (let index = 0; index < afterDays.length; index++) {
+            let afterDay = afterDays[index]
+            if (currentDayIndex + afterDay <= dayDatas.length - 1) {
+                logProfileN[`day${afterDay}`] = +((dayDatas[currentDayIndex + afterDay].close - currentDayData.close) / currentDayData.close * 100).toFixed(2)
+            } else {
+                let lastDay = dayDatas.length - 1 - currentDayIndex
+                logProfileN[`day${lastDay}`] = +((dayDatas[dayDatas.length - 1].close - currentDayData.close) / currentDayData.close * 100).toFixed(2)
+                logProfileN[`lastDay`] = lastDay
+                break
+            }
+        }
+
+        for (let index = 0; index < afterDays.length; index++) {
+            let afterDay = afterDays[index]
+            if (currentDayIndex + afterDay <= dayDatas.length - 1) {
+                let tmpUp = 0
+                let tmpUpDate = []
+                let tmpLow = 0
+                let tmpLowDate = []
+                for (let after = 1; after <= afterDay; after++) {
+                    let profile = (dayDatas[currentDayIndex + after].close - currentDayData.close) / currentDayData.close
+                    if (profile > tmpUp) {
+                        tmpUp = profile
+                        tmpUpDate = [after, dayDatas[currentDayIndex + after].date]
+                    }
+                    if (profile < tmpLow) {
+                        tmpLow = profile
+                        tmpLowDate = [after, dayDatas[currentDayIndex + after].date]
+                    }
+                }
+                logProfileN[`day${afterDay}LowUp`] = [
+                    tmpLowDate,
+                    +(tmpLow * 100).toFixed(2),
+                    tmpUpDate,
+                    +(tmpUp * 100).toFixed(2)
+                ]
+            }
+            else {
+                let lastDay = dayDatas.length - 1 - currentDayIndex
+                let tmpUp = 0
+                let tmpUpDate = []
+                let tmpLow = 0
+                let tmpLowDate = []
+                for (let after = 1; after <= lastDay; after++) {
+                    let profile = (dayDatas[currentDayIndex + after].close - currentDayData.close) / currentDayData.close
+                    if (profile > tmpUp) {
+                        tmpUp = profile
+                        tmpUpDate = [after, dayDatas[currentDayIndex + after].date]
+                    }
+                    if (profile < tmpLow) {
+                        tmpLow = profile
+                        tmpLowDate = [after, dayDatas[currentDayIndex + after].date]
+                    }
+                }
+                logProfileN[`day${lastDay}LowUp`] = [
+                    tmpLowDate,
+                    +(tmpLow * 100).toFixed(2),
+                    tmpUpDate,
+                    +(tmpUp * 100).toFixed(2)
+                ]
+                break
+            }
+        }
+
+        console.log(logProfileN.trigDate)
+
+        // //测试用
+        // logProfileN.trigDay6 = currentDayList.slice(-6)
+        // logProfileN.trigWeek4 = currentWeekList.slice(-4)
+        // logProfileN.trigMonth4 = currentMonthList.slice(-4)
+
+        logNameDateCondAtter.push(logProfileN)
     }
 
 
@@ -233,22 +377,20 @@ function backTest(dataName, dayDatas) {
         testDay(currentDayList)
         testWeek(currentWeekList)
         testMonth(currentMonthList)
+        testVolume(currentDayList, currentWeekList, currentMonthList)
 
 
-        let currentDayDate = currentDayList[currentDayList.length - 1].date
-        // if (currentDayDate.includes("2009-0311")) {
-        //     console.log(currentDayDate, dayCross, dayNlowM, weekJup, monthLowMa, monthJup, monthJlow5, monthPre5Jlow0)
-        // }
+        let currentDay = currentDayList[currentDayList.length - 1]
 
         let lastResult = dayCross && dayNlowM && weekJup && monthLowMa && monthJup && monthJlow5 && monthPre5Jlow0
-        if (lastResult) mylog(currentDayList, currentWeekList, currentMonthList)
+        if (lastResult) mylog(dataName, dayDatas, currentDayList, currentWeekList, currentMonthList, currentDay)
         restAction()
     }
     //等效setInterval循环
 }
 
 
-async function getDataBack(dataName, dataCode) {
+async function start(dataName, dataCode) {
     let dayDatas
     try {
         dayDatas = await getDataFromFile(dataName, dataCode)
@@ -275,8 +417,6 @@ async function getDataBack(dataName, dataCode) {
 }
 
 
-
-
 let browser;
 (async () => {
     browser = await puppeteer.launch({ headless: false, });
@@ -289,9 +429,9 @@ let browser;
     console.time("timelog")
     let logAllDates = ""
     for (var i = 0; i < nameCodes.length; i++) {
-        await getDataBack(nameCodes[i].name, nameCodes[i].code)
-        logAllDates += `var ${nameCodes[i].name.split("_")[0]}策略 = ` + JSON.stringify(logDates, null, 0) + "\r\n"
-        logDates = []
+        await start(nameCodes[i].name, nameCodes[i].code)
+        logAllDates += `var ${nameCodes[i].name.split("_")[0]}策略 = ` + JSON.stringify(logNameDateCondAtter, null, 0) + "\r\n"
+        logNameDateCondAtter = []
     }
     console.timeEnd("timelog")
 

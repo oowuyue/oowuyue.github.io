@@ -421,7 +421,7 @@
 
     </script>
 
-    <script type="text/javascript" src="data/雪球行情/指数策略.js"></script>
+    <script type="text/javascript" src="data/雪球行情/大盘策略.js"></script>
     <script type="text/javascript" src="data/雪球行情/证券策略.js"></script>
     <script>
         证券策略 = [
@@ -429,7 +429,32 @@
             ...招商证券策略, ...广发证券策略,
             ...东方财富策略, ...同花顺策略, ...恒生电子策略
         ]
+        证券策略 = 证券策略.map((item) => {
+            return [item.trigDate, item.trigDatePercent]
+        })
+
+
+        上证指数策略 = 上证指数策略.map((item) => {
+            return [item.trigDate, item.trigDatePercent]
+        })
+        沪深300策略 = 沪深300策略.map((item) => {
+            return [item.trigDate, item.trigDatePercent]
+        })
+
+        console.log(上证指数策略)
     </script>
+
+
+    <script type="text/javascript" src="data/新浪期货行情/1大宗策略.js"></script>
+    <script>
+        大宗策略 = 大宗策略.map((item) => {
+            let mostLow100orLast = item.day100LowUp ? item.day100LowUp[1] : item[`day${item.lastDay}LowUp`][1]
+            let mostUp100orLast = item.day100LowUp ? item.day100LowUp[3] : item[`day${item.lastDay}LowUp`][3]
+            return [item.trigDateCod1, mostLow100orLast, mostUp100orLast, item.name]
+        })
+        console.log(大宗策略)
+    </script>
+
 </head>
 
 <body style="height: 100%; margin: 0">
@@ -443,7 +468,7 @@
 
             //当天 或 hs300最后一天 
             let currentDay = new Date()
-            let lastDay = currentDay.getFullYear()+1 + "-" + (currentDay.getMonth() + 1) + "-" + currentDay.getDate()
+            let lastDay = currentDay.getFullYear() + 1 + "-" + (currentDay.getMonth() + 1) + "-" + currentDay.getDate()
             // let lastDay = 沪深300_xueqiu_day[沪深300_xueqiu_day.length - 1].date
 
             let found = arr.find((element) => element[0] == lastDay);
@@ -486,8 +511,10 @@
             },
             legend: {
                 // data: ['M1', 'M1-M2', "PPI", "股GDP比", "股债比", "上证"],
+                top: 550,
                 left: 53,
-                width: 1200
+                height: 500,
+                width: 300
             },
             toolbox: {},
             axisPointer: {
@@ -530,14 +557,14 @@
                     left: 60,
                     right: 80,
                     top: "0%",
-                    height: '10%',
+                    height: '13%',
                 },
 
                 { //中位PE 同比
                     left: 60,
                     right: 80,
-                    top: "10%",
-                    height: '20%',
+                    top: "13%",
+                    height: '17%',
                 },
 
                 { //pmi
@@ -576,7 +603,7 @@
                     splitLine: {
                         show: true,
                         lineStyle: {
-                             color: [splitLineColor]
+                            color: [splitLineColor]
                         }
                     },
                     axisPointer: {
@@ -599,7 +626,7 @@
                     splitLine: {
                         show: true,
                         lineStyle: {
-                             color: [splitLineColor]
+                            color: [splitLineColor]
                         }
                     },
                     axisPointer: {
@@ -621,7 +648,7 @@
                     splitLine: {
                         show: true,
                         lineStyle: {
-                             color: [splitLineColor]
+                            color: [splitLineColor]
                         }
                     },
                     axisPointer: {
@@ -643,7 +670,7 @@
                     splitLine: {
                         show: true,
                         lineStyle: {
-                             color: [splitLineColor]
+                            color: [splitLineColor]
                         }
                     },
                     axisPointer: {
@@ -663,7 +690,7 @@
                     splitLine: {
                         show: true,
                         lineStyle: {
-                             color: [splitLineColor]
+                            color: [splitLineColor]
                         }
                     },
                     axisPointer: {
@@ -683,7 +710,7 @@
                     splitLine: {
                         show: true,
                         lineStyle: {
-                             color: [splitLineColor]
+                            color: [splitLineColor]
                         }
                     },
                     axisPointer: {
@@ -745,7 +772,7 @@
                     //     }
                     // },
                     //interval: 5,
-                    max: 50,
+                    max: 43,
                     min: 15,
                 },
 
@@ -865,6 +892,23 @@
                     position: "letf"
 
                 },
+
+                {
+                    gridIndex: 3, //大宗策略
+                    name: '',
+                    type: 'value',
+                    splitLine: {
+                        show: false
+                    },
+                    axisLabel: {
+                        show: true
+                    },
+                    show: true,
+                    max: 90,
+                    min: -46,
+                    position: "letf"
+
+                },
             ],
 
             series: [
@@ -925,7 +969,7 @@
                                 position: "start",
                             },
                             yAxis: 75, // 标线值
-                            x: "87%",
+                            x: "83%",
                         },
                         {
                             lineStyle: {
@@ -939,7 +983,7 @@
                                 position: "insideStartBottom",
                             },
                             yAxis: 35, // 标线值
-                            x: "87%", //固定起点的 x 像素位置
+                            x: "83%", //固定起点的 x 像素位置
                         },
                         ],
                     },
@@ -1087,8 +1131,8 @@
                     showSymbol: false,
                     smooth: true,
                     lineStyle: {
-                        width: 0.8,
-                        color: "#ff4500"
+                        width: 1,
+                        color: "#ee82ee"
                     },
 
                     markLine: {
@@ -1152,7 +1196,7 @@
                             }
                         ],
                     },
-                    
+
                     data: cn_pmi_平均.filter(item => {
                         return parseFloat(item[0].substring(0, 4)) >= 2006
                     }).map(v => {
@@ -1283,7 +1327,7 @@
                             "globalCoord": false
                         }
                     },
-                  
+
                     lineStyle: {
                         width: 1.5,
                         type: "dotted"
@@ -1326,7 +1370,7 @@
                         }
 
                     },
-                    zlevel:5,
+                    zlevel: 5,
                     lineStyle: {
                         width: 1.5,
                     },
@@ -1366,7 +1410,7 @@
                         }
 
                     },
-                    zlevel:5,
+                    zlevel: 5,
                     lineStyle: {
                         width: 1.5,
                         type: 'dotted',
@@ -1400,7 +1444,7 @@
                         width: 1.2,
                         color: " black"
                     },
-                    zlevel:5,
+                    zlevel: 5,
                     data: M1.addStartEnd()
                 },
                 {
@@ -1415,7 +1459,7 @@
                         color: "black", //"#ff5c5c",
                         type: "dotted"
                     },
-                    zlevel:5,
+                    zlevel: 5,
                     data: M1_MA,
                 },
 
@@ -1566,6 +1610,28 @@
                     zlevel: 3,
                     data: 沪深300策略.addStartEnd()
                 },
+
+
+
+                {
+                    name: '大宗策略',
+                    type: 'candlestick',
+                    xAxisIndex: 3,
+                    yAxisIndex: 9,
+
+                    zlevel: 3,
+                    data: 大宗策略.map((item) => {
+                        let tmp = []
+                        tmp[0] = item[0]//date
+                        tmp[1] = 0
+                        tmp[2] = item[1] < -7 ? -0.00000000001 : 0
+                        tmp[3] = item[1] //low
+                        tmp[4] = item[2] //up
+                        tmp[5] = item[3] //name
+                        return tmp
+                    }).addStartEnd()
+                },
+
             ]
         };
 
@@ -1632,7 +1698,7 @@
 
             ["沪深300同比", "房地产$汽车与出口", "M1", "M1_MA",
                 "证券策略", "上证指数策略", "沪深300策略",
-                "策略总数", "策略数", "小市值亏损", "大市值连亏"
+                "策略总数", "策略数", "小市值亏损", "大市值连亏","大宗策略"
             ].forEach(legendName => {
                 myChart.dispatchAction({
                     type: 'legendToggleSelect',
