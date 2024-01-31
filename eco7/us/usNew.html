@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="zh-CN" style="height: 100%">
+
+<head>
+    <meta charset="utf-8" />
+    <script type="text/javascript" src="../ajslib/my.js"></script>
+
+    <script type="text/javascript" src="data/UnemploymentRate-Cpi.js"></script>
+    <script type="text/javascript" src="data/UnPlusNoncyclical季-CpiPlusRealGdp季-RealGdp季.js"></script>
+
+    <script type="text/javascript" src="data/us原油.js "></script>
+    <script type="text/javascript" src="data/us白糖.js "></script>
+    <script type="text/javascript" src="data/铜金比Day.js"></script>
+    <script type="text/javascript" src="data/MM美股基本指数.js"></script>
+
+    <script type="text/javascript" src="data/Wilshire5000-Wilshire500YoY-Vix.js"></script>
+    <script type="text/javascript" src="data/全球股市大于200日均线比例Day.js"></script>
+    <script type="text/javascript" src="data/雪球行情/标普500_xueqiu_day.js"></script>
+    <script type="text/javascript" src="data/雪球行情/美股指数策略.js"></script>
+
+    <script type="text/javascript" src="data/MM制造业指标.js"></script>
+    <script type="text/javascript" src="data/PMI_ISM,金融脉动增速.js"></script>
+    <script type="text/javascript" src="data/金融压力Day,美元指数Day.js"></script>
+
+    <script type="text/javascript" src="data/Rate周-Assets周.js"></script>
+    <script type="text/javascript" src="data/Y10日,Y2日.js"></script>
+
+    <script>
+        us原油 = us原油.data
+        us白糖 = us白糖.data
+        let 糖油比 = us原油.map(item原油 => {
+            let item白糖 = findSameTime(us白糖, item原油[0])
+            if (item白糖) return [item原油[0], item原油[4] / item白糖[4]]
+            else return [item原油[0], ""]
+        })
+
+        标普500_xueqiu_day = 标普500_xueqiu_day.data.item.xueqiuData2Obj()
+        //console.log(标普500_xueqiu_day)
+
+        let 美元指数同比 = 美元指数Day
+            .filter((ele, index, datasArr) => { //月最后一天
+                currentMonth = ele[0].substring(5, 7)
+                if (index < datasArr.length - 1) {
+                    nextMonth = datasArr[index + 1][0].substring(5, 7)
+                    return currentMonth != nextMonth
+                } else {
+                    return true
+                }
+            })
+            .map((ele, index, datasArr) => { // yoY 同比
+                let preYear = '' + (parseInt(ele[0].substring(0, 4)) - 1) + ele[0].substring(4, 10)
+                let preItem = datasArr.find(element => {
+                    return element[0] == preYear
+                })
+
+                if (!preItem) { //去原始数据找
+                    let currentDayInt = parseInt(ele[0].substring(8, 10))
+                    let preYearMonth = '' + (parseInt(ele[0].substring(0, 4)) - 1) + ele[0].substring(4, 7)
+                    let n = 0
+                    while (-5 < n) { //向前查找
+                        let dayInt = currentDayInt + n
+                        let dayStr = dayInt >= 10 ? '' + dayInt : "0" + dayInt
+                        let preYearMonthDay = '' + preYearMonth + "-" + dayStr
+                        preItem = datasArr.find(element => {
+                            return element[0] == preYearMonthDay
+                        })
+                        if (preItem) break
+                        n--
+                    }
+                }
+                let yoY = ""
+                if (preItem) {
+                    preItem[1] = parseFloat(preItem[1])
+                    ele[1] = parseFloat(ele[1])
+                    yoY = preItem[1] ? (ele[1] - preItem[1]) / preItem[1] : ""
+                }
+                return [ele[0], yoY * 100]
+            })
+            .map((item, index, datasArr) => {
+                if (index < datasArr.length - 1) {
+                    //item[0] = formatDate("macromicro", item[0])
+                }
+                return item
+            })
+
+        标普500策略 = 标普500策略.map((item) => {
+            return [item.trigDate, item.trigDatePercent]
+        })
+        纳指策略 = 纳指策略.map((item) => {
+            return [item.trigDate, item.trigDatePercent]
+        })
+        道琼斯策略 = 道琼斯策略.map((item) => {
+            return [item.trigDate, item.trigDatePercent]
+        })
+    </script>
+
+</head>
+
+<body style="height: 100%; width: 100%; margin: 0">
+    <div id="container" style="height: 100%; width: 100%;"></div>
+    <script type="text/javascript" src="../ajslib/echarts.min.js"></script>
+    <script type="text/javascript">
+        Array.prototype.addStartEnd = function () {
+            let arr = this
+            let startYear = 1976
+            if (Date.parse(arr[0][0]) < Date.parse(`${startYear}-12-28`))
+                arr = arr.filter(item => {
+                    return parseFloat(item[0].substring(0, 4)) > startYear //只包含1977及以后
+                })
+
+            arr = [
+                [`${startYear}-12-28`, ""]//头部添加一个1976-12-18
+            ].concat(arr)
+
+            let last300Day = 标普500_xueqiu_day[标普500_xueqiu_day.length - 1].date
+            if (+last300Day.substring(5, 7) <= 7)
+                var chartLastDay = last300Day.substring(0, 4) + "-12-28"
+            else
+                var chartLastDay = +last300Day.substring(0, 4) + 1 + "-12-28"
+
+            arr.push([chartLastDay, ""])
+
+            return arr
+        }
+
+        var dom = document.getElementById("container");
+        var myChart = echarts.init(dom, "red", {
+            renderer: "canvas",
+            useDirtyRect: false,
+        });
+        var app = {};
+        var option;
+
+        let gridbackgroundColor = "#f7f9fa"
+        let splitLineColor = "#d8d8d8"
+        option = {
+            title: {},
+            tooltip: {
+                trigger: "axis",
+                show: true,
+                position: ["3%", "23.5%"],
+                order: "seriesDesc",
+                formatter: function (params, ticket, callback) {
+                    return null;
+                },
+                axisPointer: {
+                    type: "cross",
+                    show: true,
+                    crossStyle: {
+                        width: 0.6,
+                        color: "black", // 鼠标十字横轴
+                    },
+                },
+            },
+            legend: {
+                inactiveColor: '#9a9393',
+                left: "3.9%",
+                top: "-0.5%"
+
+            },
+            axisPointer: {
+                type: "cross",
+                show: true,
+                link: [{
+                    xAxisIndex: "all",
+                },],
+                lineStyle: {
+                    color: "black", // 鼠标十字竖轴
+                    lineStyle: {
+                        width: 0.6,
+                        color: "black", // 鼠标十字竖轴
+                    },
+                },
+            },
+            dataZoom: [
+
+                {
+                    show: true,
+                    realtime: true,
+                    start: 0,
+                    end: 100,
+                    xAxisIndex: [0, 1, 2, 3, 4, 5],
+                    bottom: -12,
+                },
+            ],
+
+            grid: [
+
+                { //P
+                    left: 60,
+                    right: 80,
+                    top: "0%",
+                    height: '20%',
+                    show: true,
+
+                },
+                { //
+                    left: 60,
+                    right: 80,
+                    top: "20%",
+                    height: '25%',
+                    show: true,
+
+                },
+
+                { //股  
+                    left: 60,
+                    right: 80,
+                    top: "45%",
+                    height: '17%',
+                    show: true,
+
+                },
+                { //
+                    left: 60,
+                    right: 80,
+                    top: "62%",
+                    height: '16%',
+                    show: true,
+
+                },
+
+                { //QM
+                    left: 60,
+                    right: 80,
+                    top: "78%",
+                    height: '20%',
+                    show: true,
+
+                },
+
+                { //指数 单独
+                    left: 60,
+                    right: 80,
+                    top: "45%",
+                    height: '33%', // 23 or 43  
+                    show: true,
+                    backgroundColor: gridbackgroundColor,
+                },
+
+            ],
+
+            xAxis: [
+
+                { //P
+                    gridIndex: 0,
+                    type: "time",
+                    splitNumber: 20,
+                    splitLine: {
+                        show: true,
+                        lineStyle: {
+                            color: [splitLineColor]
+                        }
+                    },
+                    axisPointer: {
+                        show: true,
+                        label: {
+                            show: false,
+                        },
+                    },
+                    axisLabel: {
+                        show: false
+                    }
+                },
+                {
+                    gridIndex: 1,
+                    type: "time",
+                    splitNumber: 20,
+                    splitLine: {
+                        show: true,
+                        lineStyle: {
+                            color: [splitLineColor]
+                        }
+                    },
+                    axisPointer: {
+                        show: true,
+                        label: {
+                            show: false,
+                        },
+                    },
+                    axisLabel: {
+                        show: false
+                    }
+                },
+
+                { //股  
+                    gridIndex: 2,
+                    type: 'time',
+                    splitNumber: 20,
+                    splitLine: {
+                        show: true,
+                        lineStyle: {
+                            color: [splitLineColor]
+                        }
+                    },
+                    axisPointer: {
+                        show: true, // 抓数据圆圈
+                        label: {
+                            show: false, //黑框日期
+                        },
+                    },
+                    axisLabel: {
+                        show: false
+                    }
+                },
+                {
+                    gridIndex: 3,
+                    type: 'time',
+                    splitNumber: 20,
+                    splitLine: {
+                        show: true,
+                        lineStyle: {
+                            color: [splitLineColor]
+                        }
+                    },
+                    axisPointer: {
+                        show: true,
+                        label: {
+                            show: false,
+                        },
+                    },
+                    axisLabel: {
+                        show: false
+                    }
+                },
+
+                { //MQ
+                    gridIndex: 4,
+                    type: "time",
+                    splitNumber: 20,
+                    splitLine: {
+                        show: true,
+                        lineStyle: {
+                            color: [splitLineColor]
+                        }
+                    },
+                    axisPointer: {
+                        show: true,
+                        label: {
+                            show: true,
+                        },
+                    },
+                    axisLabel: {
+                        fontSize: 10,
+                        formatter: "{yyyy}",
+                        padding: [0, -50, 0, 0],
+                    },
+                },
+
+                { //指数 单独  
+                    gridIndex: 5,
+                    type: 'time',
+                    splitNumber: 20,
+                    splitLine: {
+                        show: true,
+                        lineStyle: {
+                            color: [splitLineColor]
+                        }
+                    },
+                    axisPointer: {
+                        show: true, // 抓数据圆圈
+                        label: {
+                            show: false, //黑框日期
+                        },
+                    },
+                    axisLabel: {
+                        show: false
+                    }
+                },
+
+            ],
+
+            yAxis: [
+
+                { //P
+                    gridIndex: 0,
+                    type: 'value',
+                    splitLine: {
+                        show: false
+                    },
+                    axisLabel: {
+                        formatter: (value, index) => {
+                            if (value <= -10) return ""
+                            else return value
+                        }
+                    },
+                    min: 0,
+                    position: "right",
+                },
+                {
+                    gridIndex: 0,
+                    type: 'value',
+                    splitLine: {
+                        show: false
+                    },
+                    position: "left",
+                },
+
+                { //
+                    gridIndex: 1,
+                    type: 'value',
+                    splitLine: {
+                        show: false
+                    },
+                    axisLabel: {
+                        formatter: (value, index) => {
+                            if (value > 60 || value < -20) return ""
+                            else return value
+                        }
+                    },
+                    min: -5,
+                    max: 12,
+                    position: "right",
+
+                },
+                {
+                    gridIndex: 1,
+                    type: 'value',
+                    splitLine: {
+                        show: false
+                    },
+                    position: "left",
+                },
+
+                { //股  
+                    gridIndex: 2,
+                    type: 'value',
+                    splitLine: {
+                        show: false
+                    },
+                    position: "right",
+                    // inverse: true, //默认现实平均
+                    min: -50
+
+                },
+                {
+                    gridIndex: 2,
+                    type: 'value',
+                    splitLine: {
+                        show: false
+                    },
+                    axisLabel: {
+                        formatter: (value, index) => {
+                            if (value > 700) return value / 1000 + "K"
+                            else return value
+                        }
+                    },
+                    position: "left",
+
+                },
+
+                {
+                    gridIndex: 3,
+                    type: 'value',
+                    splitLine: {
+                        show: false
+                    },
+                    axisLabel: {
+                        formatter: (value, index) => {
+                            if ([-10, 10].includes(value)) return value
+                            else return ""
+                        }
+                    },
+                    max: 105,
+                    position: "right",
+                },
+                {
+                    gridIndex: 3,
+                    type: 'value',
+                    splitLine: {
+                        show: false
+                    },
+                    position: "left",
+                },
+
+
+                { //MQ
+                    gridIndex: 4,
+                    type: 'value',
+                    splitLine: {
+                        show: false
+                    },
+                    axisLabel: {
+                        formatter: (value, index) => {
+                            if (value >= 40) return ""
+                            else return value
+                        }
+                    },
+                    min: -30,
+                    position: "right",
+
+                },
+                {
+                    gridIndex: 4,
+                    type: 'value',
+                    splitLine: {
+                        show: false
+                    },
+                    interval: 10,
+                    axisLabel: {
+                        formatter: (value, index) => {
+                            if (value > 30) return ""
+                            else return value
+                        },
+                        color: "black"
+                    },
+                    position: "left",
+
+                },
+
+
+                { //指数 单独
+                    gridIndex: 5,
+                    type: 'value',
+                    splitLine: {
+                        show: false
+                    },
+                    axisLabel: {
+                        formatter: (value, index) => {
+                            if (value > 700) return value / 1000 + "K"
+                            else return value
+                        }
+                    },
+                    position: "left",
+                    //min: 700
+                },
+            ],
+
+            series: [
+
+                {
+                    name: 'cpi_失业率',
+                    type: 'line',
+                    xAxisIndex: 0,
+                    yAxisIndex: 0,
+                    showSymbol: false,
+                    smooth: true,
+                    lineStyle: {
+                        width: 1,
+                        color: "#ff5c5c" //red
+
+                    },
+                    data: Cpi.addStartEnd()
+                },
+                {
+                    name: 'cpi_失业率',
+                    type: 'line',
+                    xAxisIndex: 0,
+                    yAxisIndex: 0,
+                    showSymbol: false,
+                    smooth: true,
+                    lineStyle: {
+                        width: 1,
+                        color: "#00a476" //green
+
+                    },
+                    data: UnemploymentRate.addStartEnd()
+                },
+
+                {
+                    name: 'realGdp_摩擦失业率_cpiSubReaGdp',
+                    type: 'line',
+                    xAxisIndex: 1,
+                    yAxisIndex: 2,
+                    showSymbol: false,
+                    smooth: true,
+                    lineStyle: {
+                        width: 1,
+                        color: "#00a476"  //"#00a476" //green
+
+                    },
+                    data: UnPlusNoncyclical季.addStartEnd()
+                },
+                {
+                    name: 'realGdp_摩擦失业率_cpiSubReaGdp',
+                    type: 'line',
+                    xAxisIndex: 1,
+                    yAxisIndex: 2,
+                    showSymbol: false,
+                    smooth: true,
+                    lineStyle: {
+                        width: 1,
+                        color: "#ff5c5c" //red
+
+                    },
+                    data: CpiPlusRealGdp季.addStartEnd()
+                },
+                {
+                    name: 'realGdp_摩擦失业率_cpiSubReaGdp',
+                    type: 'line',
+                    xAxisIndex: 1,
+                    yAxisIndex: 2,
+                    showSymbol: false,
+                    smooth: true,
+                    lineStyle: {
+                        width: 1,
+                        color: "#a45db2" //orange
+
+                    },
+                    data: RealGdp季.addStartEnd()
+                },
+
+                {
+                    name: "铜金比",
+                    type: "line",
+                    xAxisIndex: 0,
+                    yAxisIndex: 0,
+                    showSymbol: false,
+                    //smooth: true,
+                    lineStyle: {
+                        width: 1,
+                        //color: "#FD4142", //"#22aa62", 
+                    },
+                    markLine: {
+                        symbol: ["none", "none"],
+                        data: [
+                            {
+                                lineStyle: {
+                                    width: 0.5,
+                                    color: "gray",
+                                },
+                                label: {
+                                    formatter: "",
+                                    color: "green",
+                                    fontSize: 8,
+                                    position: "insideStartBottom",
+                                },
+                                yAxis: 2.5, // 标线值
+                            },
+
+                            {
+                                lineStyle: {
+                                    width: 0.5,
+                                    color: "gray",
+                                },
+                                label: {
+                                    formatter: "",
+                                    color: "green",
+                                    fontSize: 8,
+                                    position: "insideStartBottom",
+                                },
+                                yAxis: 1.5, // 标线值
+                            }
+                        ],
+                    },
+                    data: 铜金比Day.map(item => {
+                        item[1] = parseFloat(item[1]) * 10
+                        return item
+                    }).addStartEnd(false)
+                },
+                {
+                    name: "油糖比",
+                    type: "line",
+                    xAxisIndex: 0,
+                    yAxisIndex: 0,
+                    showSymbol: false,
+                    //smooth: true,
+                    lineStyle: {
+                        width: 1,
+                        //color: "#FD4142", //"#22aa62", 
+                    },
+                    markLine: {
+                        symbol: ["none", "none"],
+                        data: [
+                            {
+                                lineStyle: {
+                                    width: 0.5,
+                                    color: "gray",
+                                },
+                                label: {
+                                    formatter: "",
+                                    color: "green",
+                                    fontSize: 8,
+                                    position: "insideStartBottom",
+                                },
+                                yAxis: 5.5, // 标线值
+                            },
+
+                            {
+                                lineStyle: {
+                                    width: 0.5,
+                                    color: "gray",
+                                },
+                                label: {
+                                    formatter: "",
+                                    color: "green",
+                                    fontSize: 8,
+                                    position: "insideStartBottom",
+                                },
+                                yAxis: 2.5, // 标线值
+                            }
+                        ],
+                    },
+                    data: 糖油比.addStartEnd()
+                },
+                {
+                    name: '美股基本面', //柯博文重卡  企业税后获利  信用风险利差企业债-10年国债9f39b3
+                    type: 'line',
+                    xAxisIndex: 1,
+                    yAxisIndex: 2,
+                    showSymbol: false,
+                    smooth: true,
+                    lineStyle: {
+                        width: 1.5,
+                        //color: "#a45db2"
+
+                    },
+                    data: MM美股基本指数.addStartEnd()
+                },
+
+
+                {
+                    name: 'Wilshire500YoY',
+                    type: 'line',
+                    xAxisIndex: 2,
+                    yAxisIndex: 4,
+                    showSymbol: false,
+                    smooth: true,
+                    lineStyle: {
+                        width: 1,
+                        //color: "#7dcf7c"
+                    },
+                    itemStyle: {
+                        normal: {
+                            color: {
+                                type: "linear",
+                                x: 0,
+                                y: 0,
+                                x2: 0,
+                                y2: 1,
+                                colorStops: [{
+                                    offset: 0.35, //大 下
+                                    color: "red",
+                                },
+                                {
+                                    offset: 0.5,
+                                    color: "orange",
+                                },
+
+                                {
+                                    offset: 0.8, //小 上
+                                    color: "green",
+                                },
+                                ],
+                                globalCoord: true,
+                            },
+                        },
+                    },
+                    markLine: {
+                        symbol: ["none", "none"],
+                        data: [{
+                            lineStyle: {
+                                width: 0.5,
+                                color: "green",
+                            },
+                            label: {
+                                formatter: "-20低估",
+                                color: "green",
+                                fontSize: "10",
+                                position: "insideStartBottom",
+                            },
+                            yAxis: -20, // 标线值
+                            //x: "6.5%", //固定起点的 x 像素位置
+                        },
+                        {
+                            lineStyle: {
+                                width: 0.5,
+                                color: "red",
+                            },
+                            label: {
+                                formatter: "30高估",
+                                color: "red",
+                                fontSize: "10",
+                                position: "insideStartTop",
+                            },
+                            yAxis: 30, // 标线值
+                            // x: "6.5%",
+                        },
+                        {
+                            lineStyle: {
+                                width: 0.5,
+                                color: "gray",
+                                //type: "solid" // 实线，不写默认虚线
+                            },
+                            label: {
+                                formatter: "30高估",
+                                color: "red",
+                                fontSize: "0",
+                                position: "start",
+                            },
+                            yAxis: 0, // 标线值
+                        },
+                        ],
+                    },
+
+                    data: Wilshire500YoY.addStartEnd()
+                },
+                {
+                    name: '策略',
+                    type: 'scatter',
+                    xAxisIndex: 2,
+                    yAxisIndex: 4,
+                    symbol: "path://M12.0002 3.58569L19.4144 10.9999L18.0002 12.4141L13.0002 7.41412V19.9999H11.0002V7.41412L6.00015 12.4141L4.58594 10.9999L12.0002 3.58569Z",
+                    itemStyle: {
+                        normal: {
+                            opacity: 1,
+                            color: "black"
+                        }
+                    },
+                    symbolSize: function (val) {
+                        return 10
+                    },
+                    zlevel: 3,
+                    data: 道琼斯策略.addStartEnd()
+
+                },
+                {
+                    name: '策略',
+                    type: 'scatter',
+                    xAxisIndex: 2,
+                    yAxisIndex: 4,
+                    symbol: "path://M12.0002 3.58569L19.4144 10.9999L18.0002 12.4141L13.0002 7.41412V19.9999H11.0002V7.41412L6.00015 12.4141L4.58594 10.9999L12.0002 3.58569Z",
+                    itemStyle: {
+                        normal: {
+                            opacity: 1,
+                            color: "black"
+                        }
+                    },
+                    symbolSize: function (val) {
+                        return 10
+                    },
+                    zlevel: 3,
+                    data: 纳指策略.addStartEnd()
+                },
+                {
+                    name: '策略',
+                    type: 'scatter',
+                    xAxisIndex: 2,
+                    yAxisIndex: 4,
+                    symbol: "path://M12.0002 3.58569L19.4144 10.9999L18.0002 12.4141L13.0002 7.41412V19.9999H11.0002V7.41412L6.00015 12.4141L4.58594 10.9999L12.0002 3.58569Z",
+                    itemStyle: {
+                        normal: {
+                            opacity: 1,
+                            color: "black"
+                        }
+                    },
+                    symbolSize: function (val) {
+                        return 10
+                    },
+                    zlevel: 3,
+                    data: 标普500策略.addStartEnd()
+                },
+
+                {
+                    name: "超200均线比例", //
+                    type: "line",
+                    xAxisIndex: 3,
+                    yAxisIndex: 6,
+                    showSymbol: false,
+                    smooth: true,
+                    lineStyle: {
+                        width: 0.5,
+                        color: "#4671c6" //blue
+                    },
+                    zlevel: 12,
+                    markLine: {
+                        symbol: ["none", "none"],
+                        data: [
+                            {
+                                lineStyle: {
+                                    width: 0.5,
+                                    color: "green",
+                                },
+                                label: {
+                                    formatter: "30高估",
+                                    color: "red",
+                                    fontSize: "10",
+                                    position: "insideStartTop",
+                                },
+                                yAxis: 10, // 标线值
+                                // x: "6.5%",
+                            },
+
+                        ],
+                    },
+                    data: 全球股市大于200日均线比例Day.chartDataMaN(5).addStartEnd()
+
+                },
+                {
+                    name: "Vix", //
+                    type: "line",
+                    xAxisIndex: 3,
+                    yAxisIndex: 6,
+                    showSymbol: false,
+                    smooth: true,
+                    zlevel: 2,
+                    lineStyle: {
+                        width: 1.3,
+                        color: "black"  //#7cce7a
+                    },
+                    markLine: {
+                        symbol: ["none", "none"],
+                        data: [
+                            {
+                                lineStyle: {
+                                    width: 0.5,
+                                    color: "green",
+                                },
+                                label: {
+                                    formatter: "30高估",
+                                    color: "red",
+                                    fontSize: "10",
+                                    position: "insideStartTop",
+                                },
+                                yAxis: -30, // 标线值
+                                // x: "6.5%",
+                            },
+
+                        ],
+                    },
+
+
+                    data: Vix.addStartEnd()
+
+                },
+
+                {
+                    name: ' MM制造业指标', //全球製造业、零售、运输、贸易相关数据
+                    type: 'line',
+                    xAxisIndex: 4,
+                    yAxisIndex: 8,
+                    showSymbol: false,
+                    smooth: true,
+                    lineStyle: {
+                        width: 1.3,
+                        color: "#ff7f50"
+                    },
+                    data: MM制造业指标.map(v => { v[1] = parseFloat(v[1]) * 10; return v }).addStartEnd()
+                },
+                {
+                    name: 'PMI',
+                    type: 'line',
+                    xAxisIndex: 4,
+                    yAxisIndex: 8,
+                    showSymbol: false,
+                    //smooth: true,
+                    lineStyle: {
+                        width: 1,
+                        //color: "#a6ff00"
+                    },
+                    data: PMI_ISM.map((item) => {
+                        item[1] = Number(item[1]) - 50
+                        return item
+                    }).addStartEnd()
+                },
+                {
+                    name: '金融脉动增速',
+                    type: 'line',
+                    xAxisIndex: 4,
+                    yAxisIndex: 8,
+                    showSymbol: false,
+                    //smooth: true,
+                    lineStyle: {
+                        width: 1.3,
+                        color: "#ffc655"
+                    },
+                    data: 金融脉动增速.map((item) => {
+                        item[1] = Number(item[1]) * -10
+                        return item
+                    }).addStartEnd()
+                },
+
+                {
+                    name: 'Wilshire5000',
+                    type: 'line',
+                    lineStyle: {
+                        width: 0,
+                    },
+                    itemStyle: {
+                        normal: {
+                            areaStyle: {
+                                color: "#84c3db",
+                            },
+                        },
+                        emphasis: {
+                            areaStyle: {
+                                color: "#84c3db",
+                            },
+                        },
+                    },
+                    showSymbol: false,
+                    xAxisIndex: 5,
+                    yAxisIndex: 10,
+                    data: Wilshire5000.addStartEnd(),
+                },
+                {
+                    name: '标普500',
+                    type: 'line',
+                    lineStyle: {
+                        width: 0,
+                    },
+                    itemStyle: {
+                        normal: {
+                            areaStyle: {
+                                color: "#84c3db",
+                            },
+                        },
+                        emphasis: {
+                            areaStyle: {
+                                color: "#84c3db",
+                            },
+                        },
+                    },
+                    showSymbol: false,
+                    xAxisIndex: 5,
+                    yAxisIndex: 10,
+
+                    data: 标普500_xueqiu_day.map((item) => {
+                        let tmp = []
+                        tmp[0] = item.date
+                        tmp[1] = item.close ? item.close : ""
+                        return tmp
+                    }).addStartEnd(),
+                },
+            ]
+        };
+
+        if (option && typeof option === "object") {
+            myChart.setOption(option);
+        }
+        window.addEventListener("resize", myChart.resize);
+
+        myChart.on('legendselectchanged', function (params) {
+
+            if (params.name === "cpi_失业率" && params.selected["cpi_失业率"] === true) {
+                option.yAxis[0].max = 15
+                option.yAxis[0].min = 0
+                params.selected.油糖比 = false
+                params.selected.铜金比 = false
+                option.legend.selected = params.selected
+                myChart.setOption(option)
+            }
+
+            if (params.name === "铜金比" && params.selected["铜金比"] === true) {
+                option.yAxis[0].max = 6
+                option.yAxis[0].min = 1
+                params.selected.cpi_失业率 = false
+                params.selected.油糖比 = false
+                option.legend.selected = params.selected
+                myChart.setOption(option)
+            }
+
+            if (params.name === "油糖比" && params.selected["油糖比"] === true) {
+                option.yAxis[0].max = 10
+                option.yAxis[0].min = 1
+                params.selected.cpi_失业率 = false
+                params.selected.铜金比 = false
+                option.legend.selected = params.selected
+                myChart.setOption(option)
+            }
+
+            if (params.name === "realGdp_摩擦失业率_cpiSubReaGdp" && params.selected["realGdp_摩擦失业率_cpiSubReaGdp"] === true) {
+                option.yAxis[2].max = 12
+                option.yAxis[2].min = -5
+                params.selected.美股基本面 = false
+                option.legend.selected = params.selected
+                myChart.setOption(option)
+            }
+
+            if (params.name === "美股基本面" && params.selected["美股基本面"] === true) {
+                option.yAxis[2].max = 20
+                option.yAxis[2].min = -20
+                params.selected.realGdp_摩擦失业率_cpiSubReaGdp = false
+                option.legend.selected = params.selected
+                myChart.setOption(option)
+            }
+
+        })
+
+        setTimeout(() => {
+            myChart.dispatchAction({
+                type: 'legendToggleSelect',
+                name: "油糖比"
+            });
+            myChart.dispatchAction({
+                type: 'legendToggleSelect',
+                name: "铜金比"
+            });
+            myChart.dispatchAction({
+                type: 'legendToggleSelect',
+                name: "美股基本面"
+            });
+            myChart.dispatchAction({
+                type: 'legendToggleSelect',
+                name: "PMI"
+            });
+            myChart.dispatchAction({
+                type: 'legendToggleSelect',
+                name: "Vix"
+            });
+            myChart.dispatchAction({
+                type: 'legendToggleSelect',
+                name: "标普500"
+            });
+        }, "1")
+    </script>
+</body>
+
+</html>

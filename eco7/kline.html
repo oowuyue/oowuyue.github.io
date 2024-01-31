@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en" style="background: #FFFFFF;height: 100%">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="KLineChart example" />
+    <title>KLineChart + js</title>
+    <script type="text/javascript" src="ajslib/klinecharts.min.js"></script>
+    <script type="text/javascript" src="ajslib/my.js"></script>
+</head>
+
+<body style="margin: 0;height: 100%">
+    <div id="chartDay" style="height:80%"></div>
+    <div id="chartWeek" style="height:80%"></div>
+    <div id="chartMonth" style="height:80%"></div>
+
+    <script>
+        let chartDay = klinecharts.init('chartDay')
+        let chartWeek = klinecharts.init('chartWeek')
+        let chartMonth = klinecharts.init('chartMonth')
+
+        let site = decodeURI(getQueryVariable("site"))
+        let dataName = decodeURI(getQueryVariable("name"))
+        let edate = getQueryVariable("edate") //总回测数据 70开始  endate结束
+        let backday = getQueryVariable("backday") //回测开始点 结束往前天数
+        let noChart = getQueryVariable("noChart")  // ?site=sina&name=不锈钢连续&edate=2023-05-04&&backday=20
+
+        //等效for循环for1
+        let currentDayIndex
+        let endIndex
+        let conditon1 = []
+        let conditon12 = []
+        let logNameDateCondAtter = []
+
+        checkOrTryHttp(dataName, site, () => {
+            //统一数据
+            let dayDatas = window[dataName]
+            if (site == "sina") {
+            }
+            if (site == "xueqiu") {
+                dayDatas = dayDatas.data.item.map(function (data) {
+                    return {
+                        date: xueqiuFormatDate(data[0], "day"),
+                        timestamp: data[0],
+                        open: data[2],
+                        high: data[3],
+                        low: data[4],
+                        close: data[5],
+                        percent: data[7],
+                        volume: Math.ceil(+data[1]),
+                    }
+                })
+            }
+            if (site == "ths") {
+                dayDatas = dayDatas.map(function (data) {
+                    return {
+                        date: data[0],
+                        timestamp: new Date(data[0]).getTime(),
+                        open: data[1],
+                        high: data[2],
+                        low: data[3],
+                        close: data[4],
+                        percent: 0,
+                        volume: Math.ceil(+data[5]),
+                    }
+                })
+            }
+
+            klinecharts.registerIndicator({
+                name: 'MyMa',
+                shortName: 'MyMa',
+                calcParams: [3],
+                figures: [
+                    { key: 'MyMa', title: 'MyMa: ', type: 'line' },
+                ],
+
+                styles: {
+                    lines: [{
+                        // 'solid' | 'dashed'
+                        style: 'dashed',
+                        smooth: false,
+                        size: 1,
+                        dashedValue: [2, 2],
+                        color: 'blue'
+                    },]
+                },
+
+                calc: (kLineDataList, { calcParams, figures }) => {
+                    return kLineDataList.map(kLineData => {
+                        return { MyMa: kLineData.ma3 }
+                    })
+                }
+            })
+            klinecharts.registerIndicator({
+                name: 'MyBOLL',
+                shortName: 'MyBOLL',
+                calcParams: [],
+                figures: [
+                    { key: 'ups', title: 'ups: ', type: 'line' },
+                    { key: 'mas', title: 'mas: ', type: 'line' },
+                    { key: 'lows', title: 'lows: ', type: 'line' },
+                ],
+                styles: {},
+                calc: (kLineDataList, { calcParams, figures }) => {
+                    return kLineDataList.map((kLineData, i) => {
+                        return {
+                            "ups": kLineData.ups,
+                            "mas": kLineData.mas,
+                            "lows": kLineData.lows
+                        }
+                    })
+                }
+            })
+            klinecharts.registerIndicator({
+                name: 'newKDJ',
+                shortName: 'newKDJ',
+                calcParams: [],
+                figures: [
+                    { key: 'K', title: 'K: ', type: 'line' },
+                    { key: 'D', title: 'D: ', type: 'line' },
+                    { key: 'J', title: 'J: ', type: 'line' },
+                ],
+                styles: {},
+                calc: (kLineDataList, { calcParams, figures }) => {
+                    return kLineDataList.map((kLineData, i) => {
+                        return {
+                            "K": kLineData.K,
+                            "D": kLineData.D,
+                            "J": kLineData.J
+                        }
+                    })
+                }
+            })
+            klinecharts.registerIndicator({
+                name: 'newMACD',
+                shortName: 'newMACD',
+                calcParams: [],
+                figures: [
+                    { key: 'diff', title: 'diff: ', type: 'line' },
+                    { key: 'dea', title: 'dea: ', type: 'line' },
+                    { key: 'bar', title: 'bar: ', type: 'line' },
+                ],
+                styles: {},
+                calc: (kLineDataList, { calcParams, figures }) => {
+                    return kLineDataList.map((kLineData, i) => {
+                        return {
+                            "diff": kLineData.diff,
+                            "dea": kLineData.dea,
+                            "bar": kLineData.bar
+                        }
+                    })
+                },
+            })
+
+            let normalStyle = {
+                grid: {
+                    show: true,
+                    horizontal: {
+                        show: true,
+                        size: 0.35,
+                        color: 'black',
+                        style: 'dashed',
+                        // dashedValue: [0.5, 0.5]
+                    },
+                    vertical: {
+                        show: true,
+                        size: 0.35,
+                        color: '#EDEDED',
+                        style: 'dashed',
+                        dashedValue: [2, 2]
+                    }
+                },
+                candle: {
+                    // 蜡烛图类型 'candle_solid'|'candle_stroke'|'candle_up_stroke'|'candle_down_stroke'|'ohlc'|'area'
+                    type: 'candle_up_stroke',
+                    // 蜡烛柱
+                    bar: {
+                        upColor: '#f50000',
+                        downColor: '#009b3e',
+                        noChangeColor: '#888888',
+
+                        upBorderColor: '#f50000',
+                        downBorderColor: '#009b3e',
+                        noChangeBorderColor: '#888888',
+
+                        upWickColor: '#f50000',
+                        downWickColor: '#009b3e',
+                        noChangeWickColor: '#888888'
+                    },
+                },
+            }
+            chartDay.setStyles(normalStyle)
+            chartWeek.setStyles(normalStyle)
+            chartMonth.setStyles(normalStyle)
+            klinecharts.registerOverlay({
+                name: 'circle',
+                needDefaultPointFigure: true,
+                needDefaultXAxisFigure: true,
+                needDefaultYAxisFigure: true,
+                totalStep: 3,
+                createPointFigures: ({ coordinates }) => {
+                    if (coordinates.length === 2) {
+                        const xDis = Math.abs(coordinates[0].x - coordinates[1].x)
+                        const yDis = Math.abs(coordinates[0].y - coordinates[1].y)
+                        const radius = Math.sqrt(xDis * xDis + yDis * yDis)
+                        return {
+                            key: 'circle',
+                            type: 'circle',
+                            attrs: {
+                                ...coordinates[0],
+                                r: radius
+                            },
+                            styles: {
+                                style: 'stroke_fill'
+                            }
+                        }
+                    }
+                    return []
+                }
+            })
+
+            let dayNewKdj = chartDay.createIndicator('newKDJ')
+            let dayMacd = chartDay.createIndicator('MACD')
+            // let chartDayMyMa3 = chartDay.createIndicator({ name: "MyMa" }, true, { id: 'candle_pane' })
+            // let chartDayMyBOLL = chartDay.createIndicator({ name: "MyBOLL" }, true, { id: 'candle_pane' })
+
+            let weekNewKdj = chartWeek.createIndicator('newKDJ')
+            let weekMacd = chartWeek.createIndicator('MACD')
+
+            let monthNewKdj = chartMonth.createIndicator('newKDJ')
+            let monthMacd = chartMonth.createIndicator('MACD')
+
+            document.addEventListener("keydown", function (event) {
+                if (event.keyCode === 37) endIndex--
+                if (event.keyCode === 39) endIndex++
+                currentDayIndex = endIndex
+                forSetInterval(currentDayIndex, endIndex, dayDatas)
+            })
+            document.addEventListener("keydown", function (event) {
+                if (event.keyCode === 88) chartDay.createOverlay("circle")
+            })
+            document.addEventListener('keydown', (e) => {
+                if (e.ctrlKey && e.keyCode === 88) {
+                    // 创建一个新的 KeyboardEvent 对象 以Ctrl+X为例 注意：这里只能是ctrl、alt、shift 加一个普通键。
+                    const event = new KeyboardEvent('keydown', {
+                        key: 'n',
+                        code: 'KeyN',
+                        keyCode: 39,
+                        which: 39,
+                        shiftKey: false,
+                        ctrlKey: false,
+                        altKey: false,
+                        metaKey: false,
+                    });
+
+                    for (let index = 0; index <= 200; index++) {
+                        document.dispatchEvent(event);
+                    }
+                    // 触发事件
+                }
+            })
+
+
+            endIndex = dayDatas.length
+            if (edate) {
+                endIndex = dayDatas.findIndex(ele => ele.date == edate)
+                if (endIndex == -1) endIndex = dayDatas.length
+                else endIndex++
+            }
+            currentDayIndex = 70
+            if (backday) {
+                currentDayIndex = endIndex - backday
+            }
+
+            forSetInterval(currentDayIndex, endIndex, dayDatas)
+        })
+
+        function forSetInterval(currentDayIndex, endIndex, dayDatas) {
+            let timer = setInterval(function () {
+                if (timer && currentDayIndex > endIndex) { //for2
+                    clearInterval(timer)
+                    return
+                }
+
+                let currentDayList = dayDatas.slice(0, currentDayIndex).calKdj().calBoll().maN(3, "close")
+                let currentWeekList = dayToPeriod(currentDayList, "week").calKdj()
+                let currentMonthList = dayToPeriod(currentDayList, "month").calKdj()
+                if (noChart) {
+                } else {
+                    chartDay.applyNewData(currentDayList)
+                    chartWeek.applyNewData(currentWeekList)
+                    chartMonth.applyNewData(currentMonthList)
+                }
+                currentDayIndex++ //for3
+            }, 1)
+        }
+
+    </script>
+</body>
+
+</html>
