@@ -1,0 +1,25 @@
+<script>
+    function stampToDate(stamp) {
+        let date1 = new Date(stamp);
+        let y = date1.getFullYear(),
+            m = date1.getMonth() + 1,
+            d = date1.getDate();
+
+        if (m < 10) m = "0" + m;
+        if (d < 10) d = "0" + d;
+
+        return y + "-" + m + "-" + d;
+    }
+
+    let startDateArr = [2024, 0, 1];
+    let endDateArr = [2020, 1, 1];
+    let startDate = new Date(...startDateArr);
+    let endDate = new Date(...endDateArr);
+    let days = [];
+    for (let d = startDate; d >= endDate; d.setDate(d.getDate() - 1)) {
+        let dateStr = stampToDate(d.getTime())
+        let url = `https://news.sina.com.cn/head/news${dateStr.replaceAll("-", "")}pm.shtml`;
+        days.push(dateStr + "=>" + url)
+    }
+    console.log(days);
+</script>
