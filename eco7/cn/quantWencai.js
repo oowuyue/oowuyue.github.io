@@ -73,7 +73,7 @@ let taskFileDownloadThsBack = async (name, pageUrl) => {
         },
         {
             "domain": ".10jqka.com.cn",
-            "expirationDate": 1706682140,
+            "expirationDate": 1707102080.219862,
             "hostOnly": false,
             "httpOnly": false,
             "name": "escapename",
@@ -143,7 +143,7 @@ let taskFileDownloadThsBack = async (name, pageUrl) => {
         },
         {
             "domain": ".10jqka.com.cn",
-            "expirationDate": 1706682140,
+            "expirationDate": 1707102080.219886,
             "hostOnly": false,
             "httpOnly": false,
             "name": "ticket",
@@ -152,12 +152,12 @@ let taskFileDownloadThsBack = async (name, pageUrl) => {
             "secure": false,
             "session": false,
             "storeId": "0",
-            "value": "31389016c78c4b2a04dcab13f16a1c67",
+            "value": "699d4a23e3ff974f48bb149785a64447",
             "id": 9
         },
         {
             "domain": ".10jqka.com.cn",
-            "expirationDate": 1706656384,
+            "expirationDate": 1707107042.896144,
             "hostOnly": false,
             "httpOnly": false,
             "name": "u_did",
@@ -166,12 +166,12 @@ let taskFileDownloadThsBack = async (name, pageUrl) => {
             "secure": false,
             "session": false,
             "storeId": "0",
-            "value": "010B79ADFBDB4D069BAD6A71E439CC92",
+            "value": "04578E76CFF34905847D34F090A71650",
             "id": 10
         },
         {
             "domain": ".10jqka.com.cn",
-            "expirationDate": 1706656384,
+            "expirationDate": 1707107042.896117,
             "hostOnly": false,
             "httpOnly": false,
             "name": "u_dpass",
@@ -180,12 +180,12 @@ let taskFileDownloadThsBack = async (name, pageUrl) => {
             "secure": false,
             "session": false,
             "storeId": "0",
-            "value": "7YnTTaH6C7LO5jB28wUQrq2O0gPTg2Do0faxqqZuDwbWwbYO90e%2FeY68SVcSWyx4%2FsBAGfA5tlbuzYBqqcUNFA%3D%3D",
+            "value": "Wi05fqwp4obvjUZPCDUyOkidUDFyy6qVLADLrZRUVtjsfIEBvpIJ6eiSBYffRQpm%2FsBAGfA5tlbuzYBqqcUNFA%3D%3D",
             "id": 11
         },
         {
             "domain": ".10jqka.com.cn",
-            "expirationDate": 1706682140,
+            "expirationDate": 1707102080.219823,
             "hostOnly": false,
             "httpOnly": false,
             "name": "u_name",
@@ -199,7 +199,7 @@ let taskFileDownloadThsBack = async (name, pageUrl) => {
         },
         {
             "domain": ".10jqka.com.cn",
-            "expirationDate": 1706656384,
+            "expirationDate": 1707107042.896168,
             "hostOnly": false,
             "httpOnly": false,
             "name": "u_ttype",
@@ -213,7 +213,7 @@ let taskFileDownloadThsBack = async (name, pageUrl) => {
         },
         {
             "domain": ".10jqka.com.cn",
-            "expirationDate": 1706656384,
+            "expirationDate": 1707107042.895997,
             "hostOnly": false,
             "httpOnly": false,
             "name": "u_ukey",
@@ -227,7 +227,7 @@ let taskFileDownloadThsBack = async (name, pageUrl) => {
         },
         {
             "domain": ".10jqka.com.cn",
-            "expirationDate": 1706656384,
+            "expirationDate": 1707107042.896088,
             "hostOnly": false,
             "httpOnly": false,
             "name": "u_uver",
@@ -241,7 +241,7 @@ let taskFileDownloadThsBack = async (name, pageUrl) => {
         },
         {
             "domain": ".10jqka.com.cn",
-            "expirationDate": 1706682140,
+            "expirationDate": 1707102080.217304,
             "hostOnly": false,
             "httpOnly": false,
             "name": "user",
@@ -250,12 +250,12 @@ let taskFileDownloadThsBack = async (name, pageUrl) => {
             "secure": false,
             "session": false,
             "storeId": "0",
-            "value": "MDpNVFNvZnR3YXJlMTI6Ok5vbmU6NTAwOjY3NDY2MzgwMTo3LDExMTExMTExMTExLDQwOzQ0LDExLDQwOzYsMSw0MDs1LDEsNDA7MSwxMDEsNDA7MiwxLDQwOzMsMSw0MDs1LDEsNDA7OCwwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMSw0MDsxMDIsMSw0MDo6Ojo2NjQ2NjM4MDE6MTcwNjU5NTc0MDo6OjE2NzUzMDA4NjA6ODY0MDA6MDoxZWJkNTAxNTExMmYzMzQzOGM1ZTc4MTc1NzIyNzEzMmY6ZGVmYXVsdF80OjE%3D",
+            "value": "MDpNVFNvZnR3YXJlMTI6Ok5vbmU6NTAwOjY3NDY2MzgwMTo3LDExMTExMTExMTExLDQwOzQ0LDExLDQwOzYsMSw0MDs1LDEsNDA7MSwxMDEsNDA7MiwxLDQwOzMsMSw0MDs1LDEsNDA7OCwwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMSw0MDsxMDIsMSw0MDo6Ojo2NjQ2NjM4MDE6MTcwNzAxNTY3Njo6OjE2NzUzMDA4NjA6ODY0MDA6MDoxNTkyYmI3NTU5MTY3ZGY5NzQ4OTc3ODQ3YTRkOTFmNjc6ZGVmYXVsdF80OjE%3D",
             "id": 16
         },
         {
             "domain": ".10jqka.com.cn",
-            "expirationDate": 1706682140,
+            "expirationDate": 1707102080.21991,
             "hostOnly": false,
             "httpOnly": false,
             "name": "user_status",
@@ -269,7 +269,7 @@ let taskFileDownloadThsBack = async (name, pageUrl) => {
         },
         {
             "domain": ".10jqka.com.cn",
-            "expirationDate": 1706682140,
+            "expirationDate": 1707102080.217415,
             "hostOnly": false,
             "httpOnly": false,
             "name": "userid",
@@ -283,7 +283,7 @@ let taskFileDownloadThsBack = async (name, pageUrl) => {
         },
         {
             "domain": ".10jqka.com.cn",
-            "expirationDate": 1706682140,
+            "expirationDate": 1707102080.219932,
             "hostOnly": false,
             "httpOnly": false,
             "name": "utk",
@@ -292,12 +292,12 @@ let taskFileDownloadThsBack = async (name, pageUrl) => {
             "secure": false,
             "session": false,
             "storeId": "0",
-            "value": "95dead1170cc22af704007fbc99695fe",
+            "value": "fd526b1378066f01739e6d9549effc2d",
             "id": 19
         },
         {
             "domain": ".10jqka.com.cn",
-            "expirationDate": 1741155745,
+            "expirationDate": 1741575683.834058,
             "hostOnly": false,
             "httpOnly": false,
             "name": "v",
@@ -306,12 +306,12 @@ let taskFileDownloadThsBack = async (name, pageUrl) => {
             "secure": false,
             "session": false,
             "storeId": "0",
-            "value": "A1u2nks9ulom5MYuqGlfQomb6rTAMG8naUQz5k2YN9pxLHWq1QD_gnkUwzNe",
+            "value": "A0yh69AoRSFHDFHdqP5wr6LmHaF7hfAv8ikE86YNWPeaMeKfzpXAv0I51Ib1",
             "id": 20
         },
         {
             "domain": "backtest.10jqka.com.cn",
-            "expirationDate": 1706624545,
+            "expirationDate": 1707044484.017729,
             "hostOnly": true,
             "httpOnly": true,
             "name": "etrade_robot_session",
@@ -320,7 +320,7 @@ let taskFileDownloadThsBack = async (name, pageUrl) => {
             "secure": false,
             "session": false,
             "storeId": "0",
-            "value": "3e99912b52aa45fd73089f8c363d89e3912ec9b6",
+            "value": "4f06d80516d4a86649cfd4e9e7b9b02370012f6c",
             "id": 21
         }
     ]
@@ -455,7 +455,7 @@ let signal = async () => {
         技术指标统计.push([dateKey, sum, 统计byDate[dateKey]])
     }
     //console.log(技术指标统计)
-  
+
 
     let fileStr = `var 技术指标统计 = ` + JSON.stringify(技术指标统计, null, 0) + "\r\n"
     try {
@@ -581,6 +581,7 @@ let stats = [
 let browser;
 (async () => {
     //下载回测数据csv
+    //browser = await puppeteer.launch({ headless: false, executablePath: 'C:\\Program Files\\Google\\Chrome Dev\\Application\\chrome.exe', defaultViewport: null, args: ['--start-maximized'] });
     browser = await puppeteer.launch({ headless: false, defaultViewport: null, args: ['--start-maximized'] });
 
     for (let i = 0; i < stats.length; i++) {
