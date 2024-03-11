@@ -41068,5 +41068,135 @@ var 沪锌连续 = [
     "close": 21395,
     "percent": 0,
     "volume": 97130
+  },
+  {
+    "date": "2024-01-30",
+    "timestamp": 1706572800000,
+    "open": 21370,
+    "high": 21420,
+    "low": 21225,
+    "close": 21275,
+    "percent": 0,
+    "volume": 75509
+  },
+  {
+    "date": "2024-01-31",
+    "timestamp": 1706659200000,
+    "open": 21280,
+    "high": 21405,
+    "low": 21265,
+    "close": 21295,
+    "percent": 0,
+    "volume": 70392
+  },
+  {
+    "date": "2024-02-01",
+    "timestamp": 1706745600000,
+    "open": 21200,
+    "high": 21310,
+    "low": 20850,
+    "close": 20880,
+    "percent": 0,
+    "volume": 112978
+  },
+  {
+    "date": "2024-02-02",
+    "timestamp": 1706832000000,
+    "open": 20880,
+    "high": 20880,
+    "low": 20660,
+    "close": 20715,
+    "percent": 0,
+    "volume": 84737
+  },
+  {
+    "date": "2024-02-05",
+    "timestamp": 1707091200000,
+    "open": 20715,
+    "high": 20765,
+    "low": 20530,
+    "close": 20535,
+    "percent": 0,
+    "volume": 81156
+  },
+  {
+    "date": "2024-02-06",
+    "timestamp": 1707177600000,
+    "open": 20520,
+    "high": 20635,
+    "low": 20440,
+    "close": 20565,
+    "percent": 0,
+    "volume": 74037
+  },
+  {
+    "date": "2024-02-07",
+    "timestamp": 1707264000000,
+    "open": 20530,
+    "high": 20615,
+    "low": 20435,
+    "close": 20565,
+    "percent": 0,
+    "volume": 69402
+  },
+  {
+    "date": "2024-02-08",
+    "timestamp": 1707350400000,
+    "open": 20505,
+    "high": 20570,
+    "low": 20400,
+    "close": 20515,
+    "percent": 0,
+    "volume": 57596
+  },
+  {
+    "date": "2024-02-19",
+    "timestamp": 1708300800000,
+    "open": 20375,
+    "high": 20450,
+    "low": 20205,
+    "close": 20265,
+    "percent": 0,
+    "volume": 65230
+  },
+  {
+    "date": "2024-02-20",
+    "timestamp": 1708387200000,
+    "open": 20240,
+    "high": 20450,
+    "low": 20240,
+    "close": 20260,
+    "percent": 0,
+    "volume": 74049
+  },
+  {
+    "date": "2024-02-21",
+    "timestamp": 1708473600000,
+    "open": 20140,
+    "high": 20465,
+    "low": 20125,
+    "close": 20420,
+    "percent": 0,
+    "volume": 106503
+  },
+  {
+    "date": "2024-02-22",
+    "timestamp": 1708560000000,
+    "open": 20350,
+    "high": 20410,
+    "low": 20260,
+    "close": 20385,
+    "percent": 0,
+    "volume": 93185
+  },
+  {
+    "date": "2024-02-23",
+    "timestamp": 1708646400000,
+    "open": 20385,
+    "high": 20450,
+    "low": 20310,
+    "close": 20395,
+    "percent": 0,
+    "volume": 92445
   }
 ]

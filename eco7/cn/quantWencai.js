@@ -6,6 +6,7 @@ const fs = require('fs')
 const path = require('path')
 const {
     currentDayYMD,
+    getLastDayOf,
     dayToPeriod,
     xueqiuFormatDate,
     wait,
@@ -73,7 +74,7 @@ let taskFileDownloadThsBack = async (name, pageUrl) => {
         },
         {
             "domain": ".10jqka.com.cn",
-            "expirationDate": 1707102080.219862,
+            "expirationDate": 1709190084.89238,
             "hostOnly": false,
             "httpOnly": false,
             "name": "escapename",
@@ -87,6 +88,20 @@ let taskFileDownloadThsBack = async (name, pageUrl) => {
         },
         {
             "domain": ".10jqka.com.cn",
+            "expirationDate": 1709709586,
+            "hostOnly": false,
+            "httpOnly": false,
+            "name": "historystock",
+            "path": "/",
+            "sameSite": "unspecified",
+            "secure": false,
+            "session": false,
+            "storeId": "0",
+            "value": "002004%7C*%7C600598%7C*%7C300750",
+            "id": 5
+        },
+        {
+            "domain": ".10jqka.com.cn",
             "expirationDate": 1733892097,
             "hostOnly": false,
             "httpOnly": false,
@@ -97,11 +112,11 @@ let taskFileDownloadThsBack = async (name, pageUrl) => {
             "session": false,
             "storeId": "0",
             "value": "1701155948,1702356098",
-            "id": 5
+            "id": 6
         },
         {
             "domain": ".10jqka.com.cn",
-            "expirationDate": 1733892099,
+            "expirationDate": 1740465846,
             "hostOnly": false,
             "httpOnly": false,
             "name": "Hm_lvt_78c58f01938e4d85eaf619eae71b4ed1",
@@ -110,8 +125,8 @@ let taskFileDownloadThsBack = async (name, pageUrl) => {
             "secure": false,
             "session": false,
             "storeId": "0",
-            "value": "1700533814,1701155950,1701225343,1702356099",
-            "id": 6
+            "value": "1707099957,1708929846",
+            "id": 7
         },
         {
             "domain": ".10jqka.com.cn",
@@ -125,7 +140,7 @@ let taskFileDownloadThsBack = async (name, pageUrl) => {
             "session": false,
             "storeId": "0",
             "value": "1701155950,1702356099",
-            "id": 7
+            "id": 8
         },
         {
             "domain": ".10jqka.com.cn",
@@ -139,11 +154,25 @@ let taskFileDownloadThsBack = async (name, pageUrl) => {
             "session": false,
             "storeId": "0",
             "value": "sg",
-            "id": 8
+            "id": 9
         },
         {
             "domain": ".10jqka.com.cn",
-            "expirationDate": 1707102080.219886,
+            "expirationDate": 1709691956,
+            "hostOnly": false,
+            "httpOnly": false,
+            "name": "spversion",
+            "path": "/",
+            "sameSite": "unspecified",
+            "secure": false,
+            "session": false,
+            "storeId": "0",
+            "value": "20130314",
+            "id": 10
+        },
+        {
+            "domain": ".10jqka.com.cn",
+            "expirationDate": 1709190084.892419,
             "hostOnly": false,
             "httpOnly": false,
             "name": "ticket",
@@ -152,12 +181,12 @@ let taskFileDownloadThsBack = async (name, pageUrl) => {
             "secure": false,
             "session": false,
             "storeId": "0",
-            "value": "699d4a23e3ff974f48bb149785a64447",
-            "id": 9
+            "value": "183911cce49abb6ca2881bfd3cba5c34",
+            "id": 11
         },
         {
             "domain": ".10jqka.com.cn",
-            "expirationDate": 1707107042.896144,
+            "expirationDate": 1709853123.202538,
             "hostOnly": false,
             "httpOnly": false,
             "name": "u_did",
@@ -166,12 +195,12 @@ let taskFileDownloadThsBack = async (name, pageUrl) => {
             "secure": false,
             "session": false,
             "storeId": "0",
-            "value": "04578E76CFF34905847D34F090A71650",
-            "id": 10
+            "value": "9A6233B9DE2846FD937C563446D64E83",
+            "id": 12
         },
         {
             "domain": ".10jqka.com.cn",
-            "expirationDate": 1707107042.896117,
+            "expirationDate": 1709853123.202477,
             "hostOnly": false,
             "httpOnly": false,
             "name": "u_dpass",
@@ -180,12 +209,12 @@ let taskFileDownloadThsBack = async (name, pageUrl) => {
             "secure": false,
             "session": false,
             "storeId": "0",
-            "value": "Wi05fqwp4obvjUZPCDUyOkidUDFyy6qVLADLrZRUVtjsfIEBvpIJ6eiSBYffRQpm%2FsBAGfA5tlbuzYBqqcUNFA%3D%3D",
-            "id": 11
+            "value": "nrE9Yi%2FyGO8%2FFX%2F7VcYIKibQrn1zHHx9CSglya1upYD7tdOrImjGfLHxJ50hDDZf%2FsBAGfA5tlbuzYBqqcUNFA%3D%3D",
+            "id": 13
         },
         {
             "domain": ".10jqka.com.cn",
-            "expirationDate": 1707102080.219823,
+            "expirationDate": 1709190084.892349,
             "hostOnly": false,
             "httpOnly": false,
             "name": "u_name",
@@ -195,11 +224,11 @@ let taskFileDownloadThsBack = async (name, pageUrl) => {
             "session": false,
             "storeId": "0",
             "value": "MTSoftware12",
-            "id": 12
+            "id": 14
         },
         {
             "domain": ".10jqka.com.cn",
-            "expirationDate": 1707107042.896168,
+            "expirationDate": 1709853123.202587,
             "hostOnly": false,
             "httpOnly": false,
             "name": "u_ttype",
@@ -209,11 +238,11 @@ let taskFileDownloadThsBack = async (name, pageUrl) => {
             "session": false,
             "storeId": "0",
             "value": "WEB",
-            "id": 13
+            "id": 15
         },
         {
             "domain": ".10jqka.com.cn",
-            "expirationDate": 1707107042.895997,
+            "expirationDate": 1709853123.202285,
             "hostOnly": false,
             "httpOnly": false,
             "name": "u_ukey",
@@ -223,11 +252,11 @@ let taskFileDownloadThsBack = async (name, pageUrl) => {
             "session": false,
             "storeId": "0",
             "value": "A10702B8689642C6BE607730E11E6E4A",
-            "id": 14
+            "id": 16
         },
         {
             "domain": ".10jqka.com.cn",
-            "expirationDate": 1707107042.896088,
+            "expirationDate": 1709853123.202426,
             "hostOnly": false,
             "httpOnly": false,
             "name": "u_uver",
@@ -237,11 +266,11 @@ let taskFileDownloadThsBack = async (name, pageUrl) => {
             "session": false,
             "storeId": "0",
             "value": "1.0.0",
-            "id": 15
+            "id": 17
         },
         {
             "domain": ".10jqka.com.cn",
-            "expirationDate": 1707102080.217304,
+            "expirationDate": 1709190084.892182,
             "hostOnly": false,
             "httpOnly": false,
             "name": "user",
@@ -250,12 +279,12 @@ let taskFileDownloadThsBack = async (name, pageUrl) => {
             "secure": false,
             "session": false,
             "storeId": "0",
-            "value": "MDpNVFNvZnR3YXJlMTI6Ok5vbmU6NTAwOjY3NDY2MzgwMTo3LDExMTExMTExMTExLDQwOzQ0LDExLDQwOzYsMSw0MDs1LDEsNDA7MSwxMDEsNDA7MiwxLDQwOzMsMSw0MDs1LDEsNDA7OCwwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMSw0MDsxMDIsMSw0MDo6Ojo2NjQ2NjM4MDE6MTcwNzAxNTY3Njo6OjE2NzUzMDA4NjA6ODY0MDA6MDoxNTkyYmI3NTU5MTY3ZGY5NzQ4OTc3ODQ3YTRkOTFmNjc6ZGVmYXVsdF80OjE%3D",
-            "id": 16
+            "value": "MDpNVFNvZnR3YXJlMTI6Ok5vbmU6NTAwOjY3NDY2MzgwMTo3LDExMTExMTExMTExLDQwOzQ0LDExLDQwOzYsMSw0MDs1LDEsNDA7MSwxMDEsNDA7MiwxLDQwOzMsMSw0MDs1LDEsNDA7OCwwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMSw0MDsxMDIsMSw0MDo6Ojo2NjQ2NjM4MDE6MTcwOTEwMzY4NDo6OjE2NzUzMDA4NjA6ODY0MDA6MDoxZTJmMWQ1OWNhNzY0ZTM0MjVkNjFhOGUwNjJkZDFhODk6ZGVmYXVsdF80OjE%3D",
+            "id": 18
         },
         {
             "domain": ".10jqka.com.cn",
-            "expirationDate": 1707102080.21991,
+            "expirationDate": 1709190084.89245,
             "hostOnly": false,
             "httpOnly": false,
             "name": "user_status",
@@ -265,11 +294,11 @@ let taskFileDownloadThsBack = async (name, pageUrl) => {
             "session": false,
             "storeId": "0",
             "value": "0",
-            "id": 17
+            "id": 19
         },
         {
             "domain": ".10jqka.com.cn",
-            "expirationDate": 1707102080.217415,
+            "expirationDate": 1709190084.892313,
             "hostOnly": false,
             "httpOnly": false,
             "name": "userid",
@@ -279,11 +308,11 @@ let taskFileDownloadThsBack = async (name, pageUrl) => {
             "session": false,
             "storeId": "0",
             "value": "664663801",
-            "id": 18
+            "id": 20
         },
         {
             "domain": ".10jqka.com.cn",
-            "expirationDate": 1707102080.219932,
+            "expirationDate": 1709190084.892477,
             "hostOnly": false,
             "httpOnly": false,
             "name": "utk",
@@ -292,12 +321,12 @@ let taskFileDownloadThsBack = async (name, pageUrl) => {
             "secure": false,
             "session": false,
             "storeId": "0",
-            "value": "fd526b1378066f01739e6d9549effc2d",
-            "id": 19
+            "value": "cff7d8889e707099e7e524523c6a0a59",
+            "id": 21
         },
         {
             "domain": ".10jqka.com.cn",
-            "expirationDate": 1741575683.834058,
+            "expirationDate": 1743731993.006087,
             "hostOnly": false,
             "httpOnly": false,
             "name": "v",
@@ -306,12 +335,12 @@ let taskFileDownloadThsBack = async (name, pageUrl) => {
             "secure": false,
             "session": false,
             "storeId": "0",
-            "value": "A0yh69AoRSFHDFHdqP5wr6LmHaF7hfAv8ikE86YNWPeaMeKfzpXAv0I51Ib1",
-            "id": 20
+            "value": "A1C9_6xUAQzX7t0IHwi008ayIZWnGTQPVvyIZ0ohGEx_sv6L8ikE86YNWP-Z",
+            "id": 22
         },
         {
             "domain": "backtest.10jqka.com.cn",
-            "expirationDate": 1707044484.017729,
+            "expirationDate": 1709200793.273337,
             "hostOnly": true,
             "httpOnly": true,
             "name": "etrade_robot_session",
@@ -320,8 +349,8 @@ let taskFileDownloadThsBack = async (name, pageUrl) => {
             "secure": false,
             "session": false,
             "storeId": "0",
-            "value": "4f06d80516d4a86649cfd4e9e7b9b02370012f6c",
-            "id": 21
+            "value": "89e79a3ef9fe212800aa16e15a4588a0aa7348e4",
+            "id": 23
         }
     ]
 
@@ -391,10 +420,12 @@ let signal = async () => {
     let 日买入信号组合 = await csvToJson('日买入信号组合')
     let 日买入信号组合2 = await csvToJson('日买入信号组合2')
 
-    function countStat(json, name = "kdj日周月", Period = "day") {
+    function countStat(json, name = "kdj日周月", Period = "week") {
         let countJson = {}
         json.forEach((element) => {
-            let startTime = Period == "month" ? element[2].substring(0, 7) : element[2] //month day
+            let startTime = element[2] //day
+            if (Period == "week") startTime = getLastDayOf(element[2])
+            if (Period == "month") startTime = element[2].substring(0, 7) + "-28"
             if (countJson[startTime]) {
                 countJson[startTime].count += 1;
                 countJson[startTime].detail.push(element);
@@ -402,16 +433,15 @@ let signal = async () => {
                 countJson[startTime] = { count: 1, detail: [element] }
             }
         })
-
         let countArr = []
         for (var key of Object.keys(countJson)) {
-            startTime = Period == "month" ? key + "-28" : key //month day
+            startTime = key //month day
             countArr.push([startTime, countJson[key].count, name, countJson[key].detail])
         }
 
         return countArr
     }
-
+    
     let 左侧长短周期组合统计 = countStat(左侧长短周期组合, "左侧长短周期组合")
     let 右侧长短周期组合统计 = countStat(右侧长短周期组合, "右侧长短周期组合")
 
@@ -420,14 +450,9 @@ let signal = async () => {
 
     let 日买入信号组合统计 = countStat(日买入信号组合, "日买入信号组合")
     let 日买入信号组合2统计 = countStat(日买入信号组合2, "日买入信号组合2")
+    console.log(右侧长短周期组合统计, 日买入信号组合统计)
 
-    function groupBy(objectArray, property) {
-        return objectArray.reduce((acc, obj) => {
-            const key = obj[property];
-            const curGroup = acc[key] ?? [];
-            return { ...acc, [key]: [...curGroup, obj] };
-        }, {});
-    }
+
 
     统计Contact = [...左侧长短周期组合统计, ...右侧长短周期组合统计, ...日周信号组合统计, ...日周信号组合2统计, ...日买入信号组合统计, ...日买入信号组合2统计]
     统计Contact.sort(function (a, b) {
@@ -441,9 +466,16 @@ let signal = async () => {
             detail: ele[3]
         }
     })
-
+    function groupBy(objectArray, property) {
+        return objectArray.reduce((acc, obj) => {
+            const key = obj[property];
+            const curGroup = acc[key] ?? [];
+            return { ...acc, [key]: [...curGroup, obj] };
+        }, {});
+    }
     let 统计byDate = groupBy(统计Contact, "date")
     let 统计byName = groupBy(统计Contact, "quanName")
+
 
     let 技术指标统计 = []
     for (let dateKey in 统计byDate) {
@@ -520,107 +552,168 @@ let bigCom = async () => {
 }
 
 
-let stats = [
+
+
+let 回测一下urlTemplate = "`https://backtest.10jqka.com.cn/backtest/app.html#/backtest?query=${query}&daysForSaleStrategy=${daysForSaleStrategy}&startDate=${startDate}&endDate=${endDate}&benchmark=399300%20沪深300`"
+let 策略回测urlTemplate = "`https://backtest.10jqka.com.cn/backtest/app.html#/strategybacktest?query=${query}&daysForSaleStrategy=${daysForSaleStrategy}&startDate=${startDate}&endDate=${endDate}&stockHoldCount=${stockHoldCount}&dayBuyStockNum=${dayBuyStockNum}&upperIncome=${upperIncome}&lowerIncome=${lowerIncome}&fallIncome=${fallIncome}&engine=undefined&capital=100000`"
+
+let tactics = [
     {
         name: "左侧长短周期组合",
-        type: "回测一下",
         query: `
                 kdj金叉d值小于37，当日涨幅大于0.5，最近5日涨跌幅小于-5，最近5日有≥2次的涨跌幅小于0，
                 周macd上移，周kdjj值小于60，月kdj上移，实际换手率大于1.7, 
                 最近10日收盘获利小于5%的天数>0, 最近2日主力资金流入大于-250万，pe<=120，pb>0，排除st
-        `
+        `,
+        daysForSaleStrategy: "20",
+        stockHoldCount: 10,
+        dayBuyStockNum: 3,
+        upperIncome: 30,
+        fallIncome: 7,
+        lowerIncome: 7,
+        stats: "策略回测"
     },
+
     {
         name: "右侧长短周期组合",
-        type: "回测一下",
-        query: `最近5天月线周期kdj金叉；周线周期kdj底背离；周线周期kdj金叉；周线周期kdjj值小于25；日线周期kdj金叉且d值小于35；pe<=120；pb>0；排除st`
+        query: `最近5天月线周期kdj金叉；周线周期kdj底背离；周线周期kdj金叉；周线周期kdjj值小于25；日线周期kdj金叉且d值小于35；pe<=120；pb>0；排除st`,
+        daysForSaleStrategy: "20",
+        stockHoldCount: 10,
+        dayBuyStockNum: 3,
+        upperIncome: 23,
+        fallIncome: 3.5,
+        lowerIncome: 5.5,
+        stats: "策略回测"
     },
 
     {
         name: "日周信号组合",
-        type: "回测一下",
-        query: `周kdj底背离且金叉且j值小于25；kdj金叉且d值小于35；BIAS买入信号；振幅小于12；实际换手率大于2.9；上市天数大于30；roe>0；排除st；roe从大到小`
+        query: `周kdj底背离且金叉且j值小于25；kdj金叉且d值小于35；BIAS买入信号；振幅小于12；实际换手率大于2.9；上市天数大于30；roe>0；排除st；roe从大到小`,
+        daysForSaleStrategy: "20",
+        stockHoldCount: 10,
+        dayBuyStockNum: 3,
+        upperIncome: 33,
+        fallIncome: 10,
+        lowerIncome: 8.5,
+        stats: "策略回测"
     },
     {
         name: "日周信号组合2",
-        type: "回测一下",
         query: `
               周kdj金叉且j值小于59；最近10日日kdj金叉出现>=1次；日kdjd值小于39；BIAS买入信号；实际换手率大于2.9；股价大于5日均线；
-              最近3日收盘获利小于5%的天数>0；最近3日主力资金流入大于-250万；振幅小于12；扣非净利润大于3100万；pe<=120；roe>0；排除st；roe从大到小
-        `
+              最近3日收盘获利小于5%的天数>0；最近3日主力资金流入大于-250万；振幅小于12；放量；pe<=120；roe>0；排除st；roe从大到小
+        `,
+        daysForSaleStrategy: "20",
+        stockHoldCount: 10,
+        dayBuyStockNum: 3,
+        upperIncome: 33,
+        fallIncome: 10,
+        lowerIncome: 8.5,
+        stats: "策略回测"
     },
 
     {
         name: "日买入信号组合",
-        type: "回测一下",
-        query: `kdj买入信号，bias买入信号，wr信号买入，macd买入信号，cci大于-120小于0，振幅小于12，股价低于压力位，实际换手率大于2.9，排除st，排除退市`
+        query: `kdj买入信号，bias买入信号，wr信号买入，macd买入信号，cci大于-120小于0，振幅小于12，股价低于压力位，实际换手率大于2.9，排除st，排除退市`,
+        daysForSaleStrategy: "20",
+        stockHoldCount: 10,
+        dayBuyStockNum: 3,
+        upperIncome: 20,
+        fallIncome: 5.5,
+        lowerIncome: 10.5,
+        stats: "策略回测"
     },
     {
         name: "日买入信号组合2",
-        type: "回测一下",
         query: `
               kdj买入信号，bias买入信号，wr信号买入，rsi买入信号，周kdj金叉，振幅小于12，cci大于-130小于97，
               过去30个交易日涨跌幅大于-25%，最近3日主力资金流入大于-250万，实际换手率大于1，roe大于0，排除st，换手率从大到小
-        `
+        `,
+        daysForSaleStrategy: "20",
+        stockHoldCount: 10,
+        dayBuyStockNum: 3,
+        upperIncome: 25,
+        fallIncome: 10,
+        lowerIncome: 12,
+        stats: "策略回测"
+    },
+
+    {
+        name: "大市值",
+        query: `市值大于1000亿；非科创板；非创业板；同花顺二级行业龙头；细分行业龙头；过去3年的基本每股收益增长率>3%；过去30个交易日涨跌幅大于-5%小于23；振幅小于8；股性评分大于12；上市日期从大到小排名；总市值从小到大排列`,
+        daysForSaleStrategy: "20,30",
+        stockHoldCount: 1,
+        dayBuyStockNum: 1,
+        upperIncome: 30,
+        fallIncome: 7,
+        lowerIncome: 11,
+        stats: "策略回测"
     },
 
     {
         name: "小市值",
-        type: "策略回测",
         query: `总市值大于等于10亿小于等于20亿；0<pb<=2.5；0<=pe<=25；股息大于0； BIAS买入信号；放量；振幅小于10；排除st；上市天数>100；roe从大到小排列`,
-        url: "`https://backtest.10jqka.com.cn/backtest/app.html#/strategybacktest?query=${query}&daysForSaleStrategy=50,60&startDate=${startDate}&endDate=${endDate}&stockHoldCount=1&dayBuyStockNum=1&upperIncome=17&lowerIncome=12&fallIncome=5&engine=undefined&capital=100000`"
+        daysForSaleStrategy: "50,60",
+        stockHoldCount: 1,
+        dayBuyStockNum: 1,
+        upperIncome: 17,
+        fallIncome: 5,
+        lowerIncome: 12,
+        stats: "策略回测"
     },
-    {
-        name: "大市值",
-        type: "策略回测",
-        query: `市值大于1000亿；非科创板；非创业板；同花顺二级行业龙头；细分行业龙头；过去3年的基本每股收益增长率>3%；过去30个交易日涨跌幅大于-5%小于23；振幅小于8；股性评分大于12；上市日期从大到小排名；总市值从小到大排列`,
-        url: "`https://backtest.10jqka.com.cn/backtest/app.html#/strategybacktest?query=${query}&daysForSaleStrategy=20,30&startDate=${startDate}&endDate=${endDate}&stockHoldCount=1&dayBuyStockNum=1&upperIncome=1000&lowerIncome=12&fallIncome=15&engine=undefined&capital=100000`"
-    }
+
 ];
 
 let browser;
 (async () => {
-    //下载回测数据csv
-    //browser = await puppeteer.launch({ headless: false, executablePath: 'C:\\Program Files\\Google\\Chrome Dev\\Application\\chrome.exe', defaultViewport: null, args: ['--start-maximized'] });
-    browser = await puppeteer.launch({ headless: false, defaultViewport: null, args: ['--start-maximized'] });
+    browser = await puppeteer.launch({ headless: false, executablePath: 'C:\\Program Files\\Google\\Chrome Dev\\Application\\chrome.exe', defaultViewport: null, args: ['--start-maximized'] });
 
-    for (let i = 0; i < stats.length; i++) {
-        let dataName = stats[i].name
-        let dataFile = `${folder}${dataName}.csv`
-        let isFileExit = fs.existsSync(dataFile)
-        if (isFileExit) {
-            let modifyDate = fs.statSync(dataFile).mtime.toISOString().substring(0, 10)
-            let isFileToday = currentDayYMD == modifyDate
-            if (isFileToday) continue
-        }
+    // let htmlStr = ""
+    // let justProduceLink = false
+    // for (let i = 0; i < tactics.length; i++) {
+    //     let dataName = tactics[i].name
+    //     let dataFile = `${folder}${dataName}.csv`
+    //     let isFileExit = fs.existsSync(dataFile)
+    //     if (isFileExit) {
+    //         let modifyDate = fs.statSync(dataFile).mtime.toISOString().substring(0, 10)
+    //         let isFileToday = currentDayYMD == modifyDate
+    //         if (isFileToday) continue
+    //     }
+    //     let startDate = "" + parseInt(currentDayYMD.substring(0, 4)) - 5 + "-01-01"
+    //     let endDate = currentDayYMD
+    //     let query = encodeURIComponent(tactics[i].query.trim().replace(/[\r\n]/g, '').replace(/[ ]/g, ''))
+    //     let daysForSaleStrategy = tactics[i].daysForSaleStrategy ?? "10,20"
+    //     let stockHoldCount = tactics[i].stockHoldCount ?? 1
+    //     let dayBuyStockNum = tactics[i].dayBuyStockNum ?? 1
+    //     let upperIncome = tactics[i].upperIncome ?? 30
+    //     let fallIncome = tactics[i].fallIncome ?? 10
+    //     let lowerIncome = tactics[i].lowerIncome ?? 10
 
-        let startDate = "" + parseInt(currentDayYMD.substring(0, 4)) - 5 + "-01-01"
-        let endDate = currentDayYMD
-        let query = stats[i].query.trim().replace(/[\r\n]/g, '').replace(/[ ]/g, '')
-        query = encodeURIComponent(query)
-        let url = `https://backtest.10jqka.com.cn/backtest/app.html#/backtest?query=${query}&daysForSaleStrategy=10,20&startDate=${startDate}&endDate=${endDate}&benchmark=399300%20沪深300`
-        if (stats[i].type == "策略回测") {
-            startDate = "" + parseInt(currentDayYMD.substring(0, 4)) - 4 + "-01-01"
-            eval("url = " + stats[i].url)
-        }
-        console.log("\r\ndowloadUrl：", url)
-        let downLoadFile = await taskFileDownloadThsBack(dataName, url)
-        nameToFile[dataName] = downLoadFile
-    }
+    //     console.log(daysForSaleStrategy, fallIncome)
+    //     eval("回测一下url = " + 回测一下urlTemplate)
+    //     eval("策略回测url = " + 策略回测urlTemplate)
 
-    console.log("\r\ndowloadNameToFile：", nameToFile)
-    await wait(Math.random() * 2000)
-    for (let name in nameToFile) {
-        if (Object.hasOwnProperty.call(nameToFile, name)) {
-            let downLoadName = nameToFile[name];
-            try {
-                fs.copyFileSync(tmpdowloadFolder + downLoadName, folder + `${name}.csv`)
-            }
-            catch (error) { console.log(error) }
-        }
-    }
+    //     htmlStr += `<tr> <td><a href="${回测一下url}" target="_blank">${dataName}</a></td> <td><a href="${策略回测url}" target="_blank">${dataName}</a></td> </tr>`
+    //     if (i == tactics.length - 1) fs.writeFileSync(`${folder}同花顺策略链接.html`, `<table>${htmlStr}</table>`)
+    //     if (justProduceLink) continue
 
-    //统计回测数据
+    //     if (!tactics[i].stats) continue
+    //     let downBackUrl = tactics[i].stats == "策略回测" ? 策略回测url : 回测一下url
+    //     let downLoadFile = await taskFileDownloadThsBack(dataName, downBackUrl)
+    //     nameToFile[dataName] = downLoadFile
+    // }
+    // console.log("\r\n DowloadNameToFile：", nameToFile)
+    // await wait(Math.random() * 2000)
+    // for (let name in nameToFile) {
+    //     if (Object.hasOwnProperty.call(nameToFile, name)) {
+    //         let downLoadName = nameToFile[name];
+    //         try {
+    //             fs.copyFileSync(tmpdowloadFolder + downLoadName, folder + `${name}.csv`)
+    //         }
+    //         catch (error) { console.log(error) }
+    //     }
+    // }
+
     await signal()//回测一下
     await smallCom()//策略回测
     await bigCom()

@@ -7428,5 +7428,135 @@ var 生猪连续 = [
     "close": 14110,
     "percent": 0,
     "volume": 53771
+  },
+  {
+    "date": "2024-01-30",
+    "timestamp": 1706572800000,
+    "open": 14120,
+    "high": 14140,
+    "low": 13765,
+    "close": 13810,
+    "percent": 0,
+    "volume": 65580
+  },
+  {
+    "date": "2024-01-31",
+    "timestamp": 1706659200000,
+    "open": 13945,
+    "high": 14035,
+    "low": 13810,
+    "close": 13915,
+    "percent": 0,
+    "volume": 58683
+  },
+  {
+    "date": "2024-02-01",
+    "timestamp": 1706745600000,
+    "open": 13950,
+    "high": 14075,
+    "low": 13885,
+    "close": 13915,
+    "percent": 0,
+    "volume": 48333
+  },
+  {
+    "date": "2024-02-02",
+    "timestamp": 1706832000000,
+    "open": 13850,
+    "high": 13850,
+    "low": 13550,
+    "close": 13585,
+    "percent": 0,
+    "volume": 56529
+  },
+  {
+    "date": "2024-02-05",
+    "timestamp": 1707091200000,
+    "open": 13700,
+    "high": 13710,
+    "low": 13515,
+    "close": 13575,
+    "percent": 0,
+    "volume": 30975
+  },
+  {
+    "date": "2024-02-06",
+    "timestamp": 1707177600000,
+    "open": 13595,
+    "high": 13670,
+    "low": 13555,
+    "close": 13625,
+    "percent": 0,
+    "volume": 22704
+  },
+  {
+    "date": "2024-02-07",
+    "timestamp": 1707264000000,
+    "open": 13635,
+    "high": 13660,
+    "low": 13455,
+    "close": 13490,
+    "percent": 0,
+    "volume": 26785
+  },
+  {
+    "date": "2024-02-08",
+    "timestamp": 1707350400000,
+    "open": 13500,
+    "high": 13615,
+    "low": 13485,
+    "close": 13490,
+    "percent": 0,
+    "volume": 20011
+  },
+  {
+    "date": "2024-02-19",
+    "timestamp": 1708300800000,
+    "open": 13600,
+    "high": 13665,
+    "low": 13365,
+    "close": 13600,
+    "percent": 0,
+    "volume": 20014
+  },
+  {
+    "date": "2024-02-20",
+    "timestamp": 1708387200000,
+    "open": 14550,
+    "high": 14655,
+    "low": 14485,
+    "close": 14510,
+    "percent": 0,
+    "volume": 33891
+  },
+  {
+    "date": "2024-02-21",
+    "timestamp": 1708473600000,
+    "open": 14465,
+    "high": 14470,
+    "low": 14280,
+    "close": 14365,
+    "percent": 0,
+    "volume": 44644
+  },
+  {
+    "date": "2024-02-22",
+    "timestamp": 1708560000000,
+    "open": 14310,
+    "high": 14805,
+    "low": 14310,
+    "close": 14660,
+    "percent": 0,
+    "volume": 64150
+  },
+  {
+    "date": "2024-02-23",
+    "timestamp": 1708646400000,
+    "open": 14615,
+    "high": 14740,
+    "low": 14565,
+    "close": 14705,
+    "percent": 0,
+    "volume": 44177
   }
 ]

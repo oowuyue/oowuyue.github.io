@@ -46468,5 +46468,135 @@ var 豆粕连续 = [
     "close": 2952,
     "percent": 0,
     "volume": 1423920
+  },
+  {
+    "date": "2024-01-30",
+    "timestamp": 1706572800000,
+    "open": 2948,
+    "high": 2975,
+    "low": 2928,
+    "close": 2944,
+    "percent": 0,
+    "volume": 1103599
+  },
+  {
+    "date": "2024-01-31",
+    "timestamp": 1706659200000,
+    "open": 2955,
+    "high": 3018,
+    "low": 2953,
+    "close": 2994,
+    "percent": 0,
+    "volume": 1298710
+  },
+  {
+    "date": "2024-02-01",
+    "timestamp": 1706745600000,
+    "open": 2998,
+    "high": 3047,
+    "low": 2991,
+    "close": 3033,
+    "percent": 0,
+    "volume": 1255921
+  },
+  {
+    "date": "2024-02-02",
+    "timestamp": 1706832000000,
+    "open": 3023,
+    "high": 3031,
+    "low": 2991,
+    "close": 2997,
+    "percent": 0,
+    "volume": 1234806
+  },
+  {
+    "date": "2024-02-05",
+    "timestamp": 1707091200000,
+    "open": 3008,
+    "high": 3024,
+    "low": 2971,
+    "close": 2993,
+    "percent": 0,
+    "volume": 1068865
+  },
+  {
+    "date": "2024-02-06",
+    "timestamp": 1707177600000,
+    "open": 2978,
+    "high": 3013,
+    "low": 2973,
+    "close": 3002,
+    "percent": 0,
+    "volume": 799624
+  },
+  {
+    "date": "2024-02-07",
+    "timestamp": 1707264000000,
+    "open": 3006,
+    "high": 3021,
+    "low": 2974,
+    "close": 2982,
+    "percent": 0,
+    "volume": 787206
+  },
+  {
+    "date": "2024-02-08",
+    "timestamp": 1707350400000,
+    "open": 2970,
+    "high": 3011,
+    "low": 2958,
+    "close": 3007,
+    "percent": 0,
+    "volume": 723675
+  },
+  {
+    "date": "2024-02-19",
+    "timestamp": 1708300800000,
+    "open": 2999,
+    "high": 3044,
+    "low": 2996,
+    "close": 3042,
+    "percent": 0,
+    "volume": 654355
+  },
+  {
+    "date": "2024-02-20",
+    "timestamp": 1708387200000,
+    "open": 3050,
+    "high": 3070,
+    "low": 3022,
+    "close": 3026,
+    "percent": 0,
+    "volume": 890889
+  },
+  {
+    "date": "2024-02-21",
+    "timestamp": 1708473600000,
+    "open": 3025,
+    "high": 3042,
+    "low": 2992,
+    "close": 3001,
+    "percent": 0,
+    "volume": 1099279
+  },
+  {
+    "date": "2024-02-22",
+    "timestamp": 1708560000000,
+    "open": 2988,
+    "high": 2997,
+    "low": 2968,
+    "close": 2989,
+    "percent": 0,
+    "volume": 914329
+  },
+  {
+    "date": "2024-02-23",
+    "timestamp": 1708646400000,
+    "open": 2990,
+    "high": 2998,
+    "low": 2965,
+    "close": 2996,
+    "percent": 0,
+    "volume": 874395
   }
 ]

@@ -46408,5 +46408,155 @@ var 橡胶连续 = [
     "close": 13665,
     "percent": 0,
     "volume": 165485
+  },
+  {
+    "date": "2024-01-29",
+    "timestamp": 1706486400000,
+    "open": 13630,
+    "high": 13740,
+    "low": 13470,
+    "close": 13560,
+    "percent": 0,
+    "volume": 210340
+  },
+  {
+    "date": "2024-01-30",
+    "timestamp": 1706572800000,
+    "open": 13570,
+    "high": 13635,
+    "low": 13485,
+    "close": 13510,
+    "percent": 0,
+    "volume": 151537
+  },
+  {
+    "date": "2024-01-31",
+    "timestamp": 1706659200000,
+    "open": 13480,
+    "high": 13605,
+    "low": 13460,
+    "close": 13525,
+    "percent": 0,
+    "volume": 174041
+  },
+  {
+    "date": "2024-02-01",
+    "timestamp": 1706745600000,
+    "open": 13510,
+    "high": 13520,
+    "low": 13355,
+    "close": 13385,
+    "percent": 0,
+    "volume": 217506
+  },
+  {
+    "date": "2024-02-02",
+    "timestamp": 1706832000000,
+    "open": 13395,
+    "high": 13430,
+    "low": 13120,
+    "close": 13290,
+    "percent": 0,
+    "volume": 316565
+  },
+  {
+    "date": "2024-02-05",
+    "timestamp": 1707091200000,
+    "open": 13335,
+    "high": 13445,
+    "low": 13295,
+    "close": 13385,
+    "percent": 0,
+    "volume": 209584
+  },
+  {
+    "date": "2024-02-06",
+    "timestamp": 1707177600000,
+    "open": 13370,
+    "high": 13470,
+    "low": 13330,
+    "close": 13355,
+    "percent": 0,
+    "volume": 149862
+  },
+  {
+    "date": "2024-02-07",
+    "timestamp": 1707264000000,
+    "open": 13345,
+    "high": 13350,
+    "low": 13225,
+    "close": 13240,
+    "percent": 0,
+    "volume": 160150
+  },
+  {
+    "date": "2024-02-08",
+    "timestamp": 1707350400000,
+    "open": 13250,
+    "high": 13375,
+    "low": 13120,
+    "close": 13365,
+    "percent": 0,
+    "volume": 191173
+  },
+  {
+    "date": "2024-02-19",
+    "timestamp": 1708300800000,
+    "open": 13550,
+    "high": 13615,
+    "low": 13400,
+    "close": 13465,
+    "percent": 0,
+    "volume": 166270
+  },
+  {
+    "date": "2024-02-20",
+    "timestamp": 1708387200000,
+    "open": 13505,
+    "high": 13620,
+    "low": 13505,
+    "close": 13555,
+    "percent": 0,
+    "volume": 164141
+  },
+  {
+    "date": "2024-02-21",
+    "timestamp": 1708473600000,
+    "open": 13500,
+    "high": 13625,
+    "low": 13475,
+    "close": 13550,
+    "percent": 0,
+    "volume": 184759
+  },
+  {
+    "date": "2024-02-22",
+    "timestamp": 1708560000000,
+    "open": 13555,
+    "high": 13815,
+    "low": 13540,
+    "close": 13760,
+    "percent": 0,
+    "volume": 239740
+  },
+  {
+    "date": "2024-02-23",
+    "timestamp": 1708646400000,
+    "open": 13760,
+    "high": 13845,
+    "low": 13695,
+    "close": 13810,
+    "percent": 0,
+    "volume": 170180
+  },
+  {
+    "date": "2024-02-26",
+    "timestamp": 1708905600000,
+    "open": 13795,
+    "high": 13810,
+    "low": 13680,
+    "close": 13750,
+    "percent": 0,
+    "volume": 158885
   }
 ]

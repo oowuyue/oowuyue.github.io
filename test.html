@@ -1,25 +1,206 @@
+<script language="javascript" src="https://www.lodop.net/demolist/LodopFuncs.js"></script>
 <script>
-    function stampToDate(stamp) {
-        let date1 = new Date(stamp);
-        let y = date1.getFullYear(),
-            m = date1.getMonth() + 1,
-            d = date1.getDate();
-
-        if (m < 10) m = "0" + m;
-        if (d < 10) d = "0" + d;
-
-        return y + "-" + m + "-" + d;
-    }
-
-    let startDateArr = [2024, 0, 1];
-    let endDateArr = [2020, 1, 1];
-    let startDate = new Date(...startDateArr);
-    let endDate = new Date(...endDateArr);
-    let days = [];
-    for (let d = startDate; d >= endDate; d.setDate(d.getDate() - 1)) {
-        let dateStr = stampToDate(d.getTime())
-        let url = `https://news.sina.com.cn/head/news${dateStr.replaceAll("-", "")}pm.shtml`;
-        days.push(dateStr + "=>" + url)
-    }
-    console.log(days);
+    window.On_CLodop_Opened = function () {
+        LODOP.PRINT_INIT("");
+        LODOP.SET_PRINT_PAGESIZE(2, 0, 0, "A4");
+        LODOP.ADD_PRINT_TABLE("2%", "1%", "90%", "50mm", document.getElementById("div1").innerHTML);
+        LODOP.PREVIEW();
+    };
 </script>
+
+<div id="div1">
+    <style>
+        table,
+        td {
+            border-collapse: collapse;
+            font-size: 9pt;
+        }
+
+        .style-css {
+            text-align: center;
+            height: 38px;
+            border: 1px solid #000;
+            padding: 2px;
+            font-size: 9pt;
+        }
+
+        .style-css2 {
+            text-align: center;
+            font-size: 9pt;
+            height: 15pt;
+            border: 1px solid #000;
+            padding: 2px;
+        }
+
+        .style-css-fillCell {
+            text-align: center;
+            height: 24pt;
+            font-size: 9pt;
+            font-family: '楷体', '楷体_GB2312';
+            border-left: 1px solid #000;
+            border-right: 1px solid #000;
+            border-bottom: 1px solid #000;
+        }
+
+        .titleTop {
+            text-align: center;
+            font-size: 24px;
+            height: 50px;
+            font-weight: bold;
+            border: 0px solid;
+            font-family: '宋体';
+        }
+
+        .title2 {
+            text-align: left;
+            font-size: 11pt;
+            height: 24pt;
+            font-family: '宋体';
+        }
+
+        .tfootTop {
+            text-align: right;
+            font-size: 9pt;
+            height: 6pt;
+            border: 0px solid;
+            font-family: '宋体';
+        }
+    </style>
+    <table border="0" cellspacing="0" cellpadding="0"
+        style="border-collapse: collapse; width: 185mm; table-layout: fixed" border-color="#333333">
+        <thead>
+            <tr>
+                <td width="10"></td>
+                <td width="22"></td>
+
+            </tr>
+            <tr>
+                <td colspan="2" class="titleTop">事业单位人员工资明细表</td>
+            </tr>
+            <tr>
+                <td colspan="2" class="title2">统计单位：城步县一中</td>
+            </tr>
+
+
+        </thead>
+        <tbody>
+            <tr>
+                <td class="style-css-fillCell"></td>
+                <td class="style-css-fillCell"></td>
+            </tr>
+            <tr>
+                <td class="style-css-fillCell"></td>
+                <td class="style-css-fillCell"></td>
+            </tr>
+            <tr>
+                <td class="style-css-fillCell"></td>
+                <td class="style-css-fillCell"></td>
+            </tr>
+            <tr>
+                <td class="style-css-fillCell"></td>
+                <td class="style-css-fillCell"></td>
+            </tr>
+
+            <tr>
+                <td class="style-css-fillCell"></td>
+                <td class="style-css-fillCell"></td>
+            </tr>
+            <tr>
+                <td class="style-css-fillCell"></td>
+                <td class="style-css-fillCell"></td>
+            </tr>
+            <tr>
+                <td class="style-css-fillCell"></td>
+                <td class="style-css-fillCell"></td>
+            </tr>
+
+            <tr>
+                <td class="style-css-fillCell"></td>
+                <td class="style-css-fillCell"></td>
+            </tr>
+            <tr>
+                <td class="style-css-fillCell"></td>
+                <td class="style-css-fillCell"></td>
+            </tr>
+            <tr>
+                <td class="style-css-fillCell"></td>
+                <td class="style-css-fillCell"></td>
+            </tr>
+            <tr>
+                <td class="style-css-fillCell"></td>
+                <td class="style-css-fillCell"></td>
+            </tr>
+            <tr>
+                <td class="style-css-fillCell"></td>
+                <td class="style-css-fillCell"></td>
+
+
+            </tr>
+            <tr>
+                <td class="style-css-fillCell"></td>
+                <td class="style-css-fillCell"></td>
+            </tr>
+            <tr>
+                <td class="style-css-fillCell"></td>
+                <td class="style-css-fillCell"></td>
+            </tr>
+            <tr>
+                <td class="style-css-fillCell"></td>
+                <td class="style-css-fillCell"></td>
+            </tr>
+
+            <tr>
+                <td class="style-css-fillCell"></td>
+                <td class="style-css-fillCell"></td>
+            </tr>
+            <tr>
+                <td class="style-css-fillCell"></td>
+                <td class="style-css-fillCell"></td>
+            </tr>
+            <tr>
+                <td class="style-css-fillCell"></td>
+                <td class="style-css-fillCell"></td>
+            </tr>
+            <tr>
+                <td class="style-css-fillCell"></td>
+                <td class="style-css-fillCell"></td>
+            </tr>
+            <tr>
+                <td class="style-css-fillCell"></td>
+                <td class="style-css-fillCell"></td>
+            </tr>
+            <tr>
+                <td class="style-css-fillCell"></td>
+                <td class="style-css-fillCell"></td>
+            </tr>
+            <tr>
+                <td class="style-css-fillCell"></td>
+                <td class="style-css-fillCell"></td>
+            </tr>
+            <tr>
+                <td class="style-css-fillCell"></td>
+                <td class="style-css-fillCell"></td>
+            </tr>
+            <tr>
+                <td class="style-css-fillCell"></td>
+                <td class="style-css-fillCell"></td>
+            </tr>
+            <tr>
+                <td class="style-css-fillCell"></td>
+                <td class="style-css-fillCell"></td>
+            </tr>
+            <tr>
+                <td class="style-css-fillCell"></td>
+                <td class="style-css-fillCell"></td>
+            </tr>
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="2" style="font-size: 9pt; text-align: right">
+                    <span tdata="pageNO">第##页</span>，<span tdata="pageCount">共##页</span>
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+
+</div>

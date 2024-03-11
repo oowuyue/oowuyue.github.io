@@ -504,63 +504,65 @@ function backTest12(dataName, dayDatas, currentDayIndex, currentDayList, trigger
         log12ProfileN.fuckTrig1 = [log1.trig1Date, currentDayIndex - log1.trig1AtIndex]
         log12ProfileN.trig12Date = currentDayData.date
 
-        // logProfileN.trigDatePercent = currentDayData.percent
-        // let afterDays = [10, 20, 100, 200]
-        // for (let index = 0; index < afterDays.length; index++) {
-        //     let afterDay = afterDays[index]
-        //     if (currentDayIndex + afterDay <= dayDatas.length - 1) {
-        //         let tmpUp = 0
-        //         let tmpUpDate = []
-        //         let tmpLow = 0
-        //         let tmpLowDate = []
-        //         for (let after = 1; after <= afterDay; after++) {
-        //             let profile = (dayDatas[currentDayIndex + after].close - currentDayData.close) / currentDayData.close
-        //             if (profile > tmpUp) {
-        //                 tmpUp = profile
-        //                 tmpUpDate = [after, dayDatas[currentDayIndex + after].date]
-        //             }
-        //             if (profile < tmpLow) {
-        //                 tmpLow = profile
-        //                 tmpLowDate = [after, dayDatas[currentDayIndex + after].date]
-        //             }
-        //         }
-        //         logProfileN[`day${afterDay}LowUp`] = [
-        //             tmpLowDate,
-        //             +(tmpLow * 100).toFixed(2),
-        //             tmpUpDate,
-        //             +(tmpUp * 100).toFixed(2)
-        //         ]
-        //     }
-        //     else {
-        //         let lastDay = dayDatas.length - 1 - currentDayIndex
-        //         let tmpUp = 0
-        //         let tmpUpDate = []
-        //         let tmpLow = 0
-        //         let tmpLowDate = []
-        //         for (let after = 1; after <= lastDay; after++) {
-        //             let profile = (dayDatas[currentDayIndex + after].close - currentDayData.close) / currentDayData.close
-        //             if (profile > tmpUp) {
-        //                 tmpUp = profile
-        //                 tmpUpDate = [after, dayDatas[currentDayIndex + after].date]
-        //             }
-        //             if (profile < tmpLow) {
-        //                 tmpLow = profile
-        //                 tmpLowDate = [after, dayDatas[currentDayIndex + after].date]
-        //             }
-        //         }
-        //         logProfileN[`day${lastDay}LowUp`] = [
-        //             tmpLowDate,
-        //             +(tmpLow * 100).toFixed(2),
-        //             tmpUpDate,
-        //             +(tmpUp * 100).toFixed(2)
-        //         ]
-        //         break
-        //     }
-        // }
-        // //测试用
-        // logProfileN.trigDay6 = currentDayList.slice(-6)
-        // logProfileN.trigWeek4 = currentWeekList.slice(-4)
-        // logProfileN.trigMonth4 = currentMonthList.slice(-4)
+        log12ProfileN.trigDatePercent = currentDayData.percent
+        let afterDays = [10, 20, 100, 200]
+        for (let index = 0; index < afterDays.length; index++) {
+            let afterDay = afterDays[index]
+            if (currentDayIndex + afterDay <= dayDatas.length - 1) {
+                let tmpUp = 0
+                let tmpUpDate = []
+                let tmpLow = 0
+                let tmpLowDate = []
+                for (let after = 1; after <= afterDay; after++) {
+                    let profile = (dayDatas[currentDayIndex + after].close - currentDayData.close) / currentDayData.close
+                    if (profile > tmpUp) {
+                        tmpUp = profile
+                        tmpUpDate = [after, dayDatas[currentDayIndex + after].date]
+                    }
+                    if (profile < tmpLow) {
+                        tmpLow = profile
+                        tmpLowDate = [after, dayDatas[currentDayIndex + after].date]
+                    }
+                }
+                log12ProfileN[`day${afterDay}LowUp`] = [
+                    tmpLowDate,
+                    +(tmpLow * 100).toFixed(2),
+                    tmpUpDate,
+                    +(tmpUp * 100).toFixed(2)
+                ]
+            }
+            else {
+                let lastDay = dayDatas.length - 1 - currentDayIndex
+                let tmpUp = 0
+                let tmpUpDate = []
+                let tmpLow = 0
+                let tmpLowDate = []
+                for (let after = 1; after <= lastDay; after++) {
+                    let profile = (dayDatas[currentDayIndex + after].close - currentDayData.close) / currentDayData.close
+                    if (profile > tmpUp) {
+                        tmpUp = profile
+                        tmpUpDate = [after, dayDatas[currentDayIndex + after].date]
+                    }
+                    if (profile < tmpLow) {
+                        tmpLow = profile
+                        tmpLowDate = [after, dayDatas[currentDayIndex + after].date]
+                    }
+                }
+                log12ProfileN[`day${lastDay}LowUp`] = [
+                    tmpLowDate,
+                    +(tmpLow * 100).toFixed(2),
+                    tmpUpDate,
+                    +(tmpUp * 100).toFixed(2)
+                ]
+                break
+            }
+        }
+
+        ////测试用
+        //log12ProfileN.trigDay6 = currentDayList.slice(-6)
+        //log12ProfileN.trigWeek4 = currentWeekList.slice(-4)
+        //log12ProfileN.trigMonth4 = currentMonthList.slice(-4)
+
         console.log(log12ProfileN)
         trigger12LogArr.push(log12ProfileN)
     }///
@@ -580,7 +582,7 @@ function restoreLog() {
         var 大宗策略str = fs.readFileSync(`${folder}大宗策略.js`, { encoding: 'utf8', flag: 'r' })
         if (大宗策略str) eval(大宗策略str)
     } catch (e) {
-        console.log(e)
+        console.log("大宗策略文件不存在")
     }
     if (typeof 大宗策略cod1 === "undefined") var 大宗策略cod1 = []
     if (typeof 大宗策略cod12 === "undefined") var 大宗策略cod12 = []
@@ -607,14 +609,15 @@ async function down1Back1(nameCodes, backName) {
     for (let i = 0; i < nameCodes.length; i++) {
         let dataName = nameCodes[i].name
         let dataCode = nameCodes[i].code
+        console.log("\r\n----------BackTest", dataName, "----------")
         let dayDatas = await getDataFromFile(dataName, folder)
         if (!dayDatas) {
             var getDataFromUrlFunc = getDataFromUrlFunc ?? await getSinaFuture()
             dayDatas = await getDataFromUrlFunc(dataName, dataCode)
+            console.log(`${dataName} getDataFromUrl`)
             await writeDataToFile(dataName, dayDatas, folder)
         }
         nameCodes[i].dayDatas = dayDatas
-        console.log("\r\nbackTest", dataName)
 
         let conditon1 = false;
         let conditon2 = false;
@@ -715,36 +718,36 @@ async function downAllBack(nameCodes, backName) {
 
     let nameCodes = [
         //全up
-        // { name: "橡胶连续", code: "RU0" },
-        // { name: "沪铜连续", code: "CU0" },
-        // { name: "热卷连续", code: "HC0" },
-         { name: "豆粕连续", code: "M0" },
-        // { name: "黄金连续", code: "AU0" },
-        // { name: "玻璃连续", code: "FG0" },
-        // { name: "20号胶连续", code: "NR0" },
-        // { name: "PP连续", code: "PP0" },
-        // { name: "液化气连续", code: "PG0" },
-        // { name: "白银连续", code: "AG0" },
-        // { name: "短纤连续", code: "PF0" },
-        // { name: "纸浆连续", code: "SP0" },
-        // { name: "苹果连续", code: "AP0" },
+        { name: "橡胶连续", code: "RU0" },
+        { name: "沪铜连续", code: "CU0" },
+        { name: "热卷连续", code: "HC0" },
+        { name: "豆粕连续", code: "M0" },
+        { name: "黄金连续", code: "AU0" },
+        { name: "玻璃连续", code: "FG0" },
+        { name: "20号胶连续", code: "NR0" },
+        { name: "PP连续", code: "PP0" },
+        { name: "液化气连续", code: "PG0" },
+        { name: "白银连续", code: "AG0" },
+        { name: "短纤连续", code: "PF0" },
+        { name: "纸浆连续", code: "SP0" },
+        { name: "苹果连续", code: "AP0" },
 
-        // // // //高up
-        // { name: "不锈钢连续", code: "SS0" },
-         { name: "螺纹连续", code: "RB0" },
-        // { name: "沪锡连续", code: "SN0" },
-        // { name: "燃油连续", code: "FU0" },
-        // { name: "玉米连续", code: "C0" },
-        // { name: "菜油连续", code: "OI0" },
-        // { name: "鸡蛋连续", code: "JD0" },
-        // { name: "焦煤连续", code: "JM0" },
-        // { name: "纤维板连续", code: "FB0" },
-        // { name: "强麦连续", code: "WH0" },
-        // { name: "沪镍连续", code: "NI0" },
+        // // //高up
+        { name: "不锈钢连续", code: "SS0" },
+        { name: "螺纹连续", code: "RB0" },
+        { name: "沪锡连续", code: "SN0" },
+        { name: "燃油连续", code: "FU0" },
+        { name: "玉米连续", code: "C0" },
+        { name: "菜油连续", code: "OI0" },
+        { name: "鸡蛋连续", code: "JD0" },
+        { name: "焦煤连续", code: "JM0" },
+        { name: "纤维板连续", code: "FB0" },
+        { name: "强麦连续", code: "WH0" },
+        { name: "沪镍连续", code: "NI0" },
 
         // // //平
-        // { name: "沪锌连续", code: "ZN0" },
-         { name: "生猪连续", code: "LH0" },
+        { name: "沪锌连续", code: "ZN0" },
+        { name: "生猪连续", code: "LH0" },
         // { name: "棕榈油连续", code: "P0" },
         // { name: "棉花连续", code: "CF0" },
         //{ name: "PVC连续", code: "V0" },
@@ -792,6 +795,6 @@ async function downAllBack(nameCodes, backName) {
         // { name: "us原油", code: "CL" },
 
     ]
-    await downAllBack(nameCodes, "大宗策略")
+    await down1Back1(nameCodes, "大宗策略")
 
 })()

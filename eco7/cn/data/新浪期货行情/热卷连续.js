@@ -24058,5 +24058,135 @@ var 热卷连续 = [
     "close": 4092,
     "percent": 0,
     "volume": 306256
+  },
+  {
+    "date": "2024-01-30",
+    "timestamp": 1706572800000,
+    "open": 4090,
+    "high": 4102,
+    "low": 4042,
+    "close": 4044,
+    "percent": 0,
+    "volume": 353051
+  },
+  {
+    "date": "2024-01-31",
+    "timestamp": 1706659200000,
+    "open": 4042,
+    "high": 4048,
+    "low": 4005,
+    "close": 4005,
+    "percent": 0,
+    "volume": 350962
+  },
+  {
+    "date": "2024-02-01",
+    "timestamp": 1706745600000,
+    "open": 4005,
+    "high": 4023,
+    "low": 3990,
+    "close": 4004,
+    "percent": 0,
+    "volume": 307788
+  },
+  {
+    "date": "2024-02-02",
+    "timestamp": 1706832000000,
+    "open": 4006,
+    "high": 4015,
+    "low": 3943,
+    "close": 3967,
+    "percent": 0,
+    "volume": 563801
+  },
+  {
+    "date": "2024-02-05",
+    "timestamp": 1707091200000,
+    "open": 3967,
+    "high": 3994,
+    "low": 3960,
+    "close": 3971,
+    "percent": 0,
+    "volume": 294951
+  },
+  {
+    "date": "2024-02-06",
+    "timestamp": 1707177600000,
+    "open": 3960,
+    "high": 3978,
+    "low": 3931,
+    "close": 3967,
+    "percent": 0,
+    "volume": 324744
+  },
+  {
+    "date": "2024-02-07",
+    "timestamp": 1707264000000,
+    "open": 3965,
+    "high": 3977,
+    "low": 3945,
+    "close": 3968,
+    "percent": 0,
+    "volume": 229640
+  },
+  {
+    "date": "2024-02-08",
+    "timestamp": 1707350400000,
+    "open": 3968,
+    "high": 3991,
+    "low": 3961,
+    "close": 3984,
+    "percent": 0,
+    "volume": 210159
+  },
+  {
+    "date": "2024-02-19",
+    "timestamp": 1708300800000,
+    "open": 4010,
+    "high": 4023,
+    "low": 3935,
+    "close": 3943,
+    "percent": 0,
+    "volume": 348758
+  },
+  {
+    "date": "2024-02-20",
+    "timestamp": 1708387200000,
+    "open": 3945,
+    "high": 3950,
+    "low": 3881,
+    "close": 3884,
+    "percent": 0,
+    "volume": 495224
+  },
+  {
+    "date": "2024-02-21",
+    "timestamp": 1708473600000,
+    "open": 3884,
+    "high": 3966,
+    "low": 3862,
+    "close": 3916,
+    "percent": 0,
+    "volume": 679959
+  },
+  {
+    "date": "2024-02-22",
+    "timestamp": 1708560000000,
+    "open": 3914,
+    "high": 3926,
+    "low": 3882,
+    "close": 3902,
+    "percent": 0,
+    "volume": 364691
+  },
+  {
+    "date": "2024-02-23",
+    "timestamp": 1708646400000,
+    "open": 3903,
+    "high": 3927,
+    "low": 3897,
+    "close": 3905,
+    "percent": 0,
+    "volume": 282696
   }
 ]

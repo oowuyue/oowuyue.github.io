@@ -125,6 +125,14 @@ function dateToStamp(date) {
     return new Date(date).getTime()
 }
 
+//获取日期所在周的周五
+function getLastDayOf(dateStr) {
+    let day = new Date(dateStr).getDay() || 7
+    let date = new Date(dateStr)
+    let restlDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() + 5 - day)
+    return stampToDate(restlDate.getTime())
+}
+
 function findSameTime(array, time) {
     for (let index = 0; index < array.length; index++) {
         const element = array[index];
@@ -561,7 +569,7 @@ function PtPAmp(prePeriodItem, currentPeriodItem) {
 //nodejs 导出
 if (typeof module !== "undefined" && module.exports) {
     const fs = require('fs')
-    
+
     function writeDataToFile(dataName, dayDatas, folder = "./data/") {
         let promise = new Promise((resolve, reject) => {
             fs.writeFile(`${folder}${dataName}.js`, `var ${dataName} = ` + JSON.stringify(dayDatas, null, 2), 'utf8', (err) => {
@@ -577,26 +585,34 @@ if (typeof module !== "undefined" && module.exports) {
         return promise
     }
 
-    function getDataFromFile(dataName, folder = "./data/", forceNew = true) {
+    function getDataFromFile(dataName, folder = "./data/", forceNew = true, format = "json") {
         let promise = new Promise((resolve, reject) => {
             fs.readFile(`${folder}${dataName}.js`, 'utf8', (err, data) => {
                 if (err) {
+                    console.log(dataName, "文件不存在")
                     resolve(false)
                     return
                 }
                 if (forceNew) {//强制最新的当天的
                     let stat = fs.statSync(`${folder}${dataName}.js`)
                     let modifyDate = stat.mtime.toISOString().substring(0, 10)
-                    if (currentDayYMD !== modifyDate) resolve(false)
-                    return
+                    if (currentDayYMD !== modifyDate) {
+                        console.log(dataName, "文件数据不是最新的")
+                        resolve(false)
+                        return
+                    }
+
                 }
 
-                if (data.indexOf("=") >= 0) {
-                    data = data.substring(data.indexOf("=") + 1)
-                }
                 try {
-                    console.log(`\r\n${dataName} getDataFromFile`)
-                    resolve(JSON.parse(data))//返回json
+                    console.log(`${dataName} getDataFromFile`)
+                    if (format == "json") {
+                        if (data.indexOf("=") >= 0)
+                            data = data.substring(data.indexOf("=") + 1)
+                        resolve(JSON.parse(data))//返回json
+                    } else {
+                        resolve(data)//返回str
+                    }
                 } catch (error) {
                     resolve(false)
                 }
@@ -607,7 +623,12 @@ if (typeof module !== "undefined" && module.exports) {
     }
 
     exports.currentDayYMD = currentDayYMD
+    exports.preDayYMD = preDayYMD
+    
     exports.stampToDate = stampToDate
+    exports.dateToStamp = dateToStamp
+    exports.getLastDayOf = getLastDayOf
+    
 
     exports.unifyDate = unifyDate
     exports.findSameTime = findSameTime

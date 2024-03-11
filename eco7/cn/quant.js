@@ -231,8 +231,7 @@ function backTest大盘(dataName, dayDatas, currentDayIndex, triggerLogArr) {
         let logProfileN = {}
         logProfileN.name = dataName
         logProfileN.trigDate = currentDayData.date
-        logProfileN.trigDatePercent = currentDayData.percent
-
+        logProfileN.percent = currentDayData.percent
         // let afterDays = [10, 20, 100, 200]
         // for (let index = 0; index < afterDays.length; index++) {
         //     let afterDay = afterDays[index]
@@ -290,8 +289,11 @@ function backTest大盘(dataName, dayDatas, currentDayIndex, triggerLogArr) {
         // logProfileN.trigWeek4 = currentWeekList.slice(-4)
         // logProfileN.trigMonth4 = currentMonthList.slice(-4)
 
-        console.log(logProfileN.trigDate)
-        triggerLogArr.push(logProfileN)
+        let hasIndex = triggerLogArr.findIndex(ele => { return ele.trigDate == currentDayData.date })
+        if (hasIndex == -1) {
+            console.log(logProfileN.trigDate)
+            triggerLogArr.push(logProfileN)
+        }
     }
 
     let currentDayList = dayDatas.slice(0, currentDayIndex).calKdj()
@@ -511,7 +513,7 @@ function backTest证券(dataName, dayDatas, currentDayIndex, triggerLogArr) {
         let logProfileN = {}
         logProfileN.name = dataName
         logProfileN.trigDate = currentDayData.date
-        logProfileN.trigDatePercent = currentDayData.percent
+        logProfileN.percent = currentDayData.percent
 
         // let afterDays = [10, 20, 100, 200]
         // for (let index = 0; index < afterDays.length; index++) {
@@ -570,8 +572,11 @@ function backTest证券(dataName, dayDatas, currentDayIndex, triggerLogArr) {
         // logProfileN.trigWeek4 = currentWeekList.slice(-4)
         // logProfileN.trigMonth4 = currentMonthList.slice(-4)
 
-        console.log(logProfileN.trigDate)
-        triggerLogArr.push(logProfileN)
+        let hasIndex = triggerLogArr.findIndex(ele => { return ele.trigDate == currentDayData.date })
+        if (hasIndex == -1) {
+            console.log(logProfileN.trigDate)
+            triggerLogArr.push(logProfileN)
+        }
     }
 
     let currentDayList = dayDatas.slice(0, currentDayIndex).calKdj()
@@ -599,21 +604,19 @@ function backTest证券(dataName, dayDatas, currentDayIndex, triggerLogArr) {
     return triggerLogArr
 }
 
-function restoreLog() {
-    try {
-        var 大盘策略str = fs.readFileSync(`${folder}大盘策略.js`, { encoding: 'utf8', flag: 'r' })
-        if (大盘策略str) eval(大盘策略str)
-    } catch (e) {
-        //console.log(e)
-    }
+async function restoreLog大盘(nameCodes) {
+    var 大盘策略str = await getDataFromFile("大盘策略", folder, true, "raw")
+    if (大盘策略str) eval(大盘策略str)
     if (typeof 上证指数策略 === "undefined") var 上证指数策略 = []
     if (typeof 沪深300策略 === "undefined") var 沪深300策略 = []
+    if (typeof 恒生指数策略 === "undefined") var 恒生指数策略 = []
 
     let getLastLogDateIndexFunc = function (dataName, dayDatas) {
         let lastDayIndexIn = 70
         let triggerLogArr = []
-        if (dataName == "上证指数策略") triggerLogArr = 上证指数策略
-        if (dataName == "沪深300策略") triggerLogArr = 沪深300策略
+        if (dataName.includes("上证指数")) triggerLogArr = 上证指数策略
+        if (dataName.includes("沪深300")) triggerLogArr = 沪深300策略
+        if (dataName.includes("恒生指数")) triggerLogArr = 恒生指数策略
         if (triggerLogArr.length > 0) {
             let lastDay = triggerLogArr[triggerLogArr.length - 1].trigDate
             lastDayIndexIn = dayDatas.findIndex(ele => { return ele.date == lastDay })
@@ -621,32 +624,67 @@ function restoreLog() {
         return [triggerLogArr, lastDayIndexIn]
     }
     return getLastLogDateIndexFunc
-
 }
 
+async function restoreLog证券(nameCodes) {
+    var 证券策略str = await getDataFromFile("证券策略", folder, true, "raw")
+    if (证券策略str) eval(证券策略str)
+
+    nameCodes = nameCodes.map((item) => {
+        return item.name.split('_')[0]
+    })
+    evalStr = ""
+    nameCodes.forEach(elename => {
+        evalStr += `if (typeof ${elename}策略 === "undefined") var ${elename}策略 = [];`
+    })
+    eval(evalStr)
+
+
+    let getLastLogDateIndexFunc = function (dataName, dayDatas) {
+        let lastDayIndexIn = 70
+        let triggerLogArr = []
+        dataName = dataName.split('_')[0]
+        eval(`triggerLogArr = ${dataName}策略`)
+
+        if (triggerLogArr.length > 0) {
+            let lastDay = triggerLogArr[triggerLogArr.length - 1].trigDate
+            lastDayIndexIn = dayDatas.findIndex(ele => { return ele.date == lastDay })
+        }
+        return [triggerLogArr, lastDayIndexIn]
+    }
+    return getLastLogDateIndexFunc
+}
+
+
 async function down1Back1(nameCodes, backName) {
+
     let logAllStr = ""
+    let getLastLogDateIndexFunc
+    if (backName == "大盘策略") getLastLogDateIndexFunc = await restoreLog大盘(nameCodes)
+    if (backName == "证券策略") getLastLogDateIndexFunc = await restoreLog证券(nameCodes)
+
     for (let i = 0; i < nameCodes.length; i++) {
         let dataName = nameCodes[i].name
         let dataCode = nameCodes[i].code
+        console.log("\r\n----------BackTest", dataName, "----------")
         let dayDatas = await getDataFromFile(dataName, folder)
-        console.log(dataName, dayDatas)
         if (!dayDatas) {
-
             var getDataFromUrlFunc = getDataFromUrlFunc ?? await getXueQiu()
             dayDatas = await getDataFromUrlFunc(dataName, dataCode)
+            console.log(`${dataName} getDataFromUrl`)
             await writeDataToFile(dataName, dayDatas, folder)
         }
+        if (backName.includes("仅下载")) continue
         dayDatas = dayDatas.data.item.xueqiuData2Obj()
         nameCodes[i].dayDatas = dayDatas
-        console.log("\r\nbackTest", dataName)
 
         let triggerLogArr = [];
         let lastLogIndex = 70;
-        var getLastLogDateIndexFunc = getLastLogDateIndexFunc ?? restoreLog();
-        [triggerLogArr, lastLogIndex] = getLastLogDateIndexFunc(dataName, dayDatas);
+        [triggerLogArr, lastLogIndex] = getLastLogDateIndexFunc(dataName, dayDatas)
+        triggerLogArr.forEach((ele, index) => {
+            console.log(ele.trigDate, triggerLogArr.length - 1 == index ? "=>lastLogIndex:" + lastLogIndex : "")
+        });
 
-        console.log(triggerLogArr, lastLogIndex)
         for (let currentDayIndex = lastLogIndex + 1; currentDayIndex <= dayDatas.length - 1; currentDayIndex++) {
             if (backName == "大盘策略") triggerLogArr = backTest大盘(dataName, dayDatas, currentDayIndex, triggerLogArr)
             if (backName == "证券策略") triggerLogArr = backTest证券(dataName, dayDatas, currentDayIndex, triggerLogArr)
@@ -658,8 +696,8 @@ async function down1Back1(nameCodes, backName) {
 
     let promise = new Promise((resolve, reject) => {
         fs.writeFile(`${folder}${backName}.js`, logAllStr, 'utf8', (err) => {
-            if (err) { console.log(`${backName}写入失败${err}`); resolve(false); }
-            else { console.log(`${backName}写入成功`); resolve(true); }
+            if (err) { console.log(`${backName}写入失败${err}========\r\n`); resolve(false); }
+            else { console.log(`${backName}写入成功========\r\n`); resolve(true); }
         })
     })
     return promise
@@ -674,24 +712,30 @@ async function downAllBack(nameCodes, backName) {
         if (!dayDatas) {
             var getDataFromUrlFunc = getDataFromUrlFunc ?? await getXueQiu()
             dayDatas = await getDataFromUrlFunc(dataName, dataCode)
+            console.log(`${dataName} getDataFromUrl`)
             await writeDataToFile(dataName, dayDatas, folder)
         }
         dayDatas = dayDatas.data.item.xueqiuData2Obj()
         nameCodes[i].dayDatas = dayDatas
     }
+    if (backName.includes("仅下载")) return
 
     let logAllStr = ""
+    let getLastLogDateIndexFunc
+    if (backName == "大盘策略") getLastLogDateIndexFunc = await restoreLog大盘(nameCodes)
+    if (backName == "证券策略") getLastLogDateIndexFunc = await restoreLog证券(nameCodes)
     for (let i = 0; i < nameCodes.length; i++) {
         let dataName = nameCodes[i].name
         let dayDatas = nameCodes[i].dayDatas
-        console.log("\r\nbackTest", dataName)
+        console.log("\r\n----------BackTest", dataName, "----------")
 
         let triggerLogArr = [];
         let lastLogIndex = 70;
-        var getLastLogDateIndexFunc = getLastLogDateIndexFunc ?? restoreLog();
         [triggerLogArr, lastLogIndex] = getLastLogDateIndexFunc(dataName, dayDatas);
+        triggerLogArr.forEach((ele, index) => {
+            console.log(ele.trigDate, triggerLogArr.length - 1 == index ? "=>lastLogIndex:" + lastLogIndex : "")
+        });
 
-        console.log(triggerLogArr, lastLogIndex)
         for (let currentDayIndex = lastLogIndex + 1; currentDayIndex <= dayDatas.length - 1; currentDayIndex++) {
             if (backName == "大盘策略") triggerLogArr = backTest大盘(dataName, dayDatas, currentDayIndex, triggerLogArr)
             if (backName == "证券策略") triggerLogArr = backTest证券(dataName, dayDatas, currentDayIndex, triggerLogArr)
@@ -702,8 +746,8 @@ async function downAllBack(nameCodes, backName) {
     }
 
     fs.writeFile(`${folder}${backName}.js`, logAllStr, 'utf8', (err) => {
-        if (err) console.log(`${backName}写入失败${err}`);
-        else console.log(`${backName}写入成功`);
+        if (err) console.log(`${backName}写入失败${err}========\r\n`);
+        else console.log(`${backName}写入成功=========\r\n`);
     })
 
 }
@@ -711,13 +755,12 @@ async function downAllBack(nameCodes, backName) {
 (async () => {
 
     let nameCodes = [
-        { name: "恒生指数_xueqiu_day", code: "HKHSI" },
         { name: "上证指数_xueqiu_day", code: "SH000001" },
         //{ name: "Ａ股指数_xueqiu_day", code: "SH000002" },
         { name: "沪深300_xueqiu_day", code: "SH000300" },
-
+        { name: "恒生指数_xueqiu_day", code: "HKHSI" },
     ]
-    await down1Back1(nameCodes, "大盘策略")
+    await downAllBack(nameCodes, "大盘策略")
 
 
     nameCodes = [
@@ -732,6 +775,12 @@ async function downAllBack(nameCodes, backName) {
         { name: "同花顺_xueqiu_day", code: "SZ300033" },
         { name: "恒生电子_xueqiu_day", code: "SH600570" },
     ]
-    await down1Back1(nameCodes, "证券策略")
+    await downAllBack(nameCodes, "证券策略")
 
+
+    nameCodes = [
+        { name: "华新环保_xueqiu_day", code: "SZ301265" },
+        { name: "青岛中程_xueqiu_day", code: "SZ300208" },
+    ]
+    await downAllBack(nameCodes, "仅下载")
 })()

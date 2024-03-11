@@ -314,13 +314,9 @@ function backTest美股指数(dataName, dayDatas, currentDayIndex, triggerLogArr
 }
 
 
-function restoreLog() {
-    try {
-        var 美股指数策略str = fs.readFileSync(`${folder}美股指数策略.js`, { encoding: 'utf8', flag: 'r' })
-        if (美股指数策略str) eval(美股指数策略str)
-    } catch (e) {
-        console.log(e)
-    }
+async function restoreLog() {
+    var 美股指数策略str = await getDataFromFile("美股指数策略", folder, true, "raw")
+    if (美股指数策略str) eval(美股指数策略str)
     if (typeof 标普500策略 === "undefined") var 标普500策略 = []
     if (typeof 纳指策略 === "undefined") var 纳指策略 = []
     if (typeof 道琼斯策略 === "undefined") var 道琼斯策略 = []
@@ -344,25 +340,28 @@ function restoreLog() {
 
 async function down1Back1(nameCodes, backName) {
     let logAllStr = ""
+    let getLastLogDateIndexFunc = await restoreLog()
     for (let i = 0; i < nameCodes.length; i++) {
         let dataName = nameCodes[i].name
         let dataCode = nameCodes[i].code
+        console.log("\r\n----------BackTest", dataName, "----------")
         let dayDatas = await getDataFromFile(dataName, folder)
         if (!dayDatas) {
             var getDataFromUrlFunc = getDataFromUrlFunc ?? await getXueQiu()
             dayDatas = await getDataFromUrlFunc(dataName, dataCode)
+            console.log(`${dataName} getDataFromUrl`)
             await writeDataToFile(dataName, dayDatas, folder)
         }
         dayDatas = dayDatas.data.item.xueqiuData2Obj()
         nameCodes[i].dayDatas = dayDatas
-        console.log("\r\nbackTest", dataName)
-
+        
         let triggerLogArr = [];
         let lastLogIndex = 70;
-        var getLastLogDateIndexFunc = getLastLogDateIndexFunc ?? restoreLog();
         [triggerLogArr, lastLogIndex] = getLastLogDateIndexFunc(dataName, dayDatas);
+        triggerLogArr.forEach((ele, index) => {
+            console.log(ele.trigDate, triggerLogArr.length - 1 == index ? "=>lastLogIndex:" + lastLogIndex : "")
+        });
 
-        console.log(triggerLogArr, lastLogIndex)
         for (let currentDayIndex = lastLogIndex + 1; currentDayIndex <= dayDatas.length - 1; currentDayIndex++) {
             triggerLogArr = backTest美股指数(dataName, dayDatas, currentDayIndex, triggerLogArr)
         }
@@ -395,17 +394,18 @@ async function downAllBack(nameCodes, backName) {
     }
 
     let logAllStr = ""
+    let getLastLogDateIndexFunc = await restoreLog()
     for (let i = 0; i < nameCodes.length; i++) {
         let dataName = nameCodes[i].name
         let dayDatas = nameCodes[i].dayDatas
-        console.log("\r\nbackTest", dataName)
-
+        console.log("\r\n----------BackTest", dataName, "----------")
         let triggerLogArr = [];
         let lastLogIndex = 70;
-        var getLastLogDateIndexFunc = getLastLogDateIndexFunc ?? restoreLog();
         [triggerLogArr, lastLogIndex] = getLastLogDateIndexFunc(dataName, dayDatas);
+        triggerLogArr.forEach((ele, index) => {
+            console.log(ele.trigDate, triggerLogArr.length - 1 == index ? "=>lastLogIndex:" + lastLogIndex : "")
+        });
 
-        console.log(triggerLogArr, lastLogIndex)
         for (let currentDayIndex = lastLogIndex + 1; currentDayIndex <= dayDatas.length - 1; currentDayIndex++) {
             triggerLogArr = backTest美股指数(dataName, dayDatas, currentDayIndex, triggerLogArr)
         }
@@ -416,8 +416,8 @@ async function downAllBack(nameCodes, backName) {
 
     let promise = new Promise((resolve, reject) => {
         fs.writeFile(`${folder}${backName}.js`, logAllStr, 'utf8', (err) => {
-            if (err) { console.log(`${backName}写入失败${err}`); resolve(false); }
-            else { console.log(`${backName}写入成功`); resolve(true); }
+            if (err) { console.log(`${backName}写入失败${err}========\r\n`); resolve(false); }
+            else { console.log(`${backName}写入成功========\r\n`); resolve(true); }
         })
     })
     return promise

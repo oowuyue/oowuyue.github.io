@@ -46428,5 +46428,155 @@ var 沪铜连续 = [
     "close": 68870,
     "percent": 0,
     "volume": 53962
+  },
+  {
+    "date": "2024-01-29",
+    "timestamp": 1706486400000,
+    "open": 68910,
+    "high": 69280,
+    "low": 68740,
+    "close": 68780,
+    "percent": 0,
+    "volume": 53617
+  },
+  {
+    "date": "2024-01-30",
+    "timestamp": 1706572800000,
+    "open": 68900,
+    "high": 69210,
+    "low": 68870,
+    "close": 68980,
+    "percent": 0,
+    "volume": 43671
+  },
+  {
+    "date": "2024-01-31",
+    "timestamp": 1706659200000,
+    "open": 69110,
+    "high": 69470,
+    "low": 68960,
+    "close": 69350,
+    "percent": 0,
+    "volume": 67161
+  },
+  {
+    "date": "2024-02-01",
+    "timestamp": 1706745600000,
+    "open": 69440,
+    "high": 70000,
+    "low": 68930,
+    "close": 69000,
+    "percent": 0,
+    "volume": 77569
+  },
+  {
+    "date": "2024-02-02",
+    "timestamp": 1706832000000,
+    "open": 69030,
+    "high": 69190,
+    "low": 68520,
+    "close": 68630,
+    "percent": 0,
+    "volume": 57392
+  },
+  {
+    "date": "2024-02-05",
+    "timestamp": 1707091200000,
+    "open": 68800,
+    "high": 68850,
+    "low": 68500,
+    "close": 68540,
+    "percent": 0,
+    "volume": 44055
+  },
+  {
+    "date": "2024-02-06",
+    "timestamp": 1707177600000,
+    "open": 68360,
+    "high": 68390,
+    "low": 68000,
+    "close": 68060,
+    "percent": 0,
+    "volume": 60918
+  },
+  {
+    "date": "2024-02-07",
+    "timestamp": 1707264000000,
+    "open": 68020,
+    "high": 68240,
+    "low": 67800,
+    "close": 68140,
+    "percent": 0,
+    "volume": 44124
+  },
+  {
+    "date": "2024-02-08",
+    "timestamp": 1707350400000,
+    "open": 68140,
+    "high": 68140,
+    "low": 67630,
+    "close": 67960,
+    "percent": 0,
+    "volume": 49203
+  },
+  {
+    "date": "2024-02-19",
+    "timestamp": 1708300800000,
+    "open": 68620,
+    "high": 68670,
+    "low": 68280,
+    "close": 68340,
+    "percent": 0,
+    "volume": 37270
+  },
+  {
+    "date": "2024-02-20",
+    "timestamp": 1708387200000,
+    "open": 68500,
+    "high": 68600,
+    "low": 68220,
+    "close": 68320,
+    "percent": 0,
+    "volume": 38151
+  },
+  {
+    "date": "2024-02-21",
+    "timestamp": 1708473600000,
+    "open": 68460,
+    "high": 69000,
+    "low": 68370,
+    "close": 69000,
+    "percent": 0,
+    "volume": 46927
+  },
+  {
+    "date": "2024-02-22",
+    "timestamp": 1708560000000,
+    "open": 69230,
+    "high": 69530,
+    "low": 69060,
+    "close": 69260,
+    "percent": 0,
+    "volume": 58000
+  },
+  {
+    "date": "2024-02-23",
+    "timestamp": 1708646400000,
+    "open": 69260,
+    "high": 69550,
+    "low": 69100,
+    "close": 69370,
+    "percent": 0,
+    "volume": 54330
+  },
+  {
+    "date": "2024-02-26",
+    "timestamp": 1708905600000,
+    "open": 69060,
+    "high": 69360,
+    "low": 69010,
+    "close": 69050,
+    "percent": 0,
+    "volume": 54816
   }
 ]
