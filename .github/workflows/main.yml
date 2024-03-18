@@ -18,20 +18,8 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
-
-      - name: add chinese fonts
-        run: |
-          sudo apt-get install ttf-mscorefonts-installer
-          sudo apt-get install fontconfig
-          fc-list :lang=zh
-          ls -lh /usr/share/fonts/
-          cp -rf ./fonts/* /usr/share/fonts/
-          mkfontscale
-          mkfontdir
-          fc-cache
-          fc-list :lang=zh
-
+      - uses: actions/checkout@v3
+      
       - name: Cache node modules
         uses: actions/cache@v3
         env:
@@ -51,6 +39,10 @@ jobs:
       # Runs a single command using the runners shell
       - name: Run script
         run: node ./eco7/cn/quant.js
+
+       # Runs a single command using the runners shell
+      - name: Run script2
+        run: node ./eco7/cn/puppeteer.js
         
       - name: Push snapshot
         run: |
