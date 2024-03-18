@@ -50,15 +50,12 @@ jobs:
 
       # Runs a single command using the runners shell
       - name: Run script
-        run: node index.js
+        run: node ./eco7/cn/quant.js
         
-      - name: Print result
-        run: ls -lh ./snapshot
-
       - name: Push snapshot
         run: |
           git config --global user.name 'oowuyue'
           git config --global user.email 'oowuyue@gmail.com'
           git add ./
-          git commit -am "push new corn"
+          git commit -am "push new action"
           git push
