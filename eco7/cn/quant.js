@@ -15,7 +15,8 @@ const {
     curtAmp,
     PtPAmp,
     writeDataToFile,
-    getDataFromFile
+    getDataFromFile,
+    mySendMail
 } = require("../ajslib/my.js")
 const folder = path.join(__dirname, "/data/雪球行情/")
 
@@ -291,7 +292,8 @@ function backTest大盘(dataName, dayDatas, currentDayIndex, triggerLogArr) {
 
         let hasIndex = triggerLogArr.findIndex(ele => { return ele.trigDate == currentDayData.date })
         if (hasIndex == -1) {
-            console.log(logProfileN.trigDate)
+            console.log(logProfileN.trigDate," new")
+            if(logProfileN.trigDate.includes("2024")) mySendMail(dataName+logProfileN.trigDate)
             triggerLogArr.push(logProfileN)
         }
     }
@@ -675,6 +677,7 @@ async function down1Back1(nameCodes, backName) {
             await writeDataToFile(dataName, dayDatas, folder)
         }
         if (backName.includes("仅下载")) continue
+
         dayDatas = dayDatas.data.item.xueqiuData2Obj()
         nameCodes[i].dayDatas = dayDatas
 
@@ -754,6 +757,8 @@ async function downAllBack(nameCodes, backName) {
 
 (async () => {
 
+    await mySendMail("everyDay downAllBack")
+
     let nameCodes = [
         { name: "上证指数_xueqiu_day", code: "SH000001" },
         //{ name: "Ａ股指数_xueqiu_day", code: "SH000002" },
@@ -763,24 +768,24 @@ async function downAllBack(nameCodes, backName) {
     await downAllBack(nameCodes, "大盘策略")
 
 
-    nameCodes = [
-        { name: "中信证券_xueqiu_day", code: "SH600030" },
-        { name: "光大证券_xueqiu_day", code: "SH601788" },
-        { name: "国泰君安_xueqiu_day", code: "SH601211" },
-        { name: "中信建投_xueqiu_day", code: "SH601066" },
-        { name: "招商证券_xueqiu_day", code: "SH600999" },
-        { name: "广发证券_xueqiu_day", code: "SZ000776" },
+    // nameCodes = [
+    //     { name: "中信证券_xueqiu_day", code: "SH600030" },
+    //     { name: "光大证券_xueqiu_day", code: "SH601788" },
+    //     { name: "国泰君安_xueqiu_day", code: "SH601211" },
+    //     { name: "中信建投_xueqiu_day", code: "SH601066" },
+    //     { name: "招商证券_xueqiu_day", code: "SH600999" },
+    //     { name: "广发证券_xueqiu_day", code: "SZ000776" },
 
-        { name: "东方财富_xueqiu_day", code: "SZ300059" },
-        { name: "同花顺_xueqiu_day", code: "SZ300033" },
-        { name: "恒生电子_xueqiu_day", code: "SH600570" },
-    ]
-    await downAllBack(nameCodes, "证券策略")
+    //     { name: "东方财富_xueqiu_day", code: "SZ300059" },
+    //     { name: "同花顺_xueqiu_day", code: "SZ300033" },
+    //     { name: "恒生电子_xueqiu_day", code: "SH600570" },
+    // ]
+    // await downAllBack(nameCodes, "证券策略")
 
 
-    nameCodes = [
-        { name: "华新环保_xueqiu_day", code: "SZ301265" },
-        { name: "青岛中程_xueqiu_day", code: "SZ300208" },
-    ]
-    await downAllBack(nameCodes, "仅下载")
+    // nameCodes = [
+    //     { name: "华新环保_xueqiu_day", code: "SZ301265" },
+    //     { name: "青岛中程_xueqiu_day", code: "SZ300208" },
+    // ]
+    // await downAllBack(nameCodes, "仅下载")
 })()

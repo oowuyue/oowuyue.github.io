@@ -568,7 +568,8 @@ function PtPAmp(prePeriodItem, currentPeriodItem) {
 
 //nodejs 导出
 if (typeof module !== "undefined" && module.exports) {
-    const fs = require('fs')
+    const fs = require('fs');
+    const nodemailer = require("nodemailer");
 
     function writeDataToFile(dataName, dayDatas, folder = "./data/") {
         let promise = new Promise((resolve, reject) => {
@@ -622,6 +623,29 @@ if (typeof module !== "undefined" && module.exports) {
         return promise
     }
 
+
+    const transporter = nodemailer.createTransport({
+      host: "smtp.163.com",
+      port: 465,
+      secure: true, // Use `true` for port 465, `false` for all other ports
+      auth: {
+        user: "oowuyue@163.com",
+        pass: "AEUORGVIOHTDGDGZ",
+      },
+    });
+    async function mySendMail(msg) {
+      const info = await transporter.sendMail({
+        from: '"oowuyue" <oowuyue@163.com>', // sender address
+        to: "3434384699@qq.com", // list of receivers
+        subject: "Hello ✔", // Subject line
+        text: msg, // plain text body
+        html: msg, // html body
+      });
+
+      //console.log("Message sent: %s", info.messageId);
+      //Message sent: <d786aa62-4e0a-070a-47ed-0b0666549519@ethereal.email>
+    }
+
     exports.currentDayYMD = currentDayYMD
     exports.preDayYMD = preDayYMD
     
@@ -649,6 +673,7 @@ if (typeof module !== "undefined" && module.exports) {
 
     exports.writeDataToFile = writeDataToFile
     exports.getDataFromFile = getDataFromFile
+    exports.mySendMail = mySendMail
 
 
 

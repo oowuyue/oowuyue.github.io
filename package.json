@@ -1,0 +1,18 @@
+{
+  "name": "website_snapshot",
+  "version": "1.0.0",
+  "description": "a script to build a website snapshot.",
+  "main": "./eco7/cn/quant.js",
+  "scripts": {
+    "run": "node ./eco7/cn/quant.js"
+  },
+  "keywords": [],
+  "author": "1234",
+  "license": "ISC",
+  "dependencies": {
+    "puppeteer": "^22.5.0",
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2",
+    "nodemailer": "^6.9.12"
+  }
+}

@@ -18,10 +18,10 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       
       - name: Cache node modules
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         env:
           cache-name: cache-node-modules
         with:
@@ -39,15 +39,11 @@ jobs:
       # Runs a single command using the runners shell
       - name: Run script
         run: node ./eco7/cn/quant.js
-
-       # Runs a single command using the runners shell
-      - name: Run script2
-        run: node ./eco7/cn/puppeteer.js
         
-      - name: Push snapshot
-        run: |
-          git config --global user.name 'oowuyue'
-          git config --global user.email 'oowuyue@gmail.com'
-          git add ./
-          git commit -am "push new action"
-          git push
+      # - name: Push snapshot
+      #   run: |
+      #     git config --global user.name 'oowuyue'
+      #     git config --global user.email 'oowuyue@gmail.com'
+      #     git add ./eco7/cn/data
+      #     git commit -am "push new action"
+      #     git push

@@ -557,6 +557,7 @@ let bigCom = async () => {
 let 回测一下urlTemplate = "`https://backtest.10jqka.com.cn/backtest/app.html#/backtest?query=${query}&daysForSaleStrategy=${daysForSaleStrategy}&startDate=${startDate}&endDate=${endDate}&benchmark=399300%20沪深300`"
 let 策略回测urlTemplate = "`https://backtest.10jqka.com.cn/backtest/app.html#/strategybacktest?query=${query}&daysForSaleStrategy=${daysForSaleStrategy}&startDate=${startDate}&endDate=${endDate}&stockHoldCount=${stockHoldCount}&dayBuyStockNum=${dayBuyStockNum}&upperIncome=${upperIncome}&lowerIncome=${lowerIncome}&fallIncome=${fallIncome}&engine=undefined&capital=100000`"
 
+//策略2是主要的
 let tactics = [
     {
         name: "左侧长短周期组合",
@@ -573,9 +574,8 @@ let tactics = [
         lowerIncome: 7,
         stats: "策略回测"
     },
-
     {
-        name: "右侧长短周期组合",
+        name: "右侧长短周期组合2",
         query: `最近5天月线周期kdj金叉；周线周期kdj底背离；周线周期kdj金叉；周线周期kdjj值小于25；日线周期kdj金叉且d值小于35；pe<=120；pb>0；排除st`,
         daysForSaleStrategy: "20",
         stockHoldCount: 10,
@@ -638,6 +638,31 @@ let tactics = [
         stats: "策略回测"
     },
 
+
+    {
+        name: "月周macd",
+        query: `最近3天月线周期macd金叉，周线周期macd底背离，最近10日周kdj金叉且j值小于79，最近10日日kdj金叉且d值小于39，pe<=120，pb>0，排除st，roe从大到小`,
+        daysForSaleStrategy: "35",
+        stockHoldCount: 10,
+        dayBuyStockNum: 3,
+        upperIncome: 13,
+        fallIncome: 1.5,
+        lowerIncome: 15,
+        stats: "策略回测"
+    },
+    {
+        name: "月周macd-2",
+        query: `最近3天月线周期macd金叉，周线周期macd底背离，周kdjj值小于75大于5，周kdj上移，最近10日日kdj金叉且d值小于39，pe<=120，pb>0，排除st，roe从大到小`,
+        daysForSaleStrategy: "35",
+        stockHoldCount: 10,
+        dayBuyStockNum: 3,
+        upperIncome: 13,
+        fallIncome: 1.5,
+        lowerIncome: 15,
+        stats: "策略回测"
+    },
+
+
     {
         name: "大市值",
         query: `市值大于1000亿；非科创板；非创业板；同花顺二级行业龙头；细分行业龙头；过去3年的基本每股收益增长率>3%；过去30个交易日涨跌幅大于-5%小于23；振幅小于8；股性评分大于12；上市日期从大到小排名；总市值从小到大排列`,
@@ -649,7 +674,6 @@ let tactics = [
         lowerIncome: 11,
         stats: "策略回测"
     },
-
     {
         name: "小市值",
         query: `总市值大于等于10亿小于等于20亿；0<pb<=2.5；0<=pe<=25；股息大于0； BIAS买入信号；放量；振幅小于10；排除st；上市天数>100；roe从大到小排列`,
@@ -662,57 +686,164 @@ let tactics = [
         stats: "策略回测"
     },
 
+    /*===========================================================================================*/
+    {
+        name: "大股东增持",
+        query: `今日大股东增持比例大于5%；sar红色；cci小于等于97；资金流入大于-250万；涨跌幅-5~5；排除st；上市天数>100；风险提示取反；换手率从大到小`,
+        daysForSaleStrategy: "10,20",
+        stockHoldCount: 1,
+        dayBuyStockNum: 1,
+        upperIncome: 17,
+        fallIncome: 5,
+        lowerIncome: 10,
+        justProduceLink: true
+    },
+    {
+        name: "业绩预增",
+        query: `业绩预增大于50%，年报收入同比增长大于10，最近10日放量，量比大于1，最近10日振幅大于10小于35，非ST股，非*ST股，非退市，非停牌，总市值从小到大排列`,
+        daysForSaleStrategy: "50",
+        stockHoldCount: 1,
+        dayBuyStockNum: 1,
+        upperIncome: 37,
+        fallIncome: 5,
+        lowerIncome: 15,
+        justProduceLink: true
+    },
+    {
+        name: "绿空红",
+        query: `
+               昨日涨跌幅小于0.3大于-10.5，昨日阴线，当日涨跌幅小于-1大于-5，当日阳线，放量，最近5日涨跌幅小于-7大于-21，pe<=120，pb>0， roe大于0，股息大于0，cci大于-260，
+               最近3日收盘获利小于4.5%的天数>0，最近2日主力资金流入大于-200万，BIAS买入信号，kdjd值小于35，排除st，上市天数>100，风险提示取反，换手率从大到小排列
+        `,
+        daysForSaleStrategy: "20,25",
+        stockHoldCount: 1,
+        dayBuyStockNum: 1,
+        upperIncome: 30,
+        fallIncome: 5,
+        lowerIncome: 12,
+        justProduceLink: true
+    },
+    {
+        name: "均线集中度",
+        query: `
+               市值大于20亿小于350亿；5均线大于10均线；筹码集中度90小于10%；最近10日放量；最近20日换手率小于45；振幅小于10；涨跌幅大于-3.5小于5；
+               排除st；排除*st；上市天数>100；0<pe<70；pb>0；roe从大到小排列
+        `,
+        daysForSaleStrategy: "50",
+        stockHoldCount: 1,
+        dayBuyStockNum: 1,
+        upperIncome: 25,
+        fallIncome: 7,
+        lowerIncome: 13.5,
+        justProduceLink: true
+    },
+
+
+   /*===========================================================================================*/
+    {
+        name: "5日跌停",
+        query: `
+              市值小于100亿，最近5日有跌停，换手率小于1.2%，当日涨跌幅小于-1大于-3.5，当日阳线，流动比率大于1，扣非净利润增速大于0.1， 负债率小于90，pb>0，
+              非ST股，非*ST股，非退市，非停牌，roe从大到小
+        `,
+        daysForSaleStrategy: "10",
+        stockHoldCount: 1,
+        dayBuyStockNum: 1,
+        upperIncome: 27,
+        fallIncome: 5,
+        lowerIncome: 11,
+        justProduceLink: true
+    },
+    {
+        name: "跌停",
+        query: `
+             市值小于100亿，跌停，换手率小于1%，bias买入信号，主力资金流向>22万，振幅小于10，流动比率大于1，扣非净利润增速大于-0.12，负债率小于90，pb>0，
+             非ST股，非*ST股，非退市，非停牌，roe从大到小
+        `,
+        daysForSaleStrategy: "10",
+        stockHoldCount: 1,
+        dayBuyStockNum: 1,
+        upperIncome: 27,
+        fallIncome: 7,
+        lowerIncome: 9.5,
+        justProduceLink: true
+    },
+
+    {
+        name: "macd底背离",
+        query: `macd底背离，VR买入信号，成交量大于60日线，前10日的区间主力资金流向>0，流动比率大于1，涨跌幅大于1.5，roe从大到小`, //+kdj买入信号?
+        daysForSaleStrategy: "7",
+        stockHoldCount: 1,
+        dayBuyStockNum: 1,
+        upperIncome: 13,
+        fallIncome: 3,
+        lowerIncome: 10,
+        justProduceLink: true
+    },
+
+    {
+        name: "6日均线",
+        query: `行情收盘价>6日的均线，收盘价>昨日的最高价，当日阳线，昨日的macd增长值<0，当日的macd增长值>0，最近7日放量，量比大于1，前7日的区间主力资金流向>0，17>pb>0`, 
+        daysForSaleStrategy: "2",
+        stockHoldCount: 1,
+        dayBuyStockNum: 1,
+        upperIncome: 30,
+        fallIncome: 9,
+        lowerIncome: 13.5,
+        justProduceLink: true
+    },
+
 ];
 
 let browser;
 (async () => {
     browser = await puppeteer.launch({ headless: false, executablePath: 'C:\\Program Files\\Google\\Chrome Dev\\Application\\chrome.exe', defaultViewport: null, args: ['--start-maximized'] });
 
-    // let htmlStr = ""
-    // let justProduceLink = false
-    // for (let i = 0; i < tactics.length; i++) {
-    //     let dataName = tactics[i].name
-    //     let dataFile = `${folder}${dataName}.csv`
-    //     let isFileExit = fs.existsSync(dataFile)
-    //     if (isFileExit) {
-    //         let modifyDate = fs.statSync(dataFile).mtime.toISOString().substring(0, 10)
-    //         let isFileToday = currentDayYMD == modifyDate
-    //         if (isFileToday) continue
-    //     }
-    //     let startDate = "" + parseInt(currentDayYMD.substring(0, 4)) - 5 + "-01-01"
-    //     let endDate = currentDayYMD
-    //     let query = encodeURIComponent(tactics[i].query.trim().replace(/[\r\n]/g, '').replace(/[ ]/g, ''))
-    //     let daysForSaleStrategy = tactics[i].daysForSaleStrategy ?? "10,20"
-    //     let stockHoldCount = tactics[i].stockHoldCount ?? 1
-    //     let dayBuyStockNum = tactics[i].dayBuyStockNum ?? 1
-    //     let upperIncome = tactics[i].upperIncome ?? 30
-    //     let fallIncome = tactics[i].fallIncome ?? 10
-    //     let lowerIncome = tactics[i].lowerIncome ?? 10
+    let htmlStr = ""
+    let justProduceLink = true
+    for (let i = 0; i < tactics.length; i++) {
+        let dataName = tactics[i].name
+        let dataFile = `${folder}${dataName}.csv`
+        let isFileExit = fs.existsSync(dataFile)
+        if (isFileExit) {
+            let modifyDate = fs.statSync(dataFile).mtime.toISOString().substring(0, 10)
+            let isFileToday = currentDayYMD == modifyDate
+            if (isFileToday) continue
+        }
+        let startDate = "" + parseInt(currentDayYMD.substring(0, 4)) - 5 + "-01-01"
+        let endDate = currentDayYMD
+        let query = encodeURIComponent(tactics[i].query.trim().replace(/[\r\n]/g, '').replace(/[ ]/g, ''))
+        let daysForSaleStrategy = tactics[i].daysForSaleStrategy ?? "10,20"
+        let stockHoldCount = tactics[i].stockHoldCount ?? 1
+        let dayBuyStockNum = tactics[i].dayBuyStockNum ?? 1
+        let upperIncome = tactics[i].upperIncome ?? 30
+        let fallIncome = tactics[i].fallIncome ?? 10
+        let lowerIncome = tactics[i].lowerIncome ?? 10
 
-    //     console.log(daysForSaleStrategy, fallIncome)
-    //     eval("回测一下url = " + 回测一下urlTemplate)
-    //     eval("策略回测url = " + 策略回测urlTemplate)
+        //console.log(daysForSaleStrategy, fallIncome)
+        eval("回测一下url = " + 回测一下urlTemplate)
+        eval("策略回测url = " + 策略回测urlTemplate)
 
-    //     htmlStr += `<tr> <td><a href="${回测一下url}" target="_blank">${dataName}</a></td> <td><a href="${策略回测url}" target="_blank">${dataName}</a></td> </tr>`
-    //     if (i == tactics.length - 1) fs.writeFileSync(`${folder}同花顺策略链接.html`, `<table>${htmlStr}</table>`)
-    //     if (justProduceLink) continue
+        htmlStr += `<tr> <td><a href="${回测一下url}" target="_blank">${dataName}</a></td> <td><a href="${策略回测url}" target="_blank">${dataName}</a></td> </tr>`
+        if (i == tactics.length - 1) fs.writeFileSync(`${folder}同花顺策略链接.html`, `<table><tr><td>回测一下</td><td>策略回测</td></tr>${htmlStr}</table>`)
+        if (justProduceLink || tactics[i].justProduceLink) continue
 
-    //     if (!tactics[i].stats) continue
-    //     let downBackUrl = tactics[i].stats == "策略回测" ? 策略回测url : 回测一下url
-    //     let downLoadFile = await taskFileDownloadThsBack(dataName, downBackUrl)
-    //     nameToFile[dataName] = downLoadFile
-    // }
-    // console.log("\r\n DowloadNameToFile：", nameToFile)
-    // await wait(Math.random() * 2000)
-    // for (let name in nameToFile) {
-    //     if (Object.hasOwnProperty.call(nameToFile, name)) {
-    //         let downLoadName = nameToFile[name];
-    //         try {
-    //             fs.copyFileSync(tmpdowloadFolder + downLoadName, folder + `${name}.csv`)
-    //         }
-    //         catch (error) { console.log(error) }
-    //     }
-    // }
+        if (!tactics[i].stats) continue
+        let downBackUrl = tactics[i].stats == "策略回测" ? 策略回测url : 回测一下url
+        let downLoadFile = await taskFileDownloadThsBack(dataName, downBackUrl)
+        nameToFile[dataName] = downLoadFile
+    }
+    console.log("\r\n DowloadNameToFile：", nameToFile)
+    await wait(Math.random() * 2000)
+    for (let name in nameToFile) {
+        if (Object.hasOwnProperty.call(nameToFile, name)) {
+            let downLoadName = nameToFile[name];
+            try {
+                fs.copyFileSync(tmpdowloadFolder + downLoadName, folder + `${name}.csv`)
+            }
+            catch (error) { console.log(error) }
+        }
+    }
 
     await signal()//回测一下
     await smallCom()//策略回测

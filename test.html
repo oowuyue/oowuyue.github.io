@@ -1,206 +1,226 @@
-<script language="javascript" src="https://www.lodop.net/demolist/LodopFuncs.js"></script>
-<script>
-    window.On_CLodop_Opened = function () {
+<!DOCTYPE html>
+<html lang='en'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>资产增加单</title>
+</head>
+
+<body>
+
+    <div id="printHtml">
+        <style>
+        tbody tr th {
+            border: 0.75pt solid black;
+            border-collapse: collapse;
+            margin: auto;
+            font-family: 宋体;
+            font-weight: normal;
+            font-size: 10.5pt;
+        }
+
+        .textCenter {
+            text-align: center;
+        }
+
+        .textLeft {
+            text-align: left;
+            padding-left: 3.75pt;
+        }
+
+        .textRight {
+            text-align: right;
+            padding-right: 3.75pt;
+        }
+
+        .content {
+            font-family: 宋体;
+            font-weight: normal;
+            font-size: 9pt
+        }
+
+        tfoot tr th,
+        thead tr th {
+            font-family: 宋体;
+            font-weight: normal;
+            font-size: 10.5pt;
+        }
+        </style>
+        <table style='width: 98%;border-collapse:collapse;font-size: 9pt'>
+            <thead>
+                <tr style='min-height:22.5pt;max-height:22.5pt;'>
+                    <th colspan='4' class='textRight' style='font-size:18pt;font-weight: bold;'>资产增加单</th>
+                    <th colspan='5' class='textRight'>财务部门留存</th>
+                </tr>
+                <tr style='min-height:18.75pt;max-height:18.75pt;'>
+                    <th colspan='3' class='textLeft'>单位（公章）：全国X****</th>
+                    <th colspan='2' class='textLeft'>制单日期：2024-01-12</th>
+                    <th colspan='4' class='textRight'>序号：ZCDJ2401120005-1/1</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr style='border-top: 1.5pt solid black;border-left: 1.5pt solid black;border-right: 1.5pt solid black;'>
+                    <th colspan='2' class='textLeft'>
+                        <div style='overflow: hidden;max-height: 13.5pt;line-height: 13.5pt;'>报账处室：装财局财务处</div>
+                    </th>
+                    <th colspan='3' class='textLeft'>
+                        <div style='overflow: hidden;max-height: 13.5pt;line-height: 13.5pt;'>经费来源：财政拨款1</div>
+                    </th>
+                    <th colspan='4' class='textLeft'>
+                        <div style='overflow: hidden;max-height: 13.5pt;line-height: 13.5pt;'>经费年度：2024</div>
+                    </th>
+                </tr>
+                <tr style='border-left: 1.5pt solid black;border-right: 1.5pt solid black;'>
+                    <th colspan='2' class='textLeft'>
+                        <div style='overflow: hidden;max-height: 13.5pt;line-height: 13.5pt;'>资产来源：购置</div>
+                    </th>
+                    <th colspan='3' class='textLeft'>
+                        <div style='overflow: hidden;max-height: 13.5pt;'>采购方式：集中采购</div>
+                    </th>
+                    <th colspan='4' class='textLeft'>
+                        <div style='overflow: hidden;max-height: 13.5pt;line-height: 13.5pt;'>经费科目：公共安全支出1</div>
+                    </th>
+                </tr>
+                <tr style='border-left: 1.5pt solid black;border-right: 1.5pt solid black;'>
+                    <th colspan='3' class='textLeft'>
+                        <div style='overflow: hidden;max-height: 13.5pt;line-height: 13.5pt;'>经办人：超*管</div>
+                    </th>
+                    <th colspan='6' class='textLeft'>
+                        <div style='overflow: hidden;max-height: 13.5pt;line-height: 13.5pt;'>备注：</div>
+                    </th>
+                </tr>
+                <tr style='min-height:17.25pt;max-height:17.25pt;line-height: 17.25pt;border-top: 1.5pt solid black;border-left: 1.5pt solid black;border-right: 1.5pt solid black;'>
+                    <th class='textCenter' style='min-width:60pt;max-width:60pt;font-weight: bold;'>资产类别</th>
+                    <th class='textCenter' style='min-width:71.25pt;max-width:71.25pt;font-weight: bold;'>资产编号</th>
+                    <th class='textCenter' style='min-width:90pt;max-width:90pt;font-weight: bold;'>资产名称</th>
+                    <th class='textCenter' style='min-width:75pt;max-width:75pt;font-weight: bold;'>品牌</th>
+                    <th class='textCenter' style='min-width:75pt;max-width:75pt;font-weight: bold;'>规格型号</th>
+                    <th class='textCenter' style='min-width:30pt;max-width:30pt;font-weight: bold;'>单位</th>
+                    <th class='textCenter' style='min-width:26.25pt;max-width:26.25pt;font-weight: bold;'>数量</th>
+                    <th class='textCenter' style='min-width:60pt;max-width:60pt;font-weight: bold;'>单价</th>
+                    <th class='textCenter' style='min-width:60pt;max-width:60pt;font-weight: bold;'>金额</th>
+                </tr>
+                <tr style='border-left: 1.5pt solid black;border-right: 1.5pt solid black;overflow:hidden;'>
+                    <th class='textLeft content'>
+                        <div style='overflow: hidden;min-height:21.75pt;max-height: 21.75pt;min-width:56.25pt;max-width:56.25pt;'> </div>
+                    </th>
+                    <th class='textLeft content'>
+                        <div style='overflow: hidden;min-height:21.75pt;max-height: 21.75pt;min-width:71.25pt;max-width:71.25pt;word-break:break-all;overflow-wrap: break-word;'> </div>
+                    </th>
+                    <th class='textLeft content'>
+                        <div style='overflow: hidden;min-height:21.75pt;max-height: 21.75pt;min-width:90pt;max-width:90pt;word-break:break-all;overflow-wrap: break-word;'>合计</div>
+                    </th>
+                    <th class='textLeft content'>
+                        <div style='overflow: hidden;min-height:21.75pt;max-height: 21.75pt;min-width:71.25pt;max-width:71.25pt;word-break:break-all;overflow-wrap: break-word;'> </div>
+                    </th>
+                    <th class='textLeft content'>
+                        <div style='overflow: hidden;min-height:21.75pt;max-height: 21.75pt;min-width:71.25pt;max-width:71.25pt;word-break:break-all;overflow-wrap: break-word;'> </div>
+                    </th>
+                    <th class='textCenter content'>
+                        <div style='overflow: hidden;min-height:21.75pt;max-height: 21.75pt;min-width:30pt;max-width:30pt;word-break:break-all;overflow-wrap: break-word;'> </div>
+                    </th>
+                    <th class='textRight content'>
+                        <div style='overflow: hidden;min-height:21.75pt;max-height: 21.75pt;min-width:21pt;max-width:21pt;word-break:break-all;overflow-wrap: break-word;'>4</div>
+                    </th>
+                    <th class='textRight content'>
+                        <div style='overflow: hidden;min-height:21.75pt;max-height: 21.75pt;min-width:52.5pt;max-width:52.5pt;word-break:break-all;overflow-wrap: break-word;'> </div>
+                    </th>
+                    <th class='textRight content'>
+                        <div style='overflow: hidden;min-height:21.75pt;max-height: 21.75pt;min-width:56.25pt;max-width:56.25pt;word-break:break-all;overflow-wrap: break-word;'>505.00</div>
+                    </th>
+                </tr>
+                <tr style='border-left: 1.5pt solid black;border-right: 1.5pt solid black;overflow:hidden;'>
+                    <th class='textLeft content'>
+                        <div style='overflow: hidden;min-height:21.75pt;max-height: 21.75pt;min-width:56.25pt;max-width:56.25pt;'>土地、房屋及构筑物</div>
+                    </th>
+                    <th class='textLeft content'>
+                        <div style='overflow: hidden;min-height:21.75pt;max-height: 21.75pt;min-width:71.25pt;max-width:71.25pt;word-break:break-all;overflow-wrap: break-word;'>A24012900000002</div>
+                    </th>
+                    <th class='textLeft content'>
+                        <div style='overflow: hidden;min-height:21.75pt;max-height: 21.75pt;min-width:90pt;max-width:90pt;word-break:break-all;overflow-wrap: break-word;'>121</div>
+                    </th>
+                    <th class='textLeft content'>
+                        <div style='overflow: hidden;min-height:21.75pt;max-height: 21.75pt;min-width:71.25pt;max-width:71.25pt;word-break:break-all;overflow-wrap: break-word;'></div>
+                    </th>
+                    <th class='textLeft content'>
+                        <div style='overflow: hidden;min-height:21.75pt;max-height: 21.75pt;min-width:71.25pt;max-width:71.25pt;word-break:break-all;overflow-wrap: break-word;'></div>
+                    </th>
+                    <th class='textCenter content'>
+                        <div style='overflow: hidden;min-height:21.75pt;max-height: 21.75pt;min-width:30pt;max-width:30pt;word-break:break-all;overflow-wrap: break-word;'>平方米</div>
+                    </th>
+                    <th class='textRight content'>
+                        <div style='overflow: hidden;min-height:21.75pt;max-height: 21.75pt;min-width:21pt;max-width:21pt;word-break:break-all;overflow-wrap: break-word;'>1</div>
+                    </th>
+                    <th class='textRight content'>
+                        <div style='overflow: hidden;min-height:21.75pt;max-height: 21.75pt;min-width:52.5pt;max-width:52.5pt;word-break:break-all;overflow-wrap: break-word;'>1.00</div>
+                    </th>
+                    <th class='textRight content'>
+                        <div style='overflow: hidden;min-height:21.75pt;max-height: 21.75pt;min-width:56.25pt;max-width:56.25pt;word-break:break-all;overflow-wrap: break-word;'>1.00</div>
+                    </th>
+                </tr>
+                <tr style='border-left: 1.5pt solid black;border-right: 1.5pt solid black;overflow:hidden;'>
+                    <th class='textLeft content'>
+                        <div style='overflow: hidden;min-height:21.75pt;max-height: 21.75pt;min-width:56.25pt;max-width:56.25pt;'>无形资产</div>
+                    </th>
+                    <th class='textLeft content'>
+                        <div style='overflow: hidden;min-height:21.75pt;max-height: 21.75pt;min-width:71.25pt;max-width:71.25pt;word-break:break-all;overflow-wrap: break-word;'>A24013000000002</div>
+                    </th>
+                    <th class='textLeft content'>
+                        <div style='overflow: hidden;min-height:21.75pt;max-height: 21.75pt;min-width:90pt;max-width:90pt;word-break:break-all;overflow-wrap: break-word;'>1213</div>
+                    </th>
+                    <th class='textLeft content'>
+                        <div style='overflow: hidden;min-height:21.75pt;max-height: 21.75pt;min-width:71.25pt;max-width:71.25pt;word-break:break-all;overflow-wrap: break-word;'>别克</div>
+                    </th>
+                    <th class='textLeft content'>
+                        <div style='overflow: hidden;min-height:21.75pt;max-height: 21.75pt;min-width:71.25pt;max-width:71.25pt;word-break:break-all;overflow-wrap: break-word;'>456</div>
+                    </th>
+                    <th class='textCenter content'>
+                        <div style='overflow: hidden;min-height:21.75pt;max-height: 21.75pt;min-width:30pt;max-width:30pt;word-break:break-all;overflow-wrap: break-word;'>个</div>
+                    </th>
+                    <th class='textRight content'>
+                        <div style='overflow: hidden;min-height:21.75pt;max-height: 21.75pt;min-width:21pt;max-width:21pt;word-break:break-all;overflow-wrap: break-word;'>1</div>
+                    </th>
+                    <th class='textRight content'>
+                        <div style='overflow: hidden;min-height:21.75pt;max-height: 21.75pt;min-width:52.5pt;max-width:52.5pt;word-break:break-all;overflow-wrap: break-word;'>12.00</div>
+                    </th>
+                    <th class='textRight content'>
+                        <div style='overflow: hidden;min-height:21.75pt;max-height: 21.75pt;min-width:56.25pt;max-width:56.25pt;word-break:break-all;overflow-wrap: break-word;'>12.00</div>
+                    </th>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr style='min-height:18pt;max-height: 18pt;'>
+                    <th colspan='2' class='textLeft'>办公室主任：</th>
+                    <th colspan='2' class='textLeft'>资产管理人：</th>
+                    <th colspan='2' class='textLeft'>经手人：</th>
+                    <th colspan='3' class='textLeft'>国资部门：</th>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+
+
+
+    <br>
+
+
+    <a href="javascript:Print()">预览打印</a>
+    <script language="javascript" src="https://www.lodop.net/demolist/LodopFuncs.js"></script>
+    <script>
+    function Print() {
         LODOP.PRINT_INIT("");
-        LODOP.SET_PRINT_PAGESIZE(2, 0, 0, "A4");
-        LODOP.ADD_PRINT_TABLE("2%", "1%", "90%", "50mm", document.getElementById("div1").innerHTML);
+        LODOP.ADD_PRINT_HTM(10, 10, "100%", "100%", "<!DOCTYPE html>" + document.getElementById("printHtml").innerHTML);
         LODOP.PREVIEW();
     };
-</script>
-
-<div id="div1">
-    <style>
-        table,
-        td {
-            border-collapse: collapse;
-            font-size: 9pt;
-        }
-
-        .style-css {
-            text-align: center;
-            height: 38px;
-            border: 1px solid #000;
-            padding: 2px;
-            font-size: 9pt;
-        }
-
-        .style-css2 {
-            text-align: center;
-            font-size: 9pt;
-            height: 15pt;
-            border: 1px solid #000;
-            padding: 2px;
-        }
-
-        .style-css-fillCell {
-            text-align: center;
-            height: 24pt;
-            font-size: 9pt;
-            font-family: '楷体', '楷体_GB2312';
-            border-left: 1px solid #000;
-            border-right: 1px solid #000;
-            border-bottom: 1px solid #000;
-        }
-
-        .titleTop {
-            text-align: center;
-            font-size: 24px;
-            height: 50px;
-            font-weight: bold;
-            border: 0px solid;
-            font-family: '宋体';
-        }
-
-        .title2 {
-            text-align: left;
-            font-size: 11pt;
-            height: 24pt;
-            font-family: '宋体';
-        }
-
-        .tfootTop {
-            text-align: right;
-            font-size: 9pt;
-            height: 6pt;
-            border: 0px solid;
-            font-family: '宋体';
-        }
-    </style>
-    <table border="0" cellspacing="0" cellpadding="0"
-        style="border-collapse: collapse; width: 185mm; table-layout: fixed" border-color="#333333">
-        <thead>
-            <tr>
-                <td width="10"></td>
-                <td width="22"></td>
-
-            </tr>
-            <tr>
-                <td colspan="2" class="titleTop">事业单位人员工资明细表</td>
-            </tr>
-            <tr>
-                <td colspan="2" class="title2">统计单位：城步县一中</td>
-            </tr>
+    </script>
 
 
-        </thead>
-        <tbody>
-            <tr>
-                <td class="style-css-fillCell"></td>
-                <td class="style-css-fillCell"></td>
-            </tr>
-            <tr>
-                <td class="style-css-fillCell"></td>
-                <td class="style-css-fillCell"></td>
-            </tr>
-            <tr>
-                <td class="style-css-fillCell"></td>
-                <td class="style-css-fillCell"></td>
-            </tr>
-            <tr>
-                <td class="style-css-fillCell"></td>
-                <td class="style-css-fillCell"></td>
-            </tr>
+    <div id="问题描述">
+        <p>问题描述</p>
 
-            <tr>
-                <td class="style-css-fillCell"></td>
-                <td class="style-css-fillCell"></td>
-            </tr>
-            <tr>
-                <td class="style-css-fillCell"></td>
-                <td class="style-css-fillCell"></td>
-            </tr>
-            <tr>
-                <td class="style-css-fillCell"></td>
-                <td class="style-css-fillCell"></td>
-            </tr>
+    </div>
+</body>
 
-            <tr>
-                <td class="style-css-fillCell"></td>
-                <td class="style-css-fillCell"></td>
-            </tr>
-            <tr>
-                <td class="style-css-fillCell"></td>
-                <td class="style-css-fillCell"></td>
-            </tr>
-            <tr>
-                <td class="style-css-fillCell"></td>
-                <td class="style-css-fillCell"></td>
-            </tr>
-            <tr>
-                <td class="style-css-fillCell"></td>
-                <td class="style-css-fillCell"></td>
-            </tr>
-            <tr>
-                <td class="style-css-fillCell"></td>
-                <td class="style-css-fillCell"></td>
-
-
-            </tr>
-            <tr>
-                <td class="style-css-fillCell"></td>
-                <td class="style-css-fillCell"></td>
-            </tr>
-            <tr>
-                <td class="style-css-fillCell"></td>
-                <td class="style-css-fillCell"></td>
-            </tr>
-            <tr>
-                <td class="style-css-fillCell"></td>
-                <td class="style-css-fillCell"></td>
-            </tr>
-
-            <tr>
-                <td class="style-css-fillCell"></td>
-                <td class="style-css-fillCell"></td>
-            </tr>
-            <tr>
-                <td class="style-css-fillCell"></td>
-                <td class="style-css-fillCell"></td>
-            </tr>
-            <tr>
-                <td class="style-css-fillCell"></td>
-                <td class="style-css-fillCell"></td>
-            </tr>
-            <tr>
-                <td class="style-css-fillCell"></td>
-                <td class="style-css-fillCell"></td>
-            </tr>
-            <tr>
-                <td class="style-css-fillCell"></td>
-                <td class="style-css-fillCell"></td>
-            </tr>
-            <tr>
-                <td class="style-css-fillCell"></td>
-                <td class="style-css-fillCell"></td>
-            </tr>
-            <tr>
-                <td class="style-css-fillCell"></td>
-                <td class="style-css-fillCell"></td>
-            </tr>
-            <tr>
-                <td class="style-css-fillCell"></td>
-                <td class="style-css-fillCell"></td>
-            </tr>
-            <tr>
-                <td class="style-css-fillCell"></td>
-                <td class="style-css-fillCell"></td>
-            </tr>
-            <tr>
-                <td class="style-css-fillCell"></td>
-                <td class="style-css-fillCell"></td>
-            </tr>
-            <tr>
-                <td class="style-css-fillCell"></td>
-                <td class="style-css-fillCell"></td>
-            </tr>
-        </tbody>
-        <tfoot>
-            <tr>
-                <td colspan="2" style="font-size: 9pt; text-align: right">
-                    <span tdata="pageNO">第##页</span>，<span tdata="pageCount">共##页</span>
-                </td>
-            </tr>
-        </tfoot>
-    </table>
-
-</div>
+</html>
