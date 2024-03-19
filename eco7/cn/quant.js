@@ -799,11 +799,13 @@ async function downAllBack(nameCodes, backName) {
         logAllStr += `var ${nameCodes[i].name.split("_")[0]}策略 = ` + JSON.stringify(triggerLogArr, null, 0) + "\r\n"
     }
 
-    fs.writeFile(`${folder}${backName}.js`, logAllStr, 'utf8', (err) => {
-        if (err) console.log(`${backName}写入失败${err}========\r\n`);
-        else console.log(`${backName}写入成功=========\r\n`);
+    let promise = new Promise((resolve, reject) => {
+        fs.writeFile(`${folder}${backName}.js`, logAllStr, 'utf8', (err) => {
+            if (err) { console.log(`${backName}写入失败${err}========\r\n`); resolve(false); }
+            else { console.log(`${backName}写入成功=========\r\n`); resolve(true); }
+        })
     })
-
+    return promise
 }
 
 (async () => {
@@ -811,8 +813,8 @@ async function downAllBack(nameCodes, backName) {
     //await mySendMail("everyDay downAllBack")
 
     let nameCodes = [
+        { name: "沪深300_xueqiu_day", code: "SH000300" },
         // { name: "上证指数_xueqiu_day", code: "SH000001" },
-         { name: "沪深300_xueqiu_day", code: "SH000300" },
         // { name: "恒生指数_xueqiu_day", code: "HKHSI" },
         //{ name: "Ａ股指数_xueqiu_day", code: "SH000002" },
 
@@ -821,8 +823,8 @@ async function downAllBack(nameCodes, backName) {
 
 
     nameCodes = [
-        // { name: "中信证券_xueqiu_day", code: "SH600030" },
-        // { name: "光大证券_xueqiu_day", code: "SH601788" },
+        { name: "中信证券_xueqiu_day", code: "SH600030" },
+        { name: "光大证券_xueqiu_day", code: "SH601788" },
         // { name: "国泰君安_xueqiu_day", code: "SH601211" },
         // { name: "中信建投_xueqiu_day", code: "SH601066" },
         // { name: "招商证券_xueqiu_day", code: "SH600999" },
