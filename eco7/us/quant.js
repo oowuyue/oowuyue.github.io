@@ -4,6 +4,7 @@ puppeteer.use(StealthPlugin())
 const http = require('http')
 const fs = require('fs')
 const path = require('path')
+const os = require('os')
 const {
     dayToPeriod,
     xueqiuFormatDate,
@@ -14,10 +15,21 @@ const {
     curtAmp,
     PtPAmp,
     writeDataToFile,
-    getDataFromFile
+    getDataFromFile,
+    mySendMail,
+    currentDayYM,
+    currentDayYMD
 } = require("../ajslib/my.js")
 const folder = path.join(__dirname, "/data/雪球行情/")
 
+const sendMailDate = "currentYearMonthSendMail"
+function isSendMail(trigDate) {
+    if (sendMailDate == "currentYearMonthSendMail") return trigDate.substring(0, 7) == "2022-10" //currentDayYM
+    if (sendMailDate == "currentYearSendMail") return trigDate.substring(0, 4) == currentDayYM.substring(0, 4)
+    return false
+}
+
+let getXueQiuNowTimestamp
 async function getXueQiu() {
 
     var browser
@@ -38,8 +50,9 @@ async function getXueQiu() {
 
     var getDataFromUrlFunc = async (dataName, dataCode) => {
         let startTime = 31813200000;
-        let nowTimestamp = new Date().getTime();
-        let pageUrl = `https://stock.xueqiu.com/v5/stock/chart/kline.json?symbol=${dataCode}&begin=${startTime}&end=${nowTimestamp}&period=day&type=before&indicator=kline`
+        getXueQiuNowTimestamp = new Date().getTime()
+        if (os.platform != "win32") getXueQiuNowTimestamp = getXueQiuNowTimestamp + 8 * 60 * 60 * 1000 //github Action utc
+        let pageUrl = `https://stock.xueqiu.com/v5/stock/chart/kline.json?symbol=${dataCode}&begin=${startTime}&end=${getXueQiuNowTimestamp}&period=day&type=before&indicator=kline`
         await visitXqIndex()
         const page = await browser.newPage();
         await page.setRequestInterception(true)
@@ -66,8 +79,8 @@ function backTest美股指数(dataName, dayDatas, currentDayIndex, triggerLogArr
     let weekJup = false
     let monthLowMa = false
     let monthJup = false
-    let monthJlow5 = false
-    let monthPre5Jlow0 = false
+    let monthJlow = false
+    let monthPre5Jlow = false
     let volumeUp = false
 
     function testDay(currentDayList) {
@@ -151,7 +164,7 @@ function backTest美股指数(dataName, dayDatas, currentDayIndex, triggerLogArr
     }
 
     function testMonth(currentMonthList) {
-        let pre5Month = currentMonthList[currentMonthList.length - 3]
+        let pre2Month = currentMonthList[currentMonthList.length - 3]
         let preMonth = currentMonthList[currentMonthList.length - 2]
         let currentMonth = currentMonthList[currentMonthList.length - 1]
 
@@ -170,7 +183,7 @@ function backTest美股指数(dataName, dayDatas, currentDayIndex, triggerLogArr
         if (preMonth.J < currentMonth.J) {
             monthJup = true //月J向上
         }
-        if (pre5Month && (pre5Month.J < currentMonth.J)) {
+        if (pre2Month && (pre2Month.J < currentMonth.J)) {
             monthJup = true //月J向上
         }
 
@@ -180,13 +193,16 @@ function backTest美股指数(dataName, dayDatas, currentDayIndex, triggerLogArr
         }
 
         if (currentMonth.J <= 12) {
-            monthJlow5 = true //月j小于10,12
+            monthJlow = true //月j小于10,12
+        }
+        if (preMonth.J <= 10) {
+            monthJlow = true //月j小于10,12
         }
 
         for (var i = 1; i < 6; i++) {
             let monthItem = currentMonthList[currentMonthList.length - i]
             if (monthItem && monthItem.J < 10) {
-                monthPre5Jlow0 = true //前五个月有月j小于0,5,7,10
+                monthPre5Jlow = true //前五个月有月j小于0,5,7,10
                 break
             }
         }
@@ -294,8 +310,17 @@ function backTest美股指数(dataName, dayDatas, currentDayIndex, triggerLogArr
         // logProfileN.trigWeek4 = currentWeekList.slice(-4)
         // logProfileN.trigMonth4 = currentMonthList.slice(-4)
 
-        console.log(logProfileN.trigDate)
-        triggerLogArr.push(logProfileN)
+        let hasIndex = triggerLogArr.findIndex(ele => { return ele.trigDate == currentDayData.date })
+        if (hasIndex == -1) {
+            if (!isSendMail(logProfileN.trigDate)) {
+                console.log(logProfileN.trigDate, " new")
+            } else {
+                console.log(logProfileN.trigDate, " new ", sendMailDate)
+                let mailMsg = dataName + "@new" + logProfileN.trigDate + ":From:" + os.platform + ":" + getXueQiuNowTimestamp
+                mySendMail(mailMsg)
+            }
+            triggerLogArr.push(logProfileN)
+        }
     }
 
     let currentDayList = dayDatas.slice(0, currentDayIndex + 1).calKdj()
@@ -308,14 +333,14 @@ function backTest美股指数(dataName, dayDatas, currentDayIndex, triggerLogArr
     testMonth(currentMonthList)
     testVolume(currentDayList, currentWeekList, currentMonthList)
 
-    let lastResult = dayCross && dayNlowM && weekJup && monthLowMa && monthJup && monthJlow5 && monthPre5Jlow0 && volumeUp
+    let lastResult = dayCross && dayNlowM && weekJup && monthLowMa && monthJup && monthJlow && monthPre5Jlow && volumeUp
     if (lastResult) triggerLog(currentDayList, currentWeekList, currentMonthList)
     return triggerLogArr
 }
 
 
 async function restoreLog() {
-    var 美股指数策略str = await getDataFromFile("美股指数策略", folder, true, "raw")
+    var 美股指数策略str = await getDataFromFile("美股指数策略", folder, false, "raw")
     if (美股指数策略str) eval(美股指数策略str)
     if (typeof 标普500策略 === "undefined") var 标普500策略 = []
     if (typeof 纳指策略 === "undefined") var 纳指策略 = []
@@ -359,7 +384,15 @@ async function down1Back1(nameCodes, backName) {
         let lastLogIndex = 70;
         [triggerLogArr, lastLogIndex] = getLastLogDateIndexFunc(dataName, dayDatas);
         triggerLogArr.forEach((ele, index) => {
-            console.log(ele.trigDate, triggerLogArr.length - 1 == index ? "=>lastLogIndex:" + lastLogIndex : "")
+            if (triggerLogArr.length - 1 != index) console.log(ele.trigDate, " inlog")
+            else {
+                if (!isSendMail(ele.trigDate)) console.log(ele.trigDate, " inlog=>lastLogIndex:" + lastLogIndex)
+                else {
+                    console.log(ele.trigDate, " inlog=>lastLogIndex:" + lastLogIndex, " ", sendMailDate)
+                    let mailMsg = dataName + "@inlog" + ele.trigDate + ":From:" + os.platform + ":" + getXueQiuNowTimestamp
+                    mySendMail(mailMsg)
+                }
+            }
         });
 
         for (let currentDayIndex = lastLogIndex + 1; currentDayIndex <= dayDatas.length - 1; currentDayIndex++) {
@@ -403,7 +436,15 @@ async function downAllBack(nameCodes, backName) {
         let lastLogIndex = 70;
         [triggerLogArr, lastLogIndex] = getLastLogDateIndexFunc(dataName, dayDatas);
         triggerLogArr.forEach((ele, index) => {
-            console.log(ele.trigDate, triggerLogArr.length - 1 == index ? "=>lastLogIndex:" + lastLogIndex : "")
+            if (triggerLogArr.length - 1 != index) console.log(ele.trigDate, " inlog")
+            else {
+                if (!isSendMail(ele.trigDate)) console.log(ele.trigDate, " inlog=>lastLogIndex:" + lastLogIndex)
+                else {
+                    console.log(ele.trigDate, " inlog=>lastLogIndex:" + lastLogIndex, " ", sendMailDate)
+                    let mailMsg = dataName + "@inlog" + ele.trigDate + ":From:" + os.platform + ":" + getXueQiuNowTimestamp
+                    mySendMail(mailMsg)
+                }
+            }
         });
 
         for (let currentDayIndex = lastLogIndex + 1; currentDayIndex <= dayDatas.length - 1; currentDayIndex++) {
@@ -431,6 +472,6 @@ async function downAllBack(nameCodes, backName) {
         { name: "纳指_xueqiu_day", code: ".IXIC" },
         { name: "道琼斯_xueqiu_day", code: ".DJI" },
     ]
-    await downAllBack(nameCodes, "美股指数策略")
+    await down1Back1(nameCodes, "美股指数策略")
 
 })()

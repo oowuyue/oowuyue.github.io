@@ -636,16 +636,18 @@ if (typeof module !== "undefined" && module.exports) {
     async function mySendMail(msg) {
       const info = await transporter.sendMail({
         from: '"oowuyue" <oowuyue@163.com>', // sender address
-        to: "3434384699@qq.com", // list of receivers
+        to: "3434384699@qq.com, 851616860@qq.com", // list of receivers
         subject: "Hello ✔", // Subject line
         text: msg, // plain text body
         html: msg, // html body
       });
 
-      //console.log("Message sent: %s", info.messageId);
+      //console.log("Message sent: %s", msg);
+      //return true
       //Message sent: <d786aa62-4e0a-070a-47ed-0b0666549519@ethereal.email>
     }
 
+    exports.currentDayYM = currentDayYM
     exports.currentDayYMD = currentDayYMD
     exports.preDayYMD = preDayYMD
     

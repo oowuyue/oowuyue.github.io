@@ -4,6 +4,7 @@ puppeteer.use(StealthPlugin())
 const http = require('http')
 const fs = require('fs')
 const path = require('path')
+const os = require('os')
 const {
     dayToPeriod,
     xueqiuFormatDate,
@@ -16,10 +17,20 @@ const {
     PtPAmp,
     writeDataToFile,
     getDataFromFile,
-    mySendMail
+    mySendMail,
+    currentDayYM,
+    currentDayYMD
 } = require("../ajslib/my.js")
 const folder = path.join(__dirname, "/data/雪球行情/")
 
+const sendMailDate = "currentYearSendMail"
+function isSendMail(trigDate) {
+    if (sendMailDate == "currentYearMonthSendMail") return trigDate.substring(0, 7) == currentDayYM
+    if (sendMailDate == "currentYearSendMail") return trigDate.substring(0, 4) == currentDayYM.substring(0, 4)
+    return false
+}
+
+let getXueQiuNowTimestamp
 async function getXueQiu() {
 
     var browser
@@ -39,9 +50,10 @@ async function getXueQiu() {
     await visitXqIndex()
 
     var getDataFromUrlFunc = async (dataName, dataCode) => {
-        let startTime = 31813200000;
-        let nowTimestamp = new Date().getTime();
-        let pageUrl = `https://stock.xueqiu.com/v5/stock/chart/kline.json?symbol=${dataCode}&begin=${startTime}&end=${nowTimestamp}&period=day&type=before&indicator=kline`
+        let startTime = 31813200000
+        getXueQiuNowTimestamp = new Date().getTime()
+        if (os.platform != "win32") getXueQiuNowTimestamp = getXueQiuNowTimestamp + 8 * 60 * 60 * 1000 //github Action utc
+        let pageUrl = `https://stock.xueqiu.com/v5/stock/chart/kline.json?symbol=${dataCode}&begin=${startTime}&end=${getXueQiuNowTimestamp}&period=day&type=before&indicator=kline`
         await visitXqIndex()
         const page = await browser.newPage();
         await page.setRequestInterception(true)
@@ -68,8 +80,8 @@ function backTest大盘(dataName, dayDatas, currentDayIndex, triggerLogArr) {
     let weekJup = false
     let monthLowMa = false
     let monthJup = false
-    let monthJlow5 = false
-    let monthPre5Jlow0 = false
+    let monthJlow = false
+    let monthPre5Jlow = false
     let volumeUp = false
 
     function testDay(currentDayList) {
@@ -153,7 +165,7 @@ function backTest大盘(dataName, dayDatas, currentDayIndex, triggerLogArr) {
     }
 
     function testMonth(currentMonthList) {
-        let pre5Month = currentMonthList[currentMonthList.length - 3]
+        let pre2Month = currentMonthList[currentMonthList.length - 3]
         let preMonth = currentMonthList[currentMonthList.length - 2]
         let currentMonth = currentMonthList[currentMonthList.length - 1]
 
@@ -173,18 +185,23 @@ function backTest大盘(dataName, dayDatas, currentDayIndex, triggerLogArr) {
         if (preMonth.J < currentMonth.J) {
             monthJup = true //月J向上
         }
-        if (pre5Month && (pre5Month.J < currentMonth.J)) {
+        if (pre2Month && (pre2Month.J < currentMonth.J)) {
             monthJup = true //月J向上
         }
 
 
         if (currentMonth.J <= 12) {
-            monthJlow5 = true //月j小于10,12
+            monthJlow = true //月j小于10,12
         }
+        if (preMonth.J <= 10) {
+            monthJlow = true //月j小于10,12
+        }
+
+
         for (var i = 1; i < 6; i++) {
             let monthItem = currentMonthList[currentMonthList.length - i]
             if (monthItem && monthItem.J < 10) {
-                monthPre5Jlow0 = true //前五个月有月j小于0,5,7,10
+                monthPre5Jlow = true //前五个月有月j小于0,5,7,10
                 break
             }
         }
@@ -292,10 +309,16 @@ function backTest大盘(dataName, dayDatas, currentDayIndex, triggerLogArr) {
 
         let hasIndex = triggerLogArr.findIndex(ele => { return ele.trigDate == currentDayData.date })
         if (hasIndex == -1) {
-            console.log(logProfileN.trigDate," new")
-            if(logProfileN.trigDate.includes("2024")) mySendMail(dataName+logProfileN.trigDate)
+            if (!isSendMail(logProfileN.trigDate)) {
+                console.log(logProfileN.trigDate, " new")
+            } else {
+                console.log(logProfileN.trigDate, " new ", sendMailDate)
+                let mailMsg = dataName + "@new" + logProfileN.trigDate + ":From:" + os.platform + ":" + getXueQiuNowTimestamp
+                mySendMail(mailMsg)
+            }
             triggerLogArr.push(logProfileN)
         }
+
     }
 
     let currentDayList = dayDatas.slice(0, currentDayIndex).calKdj()
@@ -308,7 +331,7 @@ function backTest大盘(dataName, dayDatas, currentDayIndex, triggerLogArr) {
     testMonth(currentMonthList)
     testVolume(currentDayList, currentWeekList, currentMonthList)
 
-    let lastResult = dayCross && dayNlowM && weekJup && monthLowMa && monthJup && monthJlow5 && monthPre5Jlow0 && volumeUp
+    let lastResult = dayCross && dayNlowM && weekJup && monthLowMa && monthJup && monthJlow && monthPre5Jlow && volumeUp
     if (lastResult) triggerLog(currentDayList, currentWeekList, currentMonthList)
     return triggerLogArr
 }
@@ -320,8 +343,8 @@ function backTest证券(dataName, dayDatas, currentDayIndex, triggerLogArr) {
     let weekJup = false
     let monthLowMa = false
     let monthJup = false
-    let monthJlow5 = false
-    let monthPre5Jlow0 = false
+    let monthJlow = false
+    let monthPre5Jlow = false
     let volumeUp = false
 
     function testDay(currentDayList) {
@@ -421,7 +444,7 @@ function backTest证券(dataName, dayDatas, currentDayIndex, triggerLogArr) {
     }
 
     function testMonth(currentMonthList) {
-        let pre5Month = currentMonthList[currentMonthList.length - 3]
+        let pre2Month = currentMonthList[currentMonthList.length - 3]
         let preMonth = currentMonthList[currentMonthList.length - 2]
         let currentMonth = currentMonthList[currentMonthList.length - 1]
         if (currentMonth.ma80) {
@@ -455,18 +478,23 @@ function backTest证券(dataName, dayDatas, currentDayIndex, triggerLogArr) {
         if (preMonth.J < currentMonth.J) {
             monthJup = true //月J向上
         }
-        if (pre5Month && (pre5Month.J < currentMonth.J)) {
+        if (pre2Month && (pre2Month.J < currentMonth.J)) {
             monthJup = true //月J向上
         }
 
 
         if (currentMonth.J <= 12) {
-            monthJlow5 = true //月j小于10,12
+            monthJlow = true //月j小于10,12
         }
+        if (preMonth.J <= 10) {
+            monthJlow = true //月j小于10,12
+        }
+
+
         for (var i = 1; i < 6; i++) {
             let monthItem = currentMonthList[currentMonthList.length - i]
             if (monthItem && monthItem.J < 10) {
-                monthPre5Jlow0 = true //前五个月有月j小于0,5,7,10
+                monthPre5Jlow = true //前五个月有月j小于0,5,7,10
                 break
             }
         }
@@ -576,7 +604,13 @@ function backTest证券(dataName, dayDatas, currentDayIndex, triggerLogArr) {
 
         let hasIndex = triggerLogArr.findIndex(ele => { return ele.trigDate == currentDayData.date })
         if (hasIndex == -1) {
-            console.log(logProfileN.trigDate)
+            if (!isSendMail(logProfileN.trigDate)) {
+                console.log(logProfileN.trigDate, " new")
+            } else {
+                console.log(logProfileN.trigDate, " new ", sendMailDate)
+                let mailMsg = dataName + "@new" + logProfileN.trigDate + ":From:" + os.platform + ":" + getXueQiuNowTimestamp
+                mySendMail(mailMsg)
+            }
             triggerLogArr.push(logProfileN)
         }
     }
@@ -598,16 +632,16 @@ function backTest证券(dataName, dayDatas, currentDayIndex, triggerLogArr) {
 
     let lastResult = false
     if (["东方财富", "恒生电子", "同花顺"].includes(dataName.split("_")[0]))
-        lastResult = dayCross && dayNlowM && weekJup && (monthLowMa || (monthJup && monthJlow5 && monthPre5Jlow0) && volumeUp)
+        lastResult = dayCross && dayNlowM && weekJup && (monthLowMa || (monthJup && monthJlow && monthPre5Jlow) && volumeUp)
     else
-        lastResult = dayCross && dayNlowM && weekJup && monthLowMa && monthJup && monthJlow5 && monthPre5Jlow0 && volumeUp
+        lastResult = dayCross && dayNlowM && weekJup && monthLowMa && monthJup && monthJlow && monthPre5Jlow && volumeUp
 
     if (lastResult) triggerLog(currentDayList, currentWeekList, currentMonthList)
     return triggerLogArr
 }
 
 async function restoreLog大盘(nameCodes) {
-    var 大盘策略str = await getDataFromFile("大盘策略", folder, true, "raw")
+    var 大盘策略str = await getDataFromFile("大盘策略", folder, false, "raw")
     if (大盘策略str) eval(大盘策略str)
     if (typeof 上证指数策略 === "undefined") var 上证指数策略 = []
     if (typeof 沪深300策略 === "undefined") var 沪深300策略 = []
@@ -629,7 +663,7 @@ async function restoreLog大盘(nameCodes) {
 }
 
 async function restoreLog证券(nameCodes) {
-    var 证券策略str = await getDataFromFile("证券策略", folder, true, "raw")
+    var 证券策略str = await getDataFromFile("证券策略", folder, false, "raw")
     if (证券策略str) eval(证券策略str)
 
     nameCodes = nameCodes.map((item) => {
@@ -685,7 +719,15 @@ async function down1Back1(nameCodes, backName) {
         let lastLogIndex = 70;
         [triggerLogArr, lastLogIndex] = getLastLogDateIndexFunc(dataName, dayDatas)
         triggerLogArr.forEach((ele, index) => {
-            console.log(ele.trigDate, triggerLogArr.length - 1 == index ? "=>lastLogIndex:" + lastLogIndex : "")
+            if (triggerLogArr.length - 1 != index) console.log(ele.trigDate, " inlog")
+            else {
+                if (!isSendMail(ele.trigDate)) console.log(ele.trigDate, " inlog=>lastLogIndex:" + lastLogIndex)
+                else {
+                    console.log(ele.trigDate, " inlog=>lastLogIndex:" + lastLogIndex, " ", sendMailDate)
+                    let mailMsg = dataName + "@inlog" + ele.trigDate + ":From:" + os.platform + ":" + getXueQiuNowTimestamp
+                    mySendMail(mailMsg)
+                }
+            }
         });
 
         for (let currentDayIndex = lastLogIndex + 1; currentDayIndex <= dayDatas.length - 1; currentDayIndex++) {
@@ -736,7 +778,15 @@ async function downAllBack(nameCodes, backName) {
         let lastLogIndex = 70;
         [triggerLogArr, lastLogIndex] = getLastLogDateIndexFunc(dataName, dayDatas);
         triggerLogArr.forEach((ele, index) => {
-            console.log(ele.trigDate, triggerLogArr.length - 1 == index ? "=>lastLogIndex:" + lastLogIndex : "")
+            if (triggerLogArr.length - 1 != index) console.log(ele.trigDate, " inlog")
+            else {
+                if (!isSendMail(ele.trigDate)) console.log(ele.trigDate, " inlog=>lastLogIndex:" + lastLogIndex)
+                else {
+                    console.log(ele.trigDate, " inlog=>lastLogIndex:" + lastLogIndex, " ", sendMailDate)
+                    let mailMsg = dataName + "@inlog" + ele.trigDate + ":From:" + os.platform + ":" + getXueQiuNowTimestamp
+                    mySendMail(mailMsg)
+                }
+            }
         });
 
         for (let currentDayIndex = lastLogIndex + 1; currentDayIndex <= dayDatas.length - 1; currentDayIndex++) {
@@ -757,30 +807,31 @@ async function downAllBack(nameCodes, backName) {
 
 (async () => {
 
-    await mySendMail("everyDay downAllBack")
+    //await mySendMail("everyDay downAllBack")
 
     let nameCodes = [
         { name: "上证指数_xueqiu_day", code: "SH000001" },
-        //{ name: "Ａ股指数_xueqiu_day", code: "SH000002" },
         { name: "沪深300_xueqiu_day", code: "SH000300" },
         { name: "恒生指数_xueqiu_day", code: "HKHSI" },
+        //{ name: "Ａ股指数_xueqiu_day", code: "SH000002" },
+
     ]
-    await downAllBack(nameCodes, "大盘策略")
+    await down1Back1(nameCodes, "大盘策略")
 
 
-    // nameCodes = [
-    //     { name: "中信证券_xueqiu_day", code: "SH600030" },
-    //     { name: "光大证券_xueqiu_day", code: "SH601788" },
-    //     { name: "国泰君安_xueqiu_day", code: "SH601211" },
-    //     { name: "中信建投_xueqiu_day", code: "SH601066" },
-    //     { name: "招商证券_xueqiu_day", code: "SH600999" },
-    //     { name: "广发证券_xueqiu_day", code: "SZ000776" },
+    nameCodes = [
+        { name: "中信证券_xueqiu_day", code: "SH600030" },
+        { name: "光大证券_xueqiu_day", code: "SH601788" },
+        { name: "国泰君安_xueqiu_day", code: "SH601211" },
+        { name: "中信建投_xueqiu_day", code: "SH601066" },
+        { name: "招商证券_xueqiu_day", code: "SH600999" },
+        { name: "广发证券_xueqiu_day", code: "SZ000776" },
 
-    //     { name: "东方财富_xueqiu_day", code: "SZ300059" },
-    //     { name: "同花顺_xueqiu_day", code: "SZ300033" },
-    //     { name: "恒生电子_xueqiu_day", code: "SH600570" },
-    // ]
-    // await downAllBack(nameCodes, "证券策略")
+        { name: "东方财富_xueqiu_day", code: "SZ300059" },
+        { name: "同花顺_xueqiu_day", code: "SZ300033" },
+        { name: "恒生电子_xueqiu_day", code: "SH600570" },
+    ]
+    await downAllBack(nameCodes, "证券策略")
 
 
     // nameCodes = [
