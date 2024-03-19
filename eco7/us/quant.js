@@ -37,7 +37,8 @@ async function getXueQiu() {
     var visitXqIndex = async () => {
         if (await wait(10) && browser && indexPage) return
 
-        browser = await puppeteer.launch({ headless: false, defaultViewport: null, args: ['--start-maximized'] })
+        if (os.platform == "win32") browser = await puppeteer.launch({ headless: false, defaultViewport: null, args: ['--start-maximized'] })
+        else browser = await puppeteer.launch({ headless: true })
         browser.on('disconnected', () => { browser = undefined; indexPage = undefined; })
 
         indexPage = await browser.newPage();
