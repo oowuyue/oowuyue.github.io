@@ -378,7 +378,7 @@ async function down1Back1(nameCodes, backName) {
             console.log(`${dataName} getDataFromUrl`)
             await writeDataToFile(dataName, dayDatas, folder)
         }
-        dayDatas = dayDatas.data.item.xueqiuData2Obj()
+        dayDatas = dayDatas.data.item.xueqiuData2Obj("day", os.platform)
         nameCodes[i].dayDatas = dayDatas
         
         let triggerLogArr = [];
@@ -423,7 +423,7 @@ async function downAllBack(nameCodes, backName) {
             dayDatas = await getDataFromUrlFunc(dataName, dataCode)
             await writeDataToFile(dataName, dayDatas, folder)
         }
-        dayDatas = dayDatas.data.item.xueqiuData2Obj()
+        dayDatas = dayDatas.data.item.xueqiuData2Obj("day", os.platform)
         nameCodes[i].dayDatas = dayDatas
     }
 

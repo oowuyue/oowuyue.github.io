@@ -206,8 +206,9 @@ function wait(ms) {
 }
 
 //DateTime [date, o, h, l, c]
-function xueqiuFormatDate(stamp, period = "month") {
+function xueqiuFormatDate(stamp, period = "month", platform = "win32") {
     var date = new Date(stamp);
+    if (platform != "win32") date = new Date(stamp + 8 * 60 * 60 * 1000);
     var y = date.getFullYear(),
         m = date.getMonth() + 1,
         d = date.getDate();
@@ -262,11 +263,11 @@ Array.prototype.chartDataMaN = function (MA, dataIndex = 1) {
     return dataList
 }
 
-Array.prototype.xueqiuData2Obj = function (period = "day") {
+Array.prototype.xueqiuData2Obj = function (period = "day", platform = "win32") {
     let dataList = this
     dataList = dataList.map((data, index) => {
         return {
-            date: xueqiuFormatDate(data[0], period),
+            date: xueqiuFormatDate(data[0], period, platform),
             timestamp: data[0],
             open: data[2],
             high: data[3],
@@ -623,38 +624,37 @@ if (typeof module !== "undefined" && module.exports) {
         return promise
     }
 
-
-    const transporter = nodemailer.createTransport({
-      host: "smtp.163.com",
-      port: 465,
-      secure: true, // Use `true` for port 465, `false` for all other ports
-      auth: {
-        user: "oowuyue@163.com",
-        pass: "AEUORGVIOHTDGDGZ",
-      },
-    });
     async function mySendMail(msg) {
-      const info = await transporter.sendMail({
-        from: '"oowuyue" <oowuyue@163.com>', // sender address
-        to: "3434384699@qq.com, 851616860@qq.com", // list of receivers
-        subject: "Hello ✔", // Subject line
-        text: msg, // plain text body
-        html: msg, // html body
-      });
+        const transporter = nodemailer.createTransport({
+            host: "smtp.163.com",
+            port: 465,
+            secure: true, // Use `true` for port 465, `false` for all other ports
+            auth: {
+                user: "oowuyue@163.com",
+                pass: "AEUORGVIOHTDGDGZ",
+            },
+        });
+        const info = await transporter.sendMail({
+            from: '"oowuyue" <oowuyue@163.com>', // sender address
+            to: "3434384699@qq.com, 851616860@qq.com", // list of receivers
+            subject: "Hello ✔", // Subject line
+            text: msg, // plain text body
+            html: msg, // html body
+        });
 
-      //console.log("Message sent: %s", msg);
-      //return true
-      //Message sent: <d786aa62-4e0a-070a-47ed-0b0666549519@ethereal.email>
+        //console.log("Message sent: %s", msg);
+        //return true
+        //Message sent: <d786aa62-4e0a-070a-47ed-0b0666549519@ethereal.email>
     }
 
     exports.currentDayYM = currentDayYM
     exports.currentDayYMD = currentDayYMD
     exports.preDayYMD = preDayYMD
-    
+
     exports.stampToDate = stampToDate
     exports.dateToStamp = dateToStamp
     exports.getLastDayOf = getLastDayOf
-    
+
 
     exports.unifyDate = unifyDate
     exports.findSameTime = findSameTime
