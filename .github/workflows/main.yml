@@ -37,8 +37,11 @@ jobs:
         run: npm install
 
       # Runs a single command using the runners shell
-      - name: Run script
+      - name: Run script cn
         run: node ./eco7/cn/quant.js
+
+      - name: Run script us
+        run: node ./eco7/us/quant.js
         
       # - name: Push snapshot
       #   run: |

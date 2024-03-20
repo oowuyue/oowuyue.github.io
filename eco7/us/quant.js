@@ -466,7 +466,8 @@ async function downAllBack(nameCodes, backName) {
 
 
 (async () => {
-
+    await mySendMail("everyDay backTest美股指数")
+    
     let nameCodes = [
         { name: "标普500_xueqiu_day", code: ".INX" },
         { name: "纳指_xueqiu_day", code: ".IXIC" },

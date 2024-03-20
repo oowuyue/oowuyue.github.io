@@ -808,7 +808,7 @@ async function downAllBack(nameCodes, backName) {
 
 (async () => {
 
-    //await mySendMail("everyDay downAllBack")
+    //await mySendMail("everyDay backTestA股指数")
 
     let nameCodes = [
         { name: "沪深300_xueqiu_day", code: "SH000300" },
