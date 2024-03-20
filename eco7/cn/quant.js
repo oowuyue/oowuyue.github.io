@@ -26,10 +26,10 @@ const {
 const folder = path.join(__dirname, "/data/雪球行情/")
 
 let getXueQiuNowTimestamp
+let browser
+let indexPage
 async function getXueQiu() {
 
-    var browser
-    var indexPage
     var visitXqIndex = async () => {
         if (await wait(10) && browser && indexPage) return
 
@@ -808,16 +808,14 @@ async function downAllBack(nameCodes, backName) {
 
 (async () => {
 
-    //await mySendMail("everyDay backTestA股指数")
-
     let nameCodes = [
         { name: "沪深300_xueqiu_day", code: "SH000300" },
         { name: "上证指数_xueqiu_day", code: "SH000001" },
-        //{ name: "恒生指数_xueqiu_day", code: "HKHSI" },
+        { name: "恒生指数_xueqiu_day", code: "HKHSI" },
         //{ name: "Ａ股指数_xueqiu_day", code: "SH000002" },
 
     ]
-    await down1Back1(nameCodes, "大盘策略")
+    await downAllBack(nameCodes, "大盘策略")
 
 
     nameCodes = [
@@ -835,9 +833,7 @@ async function downAllBack(nameCodes, backName) {
     await downAllBack(nameCodes, "证券策略")
 
 
-    // nameCodes = [
-    //     { name: "华新环保_xueqiu_day", code: "SZ301265" },
-    //     { name: "青岛中程_xueqiu_day", code: "SZ300208" },
-    // ]
-    // await downAllBack(nameCodes, "仅下载")
+    await mySendMail("everyDay backTestA股指数")
+    if(browser) browser.close()
+
 })()

@@ -26,10 +26,10 @@ const folder = path.join(__dirname, "/data/雪球行情/")
 
 
 let getXueQiuNowTimestamp
+let browser
+let indexPage
 async function getXueQiu() {
 
-    var browser
-    var indexPage
     var visitXqIndex = async () => {
         if (await wait(10) && browser && indexPage) return
 
@@ -466,7 +466,6 @@ async function downAllBack(nameCodes, backName) {
 
 
 (async () => {
-    await mySendMail("everyDay backTest美股指数")
     
     let nameCodes = [
         { name: "标普500_xueqiu_day", code: ".INX" },
@@ -474,5 +473,8 @@ async function downAllBack(nameCodes, backName) {
         { name: "道琼斯_xueqiu_day", code: ".DJI" },
     ]
     await downAllBack(nameCodes, "美股指数策略")
+
+    await mySendMail("everyDay backTest美股指数策略")
+    if(browser) browser.close()
 
 })()

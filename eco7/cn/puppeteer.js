@@ -5,16 +5,24 @@ puppeteer.use(StealthPlugin());
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
+const os = require('os');
 const {
     unifyDate,
-    wait
+    wait,
+    mySendMail,
 } = require("../ajslib/my.js");
 
 (async () => {
     //const folder = path.join(__dirname, "/data/")
     const folder = "data/"
     let fileNameDelimiter = ","
-    const browser = await puppeteer.launch({ headless: false, })
+
+    let browser
+    if (os.platform == "win32")
+        browser = await puppeteer.launch({ headless: false, defaultViewport: null, args: ['--start-maximized'] })
+    else
+        browser = await puppeteer.launch({ headless: true })
+
 
     let task_macromicro = async (datasInfo, pageUrl, apiUrl) => {
         const page = await browser.newPage();
@@ -639,7 +647,7 @@ const {
         const promise1 = new Promise((resolve, reject) => {
             page.on('response', async (response) => {
                 if (response.url().includes(apiSub)) {
-                    let resData =  await response.json() 
+                    let resData = await response.json()
                     try {
                         let fileStr = saveFormat == "json" ? `var ${dataName} = ${JSON.stringify(resData, null, 4)}` : `var ${dataName} = "${resData}" `
                         fs.writeFileSync(`${folder}${dataName}.js`, fileStr);
@@ -660,41 +668,43 @@ const {
     }
 
 
-     await task_xueqiu([
-        { "name": "沪深300_xueqiu_day", "symbol": "SH000300", "period": "day" },
-        { "name": "上证指数_xueqiu_day", "symbol": "SH000001", "period": "day" },
-        //{ "name": "Ａ股指数_xueqiu_day", "symbol": "SH000002", "period": "day" }, //上证除b股
-        { "name": "恒生指数_xueqiu_day", "symbol": "HKHSI", "period": "day" },
-        { "name": "沪深300_xueqiu_week", "symbol": "SH000300", "period": "week" },
+    // await task_xueqiu([
+    //     //{ "name": "沪深300_xueqiu_day", "symbol": "SH000300", "period": "day" },
+    //     //{ "name": "上证指数_xueqiu_day", "symbol": "SH000001", "period": "day" },
+    //     //{ "name": "Ａ股指数_xueqiu_day", "symbol": "SH000002", "period": "day" }, //上证除b股
+    //     //{ "name": "恒生指数_xueqiu_day", "symbol": "HKHSI", "period": "day" },
+    //     { "name": "沪深300_xueqiu_week", "symbol": "SH000300", "period": "week" },
 
-     ])
+    // ])
 
-    await task_csindex([
-        { "name": "科技龙头_csi_day", "indexCode": "931524", "period": "day" },     //蓝筹白马                 流动性    SHS科技龙头   SHS消费龙头
-        //{ "name": "科技龙头_csi_day", "indexCode": "931524", "period": "day" },   //中小红低 大宗能粮 ppi     业绩性    沪港深通中小  上证商品  
-        //{ "name": "科技龙头_csi_day", "indexCode": "931524", "period": "day" },   //         消费白马 cpi                           SHS消费龙头
-    ])
+    // await task_csindex([
+    //     { "name": "科技龙头_csi_day", "indexCode": "931524", "period": "day" },     //蓝筹白马                 流动性    SHS科技龙头   SHS消费龙头
+    //     //{ "name": "科技龙头_csi_day", "indexCode": "931524", "period": "day" },   //中小红低 大宗能粮 ppi     业绩性    沪港深通中小  上证商品  
+    //     //{ "name": "科技龙头_csi_day", "indexCode": "931524", "period": "day" },   //         消费白马 cpi                           SHS消费龙头
+    // ])
 
-    await task_macromicro({ "CPI": 0, "PPI": 1, "CPI_PPI": 2 }, "https://sc.macromicro.me/collections/24/cn-price-relative/38939/china-cpi-vs-ppi", "/charts/data/38939")
-    await task_macroview({ "利润同比": "industryindicator_profit", "亏损增减": "industryindicator" }, "https://www.macroview.club/charts?name=cn_industry_indicator", "/get-chart")
+     await task_macromicro({ "CPI": 0, "PPI": 1, "CPI_PPI": 2 }, "https://sc.macromicro.me/collections/24/cn-price-relative/38939/china-cpi-vs-ppi", "/charts/data/38939")
+    // await task_macroview({ "利润同比": "industryindicator_profit", "亏损增减": "industryindicator" }, "https://www.macroview.club/charts?name=cn_industry_indicator", "/get-chart")
 
-    await task_macromicro({ "财新制造业PMI": 0, "官方制造业PMI": 1 }, "https://sc.macromicro.me/collections/25/cn-industry-relative/232/cn-pmi-caixin", "/charts/data/232")
-    await task_macromicro({ "零售汽车": 1 }, "https://sc.macromicro.me/collections/23/cn-consumption/294/cn-china-retail-sales-of-enterprises-above-designated-size-automobile", "/charts/data/294")
-    await task_macromicro({ "商品房销售": 1 }, "https://sc.macromicro.me/collections/26/cn-house-relative/273/cn-commercialized-buildings-sold", "/charts/data/273")
-    await task_macromicro({ "出口": 1 }, "https://sc.macromicro.me/collections/27/cn-trade-finance-relative/279/cn-china-trade-export-growth-rate", "/charts/data/279")
+    // await task_macromicro({ "财新制造业PMI": 0, "官方制造业PMI": 1 }, "https://sc.macromicro.me/collections/25/cn-industry-relative/232/cn-pmi-caixin", "/charts/data/232")
+    // await task_macromicro({ "零售汽车": 1 }, "https://sc.macromicro.me/collections/23/cn-consumption/294/cn-china-retail-sales-of-enterprises-above-designated-size-automobile", "/charts/data/294")
+    // await task_macromicro({ "商品房销售": 1 }, "https://sc.macromicro.me/collections/26/cn-house-relative/273/cn-commercialized-buildings-sold", "/charts/data/273")
+    // await task_macromicro({ "出口": 1 }, "https://sc.macromicro.me/collections/27/cn-trade-finance-relative/279/cn-china-trade-export-growth-rate", "/charts/data/279")
 
-    await task_value500({ "股债差300平均": { "chartOptionId": 0, "chartSerieId": 0 } }, "http://value500.com/CSI300.asp")
-    await task_value500({ "股债差上证平均": { "chartOptionId": 0, "chartSerieId": 0 } }, "http://value500.com/ep.asp")
+    // await task_value500({ "股债差300平均": { "chartOptionId": 0, "chartSerieId": 0 } }, "http://value500.com/CSI300.asp")
+    // await task_value500({ "股债差上证平均": { "chartOptionId": 0, "chartSerieId": 0 } }, "http://value500.com/ep.asp")
 
-    await task_legulegu({ "沪深300PE中位数": "hs300PeMiddle", "全A股PE中位数": "marketPe", "十年期国债利率倒数": "debtInterestRate" }, "https://legulegu.com/stockdata/china-10-year-bond-yield", "china-10-year-bond-yield-data?token")
-    await task_value500({ "沪深300同比": { "chartOptionId": 0, "chartSerieId": 3 }, "上证同比": { "chartOptionId": 0, "chartSerieId": 2 }, }, "http://value500.com/SH000001.asp")
+    // await task_legulegu({ "沪深300PE中位数": "hs300PeMiddle", "全A股PE中位数": "marketPe", "十年期国债利率倒数": "debtInterestRate" }, "https://legulegu.com/stockdata/china-10-year-bond-yield", "china-10-year-bond-yield-data?token")
+    // await task_value500({ "沪深300同比": { "chartOptionId": 0, "chartSerieId": 3 }, "上证同比": { "chartOptionId": 0, "chartSerieId": 2 }, }, "http://value500.com/SH000001.asp")
 
-    await task_value500({ "M1": { "chartOptionId": 0, "chartSerieId": 0 }, "M1_M2": { "chartOptionId": 0, "chartSerieId": 2 } }, "http://value500.com/M1.asp")
-    await task_value500({ "社融存量": { "chartOptionId": 1, "chartSerieId": 0 } }, "http://value500.com/srzl.asp")
-    await task_macromicro({ "信贷脉冲": 0, "房价同比": 1, "沪深300Day": 2, }, "https://sc.macromicro.me/collections/31/cn-finance-relative/35559/china-credit-impulse-index", "/charts/data/35559")
+    // await task_value500({ "M1": { "chartOptionId": 0, "chartSerieId": 0 }, "M1_M2": { "chartOptionId": 0, "chartSerieId": 2 } }, "http://value500.com/M1.asp")
+    // await task_value500({ "社融存量": { "chartOptionId": 1, "chartSerieId": 0 } }, "http://value500.com/srzl.asp")
+    // await task_macromicro({ "信贷脉冲": 0, "房价同比": 1, "沪深300Day": 2, }, "https://sc.macromicro.me/collections/31/cn-finance-relative/35559/china-credit-impulse-index", "/charts/data/35559")
 
+    await taskPage("恐贪指数", "https://api.jiucaishuo.com/v2/kjtl/kjtlconnect", undefined, "text")
 
-    taskPage("恐贪指数", "https://api.jiucaishuo.com/v2/kjtl/kjtlconnect", undefined, "text")
+    await mySendMail("everyMonth puppeteer cn")
+    if(browser) browser.close()
 
 })()
 

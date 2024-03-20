@@ -43,10 +43,10 @@ jobs:
       - name: Run script us
         run: node ./eco7/us/quant.js
         
-      # - name: Push snapshot
-      #   run: |
-      #     git config --global user.name 'oowuyue'
-      #     git config --global user.email 'oowuyue@gmail.com'
-      #     git add ./eco7/cn/data
-      #     git commit -am "push new action"
-      #     git push
+      - name: Push github
+        run: |
+          git config --global user.name 'oowuyue'
+          git config --global user.email 'oowuyue@gmail.com'
+          git add ./
+          git commit -am "push new action"
+          git push
