@@ -632,28 +632,28 @@ if (typeof module !== "undefined" && module.exports) {
     async function mySendMail(msg) {
         let promise = new Promise(async (resolve, reject) => {
             try {
-                // const transporter = nodemailer.createTransport({
-                //     pool: true,
-                //     host: "smtp.163.com",
-                //     port: 465,
-                //     secure: true, // Use `true` for port 465, `false` for all other ports
-                //     secureConnection: true,
-                //     auth: {
-                //         user: "oowuyue@163.com",
-                //         pass: "AEUORGVIOHTDGDGZ",  //qq8516 的：swvwmndqaedjbfii 
-                //     },
-                // });
-                // transporter.sendMail({
-                //     from: '"oowuyue" <oowuyue@163.com>', // sender address
-                //     to: "3434384699@qq.com, 851616860@qq.com", // list of receivers
-                //     subject: "Hello ✔", // Subject line
-                //     text: msg, // plain text body
-                //     html: msg, // html body
-                // }, (err, info) => {
-                //     if (err) reject(err)
-                //     else resolve(info)
-                // });
-               resolve({response:"ok"})
+                const transporter = nodemailer.createTransport({
+                    pool: true,
+                    host: "smtp.163.com",
+                    port: 465,
+                    secure: true, // Use `true` for port 465, `false` for all other ports
+                    secureConnection: true,
+                    auth: {
+                        user: "oowuyue@163.com",
+                        pass: "AEUORGVIOHTDGDGZ",  //qq8516 的：swvwmndqaedjbfii 
+                    },
+                });
+                transporter.sendMail({
+                    from: '"oowuyue" <oowuyue@163.com>', // sender address
+                    to: "3434384699@qq.com, 851616860@qq.com", // list of receivers
+                    subject: "Hello ✔", // Subject line
+                    text: msg, // plain text body
+                    html: msg, // html body
+                }, (err, info) => {
+                    if (err) reject(err)
+                    else resolve(info)
+                });
+                //resolve({response:"ok"})
             } catch (error) {
                 reject(error)
             }
