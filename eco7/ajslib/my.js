@@ -586,7 +586,6 @@ if (typeof module !== "undefined" && module.exports) {
         })
         return promise
     }
-
     function getDataFromFile(dataName, folder = "./data/", forceNew = true, format = "json") {
         let promise = new Promise((resolve, reject) => {
             fs.readFile(`${folder}${dataName}.js`, 'utf8', (err, data) => {
@@ -624,24 +623,43 @@ if (typeof module !== "undefined" && module.exports) {
         return promise
     }
 
+    const sendMailDate = "curY-email"
+    function isSendMail(trigDate) {
+        if (sendMailDate == "curYM-email") return trigDate.substring(0, 7) == currentDayYM
+        if (sendMailDate == "curY-email") return trigDate.substring(0, 4) == currentDayYM.substring(0, 4)
+        return false
+    }
     async function mySendMail(msg) {
-        const transporter = nodemailer.createTransport({
-            host: "smtp.163.com",
-            port: 465,
-            secure: true, // Use `true` for port 465, `false` for all other ports
-            auth: {
-                user: "oowuyue@163.com",
-                pass: "AEUORGVIOHTDGDGZ",
-            },
-        });
-        const info = await transporter.sendMail({
-            from: '"oowuyue" <oowuyue@163.com>', // sender address
-            to: "3434384699@qq.com, 851616860@qq.com", // list of receivers
-            subject: "Hello ✔", // Subject line
-            text: msg, // plain text body
-            html: msg, // html body
+        let promise = new Promise(async (resolve, reject) => {
+            try {
+                // const transporter = nodemailer.createTransport({
+                //     pool: true,
+                //     host: "smtp.163.com",
+                //     port: 465,
+                //     secure: true, // Use `true` for port 465, `false` for all other ports
+                //     secureConnection: true,
+                //     auth: {
+                //         user: "oowuyue@163.com",
+                //         pass: "AEUORGVIOHTDGDGZ",
+                //     },
+                // });
+                // transporter.sendMail({
+                //     from: '"oowuyue" <oowuyue@163.com>', // sender address
+                //     to: "3434384699@qq.com, 851616860@qq.com", // list of receivers
+                //     subject: "Hello ✔", // Subject line
+                //     text: msg, // plain text body
+                //     html: msg, // html body
+                // }, (err, info) => {
+                //     if (err) reject(err)
+                //     else resolve(info)
+                // });
+               resolve({response:"ok"})
+            } catch (error) {
+                reject(error)
+            }
         });
 
+        return promise
         //console.log("Message sent: %s", msg);
         //return true
         //Message sent: <d786aa62-4e0a-070a-47ed-0b0666549519@ethereal.email>
@@ -650,11 +668,11 @@ if (typeof module !== "undefined" && module.exports) {
     exports.currentDayYM = currentDayYM
     exports.currentDayYMD = currentDayYMD
     exports.preDayYMD = preDayYMD
+    exports.sendMailDate = sendMailDate
 
     exports.stampToDate = stampToDate
     exports.dateToStamp = dateToStamp
     exports.getLastDayOf = getLastDayOf
-
 
     exports.unifyDate = unifyDate
     exports.findSameTime = findSameTime
@@ -676,7 +694,5 @@ if (typeof module !== "undefined" && module.exports) {
     exports.writeDataToFile = writeDataToFile
     exports.getDataFromFile = getDataFromFile
     exports.mySendMail = mySendMail
-
-
-
+    exports.isSendMail = isSendMail
 } 

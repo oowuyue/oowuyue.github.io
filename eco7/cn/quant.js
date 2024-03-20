@@ -18,17 +18,12 @@ const {
     writeDataToFile,
     getDataFromFile,
     mySendMail,
+    isSendMail,
+    sendMailDate,
     currentDayYM,
     currentDayYMD
 } = require("../ajslib/my.js")
 const folder = path.join(__dirname, "/data/雪球行情/")
-
-const sendMailDate = "currentYearSendMail"
-function isSendMail(trigDate) {
-    if (sendMailDate == "currentYearMonthSendMail") return trigDate.substring(0, 7) == currentDayYM
-    if (sendMailDate == "currentYearSendMail") return trigDate.substring(0, 4) == currentDayYM.substring(0, 4)
-    return false
-}
 
 let getXueQiuNowTimestamp
 async function getXueQiu() {
@@ -74,7 +69,7 @@ async function getXueQiu() {
     return getDataFromUrlFunc
 }
 
-function backTest大盘(dataName, dayDatas, currentDayIndex, triggerLogArr) {
+async function backTest大盘(dataName, dayDatas, currentDayIndex, triggerLogArr) {
 
     let dayCross = false
     let dayNlowM = false
@@ -243,7 +238,7 @@ function backTest大盘(dataName, dayDatas, currentDayIndex, triggerLogArr) {
 
     }
 
-    function triggerLog(currentDayList, currentWeekList, currentMonthList) {
+    async function triggerLog(currentDayList, currentWeekList, currentMonthList) {
         let currentDayIndex = currentDayList.length - 1
         let currentDayData = currentDayList[currentDayIndex]
 
@@ -311,14 +306,15 @@ function backTest大盘(dataName, dayDatas, currentDayIndex, triggerLogArr) {
         let hasIndex = triggerLogArr.findIndex(ele => { return ele.trigDate == currentDayData.date })
         if (hasIndex == -1) {
             if (!isSendMail(logProfileN.trigDate)) {
-                console.log(logProfileN.trigDate, " new")
+                console.log(logProfileN.trigDate, "new")
             } else {
-                console.log(logProfileN.trigDate, " new ", sendMailDate)
                 let mailMsg = dataName + "@new" + logProfileN.trigDate + ":From:" + os.platform + ":" + getXueQiuNowTimestamp
-                mySendMail(mailMsg)
+                let mailRes = await mySendMail(mailMsg).catch(console.error);
+                console.log(`${logProfileN.trigDate} new,${sendMailDate}:${mailRes?.response?.substring(0, 8)}`)
             }
             triggerLogArr.push(logProfileN)
         }
+        return true
 
     }
 
@@ -333,11 +329,11 @@ function backTest大盘(dataName, dayDatas, currentDayIndex, triggerLogArr) {
     testVolume(currentDayList, currentWeekList, currentMonthList)
 
     let lastResult = dayCross && dayNlowM && weekJup && monthLowMa && monthJup && monthJlow && monthPre5Jlow && volumeUp
-    if (lastResult) triggerLog(currentDayList, currentWeekList, currentMonthList)
+    if (lastResult) await triggerLog(currentDayList, currentWeekList, currentMonthList)
     return triggerLogArr
 }
 
-function backTest证券(dataName, dayDatas, currentDayIndex, triggerLogArr) {
+async function backTest证券(dataName, dayDatas, currentDayIndex, triggerLogArr) {
 
     let dayCross = false
     let dayNlowM = false
@@ -537,7 +533,7 @@ function backTest证券(dataName, dayDatas, currentDayIndex, triggerLogArr) {
 
     }
 
-    function triggerLog(currentDayList, currentWeekList, currentMonthList) {
+    async function triggerLog(currentDayList, currentWeekList, currentMonthList) {
         let currentDayIndex = currentDayList.length - 1
         let currentDayData = currentDayList[currentDayIndex]
 
@@ -606,11 +602,11 @@ function backTest证券(dataName, dayDatas, currentDayIndex, triggerLogArr) {
         let hasIndex = triggerLogArr.findIndex(ele => { return ele.trigDate == currentDayData.date })
         if (hasIndex == -1) {
             if (!isSendMail(logProfileN.trigDate)) {
-                console.log(logProfileN.trigDate, " new")
+                console.log(logProfileN.trigDate, "new")
             } else {
-                console.log(logProfileN.trigDate, " new ", sendMailDate)
                 let mailMsg = dataName + "@new" + logProfileN.trigDate + ":From:" + os.platform + ":" + getXueQiuNowTimestamp
-                mySendMail(mailMsg)
+                let mailRes = await mySendMail(mailMsg).catch(console.error);
+                console.log(`${logProfileN.trigDate} new,${sendMailDate}:${mailRes?.response?.substring(0, 8)}`)
             }
             triggerLogArr.push(logProfileN)
         }
@@ -637,7 +633,7 @@ function backTest证券(dataName, dayDatas, currentDayIndex, triggerLogArr) {
     else
         lastResult = dayCross && dayNlowM && weekJup && monthLowMa && monthJup && monthJlow && monthPre5Jlow && volumeUp
 
-    if (lastResult) triggerLog(currentDayList, currentWeekList, currentMonthList)
+    if (lastResult) await triggerLog(currentDayList, currentWeekList, currentMonthList)
     return triggerLogArr
 }
 
@@ -719,21 +715,22 @@ async function down1Back1(nameCodes, backName) {
         let triggerLogArr = [];
         let lastLogIndex = 70;
         [triggerLogArr, lastLogIndex] = getLastLogDateIndexFunc(dataName, dayDatas)
-        triggerLogArr.forEach((ele, index) => {
-            if (triggerLogArr.length - 1 != index) console.log(ele.trigDate, " inlog")
+        for (let index = 0; index < triggerLogArr.length; index++) { //https://zhuanlan.zhihu.com/p/128551597
+            const ele = triggerLogArr[index];
+            if (triggerLogArr.length - 1 != index) console.log(ele.trigDate, "inlog")
             else {
-                if (!isSendMail(ele.trigDate)) console.log(ele.trigDate, " inlog=>lastLogIndex:" + lastLogIndex)
+                if (!isSendMail(ele.trigDate)) console.log(ele.trigDate, "inlog=>lastLogIndex:" + lastLogIndex)
                 else {
-                    console.log(ele.trigDate, " inlog=>lastLogIndex:" + lastLogIndex, " ", sendMailDate)
                     let mailMsg = dataName + "@inlog" + ele.trigDate + ":From:" + os.platform + ":" + getXueQiuNowTimestamp
-                    mySendMail(mailMsg)
+                    let mailRes = await mySendMail(mailMsg).catch(console.error);
+                    console.log(`${ele.trigDate} inlog=>lastLogIndex: ${lastLogIndex},${sendMailDate}:${mailRes?.response?.substring(0, 8)}`)
                 }
             }
-        });
+        }
 
         for (let currentDayIndex = lastLogIndex + 1; currentDayIndex <= dayDatas.length - 1; currentDayIndex++) {
-            if (backName == "大盘策略") triggerLogArr = backTest大盘(dataName, dayDatas, currentDayIndex, triggerLogArr)
-            if (backName == "证券策略") triggerLogArr = backTest证券(dataName, dayDatas, currentDayIndex, triggerLogArr)
+            if (backName == "大盘策略") triggerLogArr = await backTest大盘(dataName, dayDatas, currentDayIndex, triggerLogArr)
+            if (backName == "证券策略") triggerLogArr = await backTest证券(dataName, dayDatas, currentDayIndex, triggerLogArr)
         }
         nameCodes[i].triggerLogArr = triggerLogArr
 
@@ -778,21 +775,22 @@ async function downAllBack(nameCodes, backName) {
         let triggerLogArr = [];
         let lastLogIndex = 70;
         [triggerLogArr, lastLogIndex] = getLastLogDateIndexFunc(dataName, dayDatas);
-        triggerLogArr.forEach((ele, index) => {
-            if (triggerLogArr.length - 1 != index) console.log(ele.trigDate, " inlog")
+        for (let index = 0; index < triggerLogArr.length; index++) { //https://zhuanlan.zhihu.com/p/128551597
+            const ele = triggerLogArr[index];
+            if (triggerLogArr.length - 1 != index) console.log(ele.trigDate, "inlog")
             else {
-                if (!isSendMail(ele.trigDate)) console.log(ele.trigDate, " inlog=>lastLogIndex:" + lastLogIndex)
+                if (!isSendMail(ele.trigDate)) console.log(ele.trigDate, "inlog=>lastLogIndex:" + lastLogIndex)
                 else {
-                    console.log(ele.trigDate, " inlog=>lastLogIndex:" + lastLogIndex, " ", sendMailDate)
                     let mailMsg = dataName + "@inlog" + ele.trigDate + ":From:" + os.platform + ":" + getXueQiuNowTimestamp
-                    mySendMail(mailMsg)
+                    let mailRes = await mySendMail(mailMsg).catch(console.error);
+                    console.log(`${ele.trigDate} inlog=>lastLogIndex: ${lastLogIndex},${sendMailDate}:${mailRes?.response?.substring(0, 8)}`)
                 }
             }
-        });
+        }
 
         for (let currentDayIndex = lastLogIndex + 1; currentDayIndex <= dayDatas.length - 1; currentDayIndex++) {
-            if (backName == "大盘策略") triggerLogArr = backTest大盘(dataName, dayDatas, currentDayIndex, triggerLogArr)
-            if (backName == "证券策略") triggerLogArr = backTest证券(dataName, dayDatas, currentDayIndex, triggerLogArr)
+            if (backName == "大盘策略") triggerLogArr = await backTest大盘(dataName, dayDatas, currentDayIndex, triggerLogArr)
+            if (backName == "证券策略") triggerLogArr = await backTest证券(dataName, dayDatas, currentDayIndex, triggerLogArr)
         }
         nameCodes[i].triggerLogArr = triggerLogArr
 
@@ -814,8 +812,8 @@ async function downAllBack(nameCodes, backName) {
 
     let nameCodes = [
         { name: "沪深300_xueqiu_day", code: "SH000300" },
-        // { name: "上证指数_xueqiu_day", code: "SH000001" },
-        // { name: "恒生指数_xueqiu_day", code: "HKHSI" },
+        { name: "上证指数_xueqiu_day", code: "SH000001" },
+        //{ name: "恒生指数_xueqiu_day", code: "HKHSI" },
         //{ name: "Ａ股指数_xueqiu_day", code: "SH000002" },
 
     ]
@@ -825,12 +823,12 @@ async function downAllBack(nameCodes, backName) {
     nameCodes = [
         { name: "中信证券_xueqiu_day", code: "SH600030" },
         { name: "光大证券_xueqiu_day", code: "SH601788" },
-        // { name: "国泰君安_xueqiu_day", code: "SH601211" },
-        // { name: "中信建投_xueqiu_day", code: "SH601066" },
-        // { name: "招商证券_xueqiu_day", code: "SH600999" },
-        // { name: "广发证券_xueqiu_day", code: "SZ000776" },
+        { name: "国泰君安_xueqiu_day", code: "SH601211" },
+        { name: "中信建投_xueqiu_day", code: "SH601066" },
+        { name: "招商证券_xueqiu_day", code: "SH600999" },
+        { name: "广发证券_xueqiu_day", code: "SZ000776" },
 
-        // { name: "东方财富_xueqiu_day", code: "SZ300059" },
+        { name: "东方财富_xueqiu_day", code: "SZ300059" },
         { name: "同花顺_xueqiu_day", code: "SZ300033" },
         { name: "恒生电子_xueqiu_day", code: "SH600570" },
     ]
