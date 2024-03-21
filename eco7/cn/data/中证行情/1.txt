@@ -1,10 +1,1 @@
-aassss11
-
-
-git add .&&git commit -m "update by github actions"&&git push origin master
-
-
-sss
-
-          git diff --exit-code ./eco7/ || git add ./eco7/ && git commit -am "push new action" && git push 
-的范德萨发
+aassss11方法的观点桑
