@@ -240,10 +240,16 @@
         if (typeof 上证指数策略 === "undefined") var 上证指数策略 = []
 
         证券策略 = [
-            ...中信证券策略, ...光大证券策略, ...国泰君安策略, ...中信建投策略,
-            ...招商证券策略, ...广发证券策略,
-            ...东方财富策略, ...同花顺策略, ...恒生电子策略
+            "中信证券策略", "光大证券策略", "国泰君安策略", "中信建投策略",
+            "招商证券策略", "广发证券策略",
+            "东方财富策略", "同花顺策略", "恒生电子策略"
         ]
+        evalStr = ""
+        证券策略.forEach(elename => {
+            evalStr += `if (typeof ${elename} === "undefined") var ${elename} = [];`
+        })
+        eval(evalStr)
+
     </script>
     <script type="text/javascript" src="data/同花顺策略/同花顺策略统计.js"></script>
     <script type="text/javascript">
@@ -1053,7 +1059,7 @@
                 type: 'legendToggleSelect',
                 name: "恒生指数"
             });
-            
+
 
         }, "1")
 

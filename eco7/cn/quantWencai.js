@@ -795,12 +795,12 @@ let tactics = [
 
 ];
 
+let justProduceLink = true
 let browser;
 (async () => {
     browser = await puppeteer.launch({ headless: false, executablePath: 'C:\\Program Files\\Google\\Chrome Dev\\Application\\chrome.exe', defaultViewport: null, args: ['--start-maximized'] });
 
     let htmlStr = ""
-    let justProduceLink = true
     for (let i = 0; i < tactics.length; i++) {
         let dataName = tactics[i].name
         let dataFile = `${folder}${dataName}.csv`
@@ -849,4 +849,5 @@ let browser;
     await smallCom()//策略回测
     await bigCom()
 
+    // mx_664226190   sogo54321  手机177
 })()
