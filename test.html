@@ -6,221 +6,103 @@
     <meta http-equiv='X-UA-Compatible' content='IE=edge'>
     <meta name='viewport' content='width=device-width, initial-scale=1.0'>
     <title>资产增加单</title>
+    <script type="text/javascript" src="./eco7/ajslib/my.js"></script>
 </head>
 
 <body>
 
-    <div id="printHtml">
-        <style>
-        tbody tr th {
-            border: 0.75pt solid black;
-            border-collapse: collapse;
-            margin: auto;
-            font-family: 宋体;
-            font-weight: normal;
-            font-size: 10.5pt;
+
+
+    <img id="captcha-verify-image" style="width:280px; height: 160.58823529411765px;" src="./getImg.png">
+    <img id="captcha-verify-image-bw" style="width:280px; height: 160.58823529411765px;">
+
+    <img id="captcha-verify-image1" style="width:280px; height: 160.58823529411765px;" src="./getImg1.png">
+    <img id="captcha-verify-image1-bw" style="width:280px; height: 160.58823529411765px;">
+
+    <img id="captcha-verify-image2" style="width:280px; height: 160.58823529411765px;" src="./getImg2.png">
+    <img id="captcha-verify-image2-bw" style="width:280px; height: 160.58823529411765px;">
+
+    <script type="text/javascript">
+
+
+        let image = document.getElementById('captcha-verify-image');
+        image.onload = getPos(image, document.getElementById('captcha-verify-image-bw'));
+
+        let image1 = document.getElementById('captcha-verify-image1');
+        image1.onload = getPos(image1, document.getElementById('captcha-verify-image1-bw'));
+
+        let image2 = document.getElementById('captcha-verify-image2');
+        image2.onload = getPos(image2, document.getElementById('captcha-verify-image2-bw'));
+
+
+
+        function getPos(sourceImage, resImg) {
+
+            let canvas = document.createElement('canvas');
+            canvas.width = sourceImage.width;
+            canvas.height = sourceImage.height;
+            let ctx = canvas.getContext('2d');
+
+            // 将验证码图片绘制到画布上
+            ctx.drawImage(sourceImage, 0, 0, sourceImage.width, sourceImage.height);
+            // 获取画布上的像素数据
+            let imageData = ctx.getImageData(0, 0, sourceImage.width, sourceImage.height);
+
+            for (let index = 0; index < imageData.data.length; index += 4) {
+                let r = imageData.data[index] * 0.2126;
+                let g = imageData.data[index + 1] * 0.7152;
+                let b = imageData.data[index + 2] * 0.0722;
+                if (r + g + b > 150) {
+                    imageData.data[index] = 255
+                    imageData.data[index + 1] = 255
+                    imageData.data[index + 2] = 255
+                } else {
+                    imageData.data[index] = 0
+                    imageData.data[index + 1] = 0
+                    imageData.data[index + 2] = 0
+                }
+            }
+            ctx.putImageData(imageData, 0, 0);
+            resImg.src = canvas.toDataURL();
+
+            //将像素数据转换为二维数组，处理灰度、二值化，将像素点转换为0（黑色）或1（白色）
+            image = sourceImage
+            let data = [];
+            for (let h = 0; h < image.height; h++) {
+                data.push([]);
+                for (let w = 0; w < image.width; w++) {
+                    const index = (h * image.width + w) * 4;
+                    const r = imageData.data[index] * 0.2126;
+                    const g = imageData.data[index + 1] * 0.7152;
+                    const b = imageData.data[index + 2] * 0.0722;
+                    if (r + g + b > 100) {
+                        data[h].push(1);
+                    } else {
+                        data[h].push(0);
+                    }
+                }
+            }
+            // 计算每一列黑白色像素点相邻的个数，找到最多的一列，大概率为缺口位置
+            let maxChangeCount = 0;
+            let coordinateShift = 0;
+            for (let w = image.width - 1; w > 40; w--) {
+                let changeCount = 0;
+                for (let h = 0; h < image.height; h++) {
+                    if (data[h][w] == 0 && data[h][w - 1] == 1) {
+                        changeCount++;
+                    }
+                }
+                if (changeCount > maxChangeCount) {
+                    maxChangeCount = changeCount;
+                    coordinateShift = w;
+                }
+            }
+
+            console.log(coordinateShift, image.src)
+            // return coordinateShift;
         }
 
-        .textCenter {
-            text-align: center;
-        }
-
-        .textLeft {
-            text-align: left;
-            padding-left: 3.75pt;
-        }
-
-        .textRight {
-            text-align: right;
-            padding-right: 3.75pt;
-        }
-
-        .content {
-            font-family: 宋体;
-            font-weight: normal;
-            font-size: 9pt
-        }
-
-        tfoot tr th,
-        thead tr th {
-            font-family: 宋体;
-            font-weight: normal;
-            font-size: 10.5pt;
-        }
-        </style>
-        <table style='width: 98%;border-collapse:collapse;font-size: 9pt'>
-            <thead>
-                <tr style='min-height:22.5pt;max-height:22.5pt;'>
-                    <th colspan='4' class='textRight' style='font-size:18pt;font-weight: bold;'>资产增加单</th>
-                    <th colspan='5' class='textRight'>财务部门留存</th>
-                </tr>
-                <tr style='min-height:18.75pt;max-height:18.75pt;'>
-                    <th colspan='3' class='textLeft'>单位（公章）：全国X****</th>
-                    <th colspan='2' class='textLeft'>制单日期：2024-01-12</th>
-                    <th colspan='4' class='textRight'>序号：ZCDJ2401120005-1/1</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr style='border-top: 1.5pt solid black;border-left: 1.5pt solid black;border-right: 1.5pt solid black;'>
-                    <th colspan='2' class='textLeft'>
-                        <div style='overflow: hidden;max-height: 13.5pt;line-height: 13.5pt;'>报账处室：装财局财务处</div>
-                    </th>
-                    <th colspan='3' class='textLeft'>
-                        <div style='overflow: hidden;max-height: 13.5pt;line-height: 13.5pt;'>经费来源：财政拨款1</div>
-                    </th>
-                    <th colspan='4' class='textLeft'>
-                        <div style='overflow: hidden;max-height: 13.5pt;line-height: 13.5pt;'>经费年度：2024</div>
-                    </th>
-                </tr>
-                <tr style='border-left: 1.5pt solid black;border-right: 1.5pt solid black;'>
-                    <th colspan='2' class='textLeft'>
-                        <div style='overflow: hidden;max-height: 13.5pt;line-height: 13.5pt;'>资产来源：购置</div>
-                    </th>
-                    <th colspan='3' class='textLeft'>
-                        <div style='overflow: hidden;max-height: 13.5pt;'>采购方式：集中采购</div>
-                    </th>
-                    <th colspan='4' class='textLeft'>
-                        <div style='overflow: hidden;max-height: 13.5pt;line-height: 13.5pt;'>经费科目：公共安全支出1</div>
-                    </th>
-                </tr>
-                <tr style='border-left: 1.5pt solid black;border-right: 1.5pt solid black;'>
-                    <th colspan='3' class='textLeft'>
-                        <div style='overflow: hidden;max-height: 13.5pt;line-height: 13.5pt;'>经办人：超*管</div>
-                    </th>
-                    <th colspan='6' class='textLeft'>
-                        <div style='overflow: hidden;max-height: 13.5pt;line-height: 13.5pt;'>备注：</div>
-                    </th>
-                </tr>
-                <tr style='min-height:17.25pt;max-height:17.25pt;line-height: 17.25pt;border-top: 1.5pt solid black;border-left: 1.5pt solid black;border-right: 1.5pt solid black;'>
-                    <th class='textCenter' style='min-width:60pt;max-width:60pt;font-weight: bold;'>资产类别</th>
-                    <th class='textCenter' style='min-width:71.25pt;max-width:71.25pt;font-weight: bold;'>资产编号</th>
-                    <th class='textCenter' style='min-width:90pt;max-width:90pt;font-weight: bold;'>资产名称</th>
-                    <th class='textCenter' style='min-width:75pt;max-width:75pt;font-weight: bold;'>品牌</th>
-                    <th class='textCenter' style='min-width:75pt;max-width:75pt;font-weight: bold;'>规格型号</th>
-                    <th class='textCenter' style='min-width:30pt;max-width:30pt;font-weight: bold;'>单位</th>
-                    <th class='textCenter' style='min-width:26.25pt;max-width:26.25pt;font-weight: bold;'>数量</th>
-                    <th class='textCenter' style='min-width:60pt;max-width:60pt;font-weight: bold;'>单价</th>
-                    <th class='textCenter' style='min-width:60pt;max-width:60pt;font-weight: bold;'>金额</th>
-                </tr>
-                <tr style='border-left: 1.5pt solid black;border-right: 1.5pt solid black;overflow:hidden;'>
-                    <th class='textLeft content'>
-                        <div style='overflow: hidden;min-height:21.75pt;max-height: 21.75pt;min-width:56.25pt;max-width:56.25pt;'> </div>
-                    </th>
-                    <th class='textLeft content'>
-                        <div style='overflow: hidden;min-height:21.75pt;max-height: 21.75pt;min-width:71.25pt;max-width:71.25pt;word-break:break-all;overflow-wrap: break-word;'> </div>
-                    </th>
-                    <th class='textLeft content'>
-                        <div style='overflow: hidden;min-height:21.75pt;max-height: 21.75pt;min-width:90pt;max-width:90pt;word-break:break-all;overflow-wrap: break-word;'>合计</div>
-                    </th>
-                    <th class='textLeft content'>
-                        <div style='overflow: hidden;min-height:21.75pt;max-height: 21.75pt;min-width:71.25pt;max-width:71.25pt;word-break:break-all;overflow-wrap: break-word;'> </div>
-                    </th>
-                    <th class='textLeft content'>
-                        <div style='overflow: hidden;min-height:21.75pt;max-height: 21.75pt;min-width:71.25pt;max-width:71.25pt;word-break:break-all;overflow-wrap: break-word;'> </div>
-                    </th>
-                    <th class='textCenter content'>
-                        <div style='overflow: hidden;min-height:21.75pt;max-height: 21.75pt;min-width:30pt;max-width:30pt;word-break:break-all;overflow-wrap: break-word;'> </div>
-                    </th>
-                    <th class='textRight content'>
-                        <div style='overflow: hidden;min-height:21.75pt;max-height: 21.75pt;min-width:21pt;max-width:21pt;word-break:break-all;overflow-wrap: break-word;'>4</div>
-                    </th>
-                    <th class='textRight content'>
-                        <div style='overflow: hidden;min-height:21.75pt;max-height: 21.75pt;min-width:52.5pt;max-width:52.5pt;word-break:break-all;overflow-wrap: break-word;'> </div>
-                    </th>
-                    <th class='textRight content'>
-                        <div style='overflow: hidden;min-height:21.75pt;max-height: 21.75pt;min-width:56.25pt;max-width:56.25pt;word-break:break-all;overflow-wrap: break-word;'>505.00</div>
-                    </th>
-                </tr>
-                <tr style='border-left: 1.5pt solid black;border-right: 1.5pt solid black;overflow:hidden;'>
-                    <th class='textLeft content'>
-                        <div style='overflow: hidden;min-height:21.75pt;max-height: 21.75pt;min-width:56.25pt;max-width:56.25pt;'>土地、房屋及构筑物</div>
-                    </th>
-                    <th class='textLeft content'>
-                        <div style='overflow: hidden;min-height:21.75pt;max-height: 21.75pt;min-width:71.25pt;max-width:71.25pt;word-break:break-all;overflow-wrap: break-word;'>A24012900000002</div>
-                    </th>
-                    <th class='textLeft content'>
-                        <div style='overflow: hidden;min-height:21.75pt;max-height: 21.75pt;min-width:90pt;max-width:90pt;word-break:break-all;overflow-wrap: break-word;'>121</div>
-                    </th>
-                    <th class='textLeft content'>
-                        <div style='overflow: hidden;min-height:21.75pt;max-height: 21.75pt;min-width:71.25pt;max-width:71.25pt;word-break:break-all;overflow-wrap: break-word;'></div>
-                    </th>
-                    <th class='textLeft content'>
-                        <div style='overflow: hidden;min-height:21.75pt;max-height: 21.75pt;min-width:71.25pt;max-width:71.25pt;word-break:break-all;overflow-wrap: break-word;'></div>
-                    </th>
-                    <th class='textCenter content'>
-                        <div style='overflow: hidden;min-height:21.75pt;max-height: 21.75pt;min-width:30pt;max-width:30pt;word-break:break-all;overflow-wrap: break-word;'>平方米</div>
-                    </th>
-                    <th class='textRight content'>
-                        <div style='overflow: hidden;min-height:21.75pt;max-height: 21.75pt;min-width:21pt;max-width:21pt;word-break:break-all;overflow-wrap: break-word;'>1</div>
-                    </th>
-                    <th class='textRight content'>
-                        <div style='overflow: hidden;min-height:21.75pt;max-height: 21.75pt;min-width:52.5pt;max-width:52.5pt;word-break:break-all;overflow-wrap: break-word;'>1.00</div>
-                    </th>
-                    <th class='textRight content'>
-                        <div style='overflow: hidden;min-height:21.75pt;max-height: 21.75pt;min-width:56.25pt;max-width:56.25pt;word-break:break-all;overflow-wrap: break-word;'>1.00</div>
-                    </th>
-                </tr>
-                <tr style='border-left: 1.5pt solid black;border-right: 1.5pt solid black;overflow:hidden;'>
-                    <th class='textLeft content'>
-                        <div style='overflow: hidden;min-height:21.75pt;max-height: 21.75pt;min-width:56.25pt;max-width:56.25pt;'>无形资产</div>
-                    </th>
-                    <th class='textLeft content'>
-                        <div style='overflow: hidden;min-height:21.75pt;max-height: 21.75pt;min-width:71.25pt;max-width:71.25pt;word-break:break-all;overflow-wrap: break-word;'>A24013000000002</div>
-                    </th>
-                    <th class='textLeft content'>
-                        <div style='overflow: hidden;min-height:21.75pt;max-height: 21.75pt;min-width:90pt;max-width:90pt;word-break:break-all;overflow-wrap: break-word;'>1213</div>
-                    </th>
-                    <th class='textLeft content'>
-                        <div style='overflow: hidden;min-height:21.75pt;max-height: 21.75pt;min-width:71.25pt;max-width:71.25pt;word-break:break-all;overflow-wrap: break-word;'>别克</div>
-                    </th>
-                    <th class='textLeft content'>
-                        <div style='overflow: hidden;min-height:21.75pt;max-height: 21.75pt;min-width:71.25pt;max-width:71.25pt;word-break:break-all;overflow-wrap: break-word;'>456</div>
-                    </th>
-                    <th class='textCenter content'>
-                        <div style='overflow: hidden;min-height:21.75pt;max-height: 21.75pt;min-width:30pt;max-width:30pt;word-break:break-all;overflow-wrap: break-word;'>个</div>
-                    </th>
-                    <th class='textRight content'>
-                        <div style='overflow: hidden;min-height:21.75pt;max-height: 21.75pt;min-width:21pt;max-width:21pt;word-break:break-all;overflow-wrap: break-word;'>1</div>
-                    </th>
-                    <th class='textRight content'>
-                        <div style='overflow: hidden;min-height:21.75pt;max-height: 21.75pt;min-width:52.5pt;max-width:52.5pt;word-break:break-all;overflow-wrap: break-word;'>12.00</div>
-                    </th>
-                    <th class='textRight content'>
-                        <div style='overflow: hidden;min-height:21.75pt;max-height: 21.75pt;min-width:56.25pt;max-width:56.25pt;word-break:break-all;overflow-wrap: break-word;'>12.00</div>
-                    </th>
-                </tr>
-            </tbody>
-            <tfoot>
-                <tr style='min-height:18pt;max-height: 18pt;'>
-                    <th colspan='2' class='textLeft'>办公室主任：</th>
-                    <th colspan='2' class='textLeft'>资产管理人：</th>
-                    <th colspan='2' class='textLeft'>经手人：</th>
-                    <th colspan='3' class='textLeft'>国资部门：</th>
-                </tr>
-            </tfoot>
-        </table>
-    </div>
-
-
-
-    <br>
-
-
-    <a href="javascript:Print()">预览打印</a>
-    <script language="javascript" src="https://www.lodop.net/demolist/LodopFuncs.js"></script>
-    <script>
-    function Print() {
-        LODOP.PRINT_INIT("");
-        LODOP.ADD_PRINT_HTM(10, 10, "100%", "100%", "<!DOCTYPE html>" + document.getElementById("printHtml").innerHTML);
-        LODOP.PREVIEW();
-    };
     </script>
-
-
-    <div id="问题描述">
-        <p>问题描述</p>
-
-    </div>
 </body>
 
 </html>
