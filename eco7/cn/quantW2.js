@@ -72,7 +72,7 @@ function getDateTimeLocal(preNDay = 0) {
 let browser
 async function run() {
     browser = await puppeteer.launch({
-        headless: false, //Missing X server or $DISPLAY
+        headless: 'new', //Missing X server or $DISPLAY
         defaultViewport: { width: 1366, height: 768 },
         devtools: false
     })
