@@ -205,7 +205,7 @@ async function run() {
                 const newY = dragY + Math.random() * 10;
 
                 await page.mouse.move(newX, newY, { steps: 1 });
-                await page.waitForTimeout(stepTime);
+                await wait(stepTime);
             }
             // 松手前最好还是等待一下，这也很符合真实操作
             await wait(500)
