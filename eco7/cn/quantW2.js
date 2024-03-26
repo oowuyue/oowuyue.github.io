@@ -72,7 +72,7 @@ function getDateTimeLocal(preNDay = 0) {
 let browser
 async function run() {
     browser = await puppeteer.launch({
-        headless: false, //Missing X server or $DISPLAY
+        headless: true, //Missing X server or $DISPLAY
         defaultViewport: { width: 1366, height: 768 },
         devtools: false
     })
@@ -84,7 +84,7 @@ async function run() {
             if (response.request().resourceType() === 'image')
                 originalImage = await response.buffer().catch(() => { })
         })
-        await page.goto('https://upass.110jqka.com.cn/login');
+        await page.goto('https://upass.10jqka.com.cn/login');
         await page.click('#to_account_login a.pointer')
         await page.type('#account_pannel input#uname', 'MTSoftware12'); //mx_664226190 
         await page.type('#account_pannel input#passwd', 'sogo54321');
