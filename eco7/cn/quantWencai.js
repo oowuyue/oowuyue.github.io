@@ -6,7 +6,7 @@ const fs = require('fs')
 const path = require('path')
 const {
     currentDayYMD,
-    getLastDayOf,
+    getDateInWeekDay,
     dayToPeriod,
     xueqiuFormatDate,
     wait,
@@ -424,7 +424,7 @@ let signal = async () => {
         let countJson = {}
         json.forEach((element) => {
             let startTime = element[2] //day
-            if (Period == "week") startTime = getLastDayOf(element[2])
+            if (Period == "week") startTime = getDateInWeekDay(element[2])
             if (Period == "month") startTime = element[2].substring(0, 7) + "-28"
             if (countJson[startTime]) {
                 countJson[startTime].count += 1;

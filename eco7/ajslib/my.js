@@ -125,11 +125,12 @@ function dateToStamp(date) {
     return new Date(date).getTime()
 }
 
-//获取日期所在周的周五
-function getLastDayOf(dateStr) {
+
+//获取日期dateStr 所在周的周weekDay 的日期
+function getDateInWeekDay(dateStr, weekDay = 5) {
     let day = new Date(dateStr).getDay() || 7
     let date = new Date(dateStr)
-    let restlDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() + 5 - day)
+    let restlDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() + weekDay - day)
     return stampToDate(restlDate.getTime())
 }
 
@@ -571,6 +572,7 @@ function PtPAmp(prePeriodItem, currentPeriodItem) {
 if (typeof module !== "undefined" && module.exports) {
     const fs = require('fs');
     const nodemailer = require("nodemailer");
+    const devTestEnv = false
 
     function writeDataToFile(dataName, dayDatas, folder = "./data/") {
         let promise = new Promise((resolve, reject) => {
@@ -623,13 +625,20 @@ if (typeof module !== "undefined" && module.exports) {
         return promise
     }
 
-    const sendMailDate = "curY-email"
+    const sendMailDate = "curWeek-email"
     function isSendMail(trigDate) {
+        if (sendMailDate == "curWeek-email") {
+            // console.log(trigDate, getDateInWeekDay(trigDate, 7))
+            // console.log(currentDayYMD, getDateInWeekDay(currentDayYMD, 7))
+            return getDateInWeekDay(trigDate, 7) == getDateInWeekDay(currentDayYMD, 7)
+        }
         if (sendMailDate == "curYM-email") return trigDate.substring(0, 7) == currentDayYM
         if (sendMailDate == "curY-email") return trigDate.substring(0, 4) == currentDayYM.substring(0, 4)
         return false
     }
+
     async function mySendMail(msg) {
+        if (devTestEnv) { console.log(msg); return true; }
         let promise = new Promise(async (resolve, reject) => {
             try {
                 const transporter = nodemailer.createTransport({
@@ -653,16 +662,12 @@ if (typeof module !== "undefined" && module.exports) {
                     if (err) reject(err)
                     else resolve(info)
                 });
-                //resolve({response:"ok"})
+
             } catch (error) {
                 reject(error)
             }
         });
-
         return promise
-        //console.log("Message sent: %s", msg);
-        //return true
-        //Message sent: <d786aa62-4e0a-070a-47ed-0b0666549519@ethereal.email>
     }
 
     exports.currentDayYM = currentDayYM
@@ -672,7 +677,7 @@ if (typeof module !== "undefined" && module.exports) {
 
     exports.stampToDate = stampToDate
     exports.dateToStamp = dateToStamp
-    exports.getLastDayOf = getLastDayOf
+    exports.getDateInWeekDay = getDateInWeekDay
 
     exports.unifyDate = unifyDate
     exports.findSameTime = findSameTime

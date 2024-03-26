@@ -81,7 +81,6 @@ async function backTest大盘(dataName, dayDatas, currentDayIndex, triggerLogArr
     let volumeUp = false
 
     function testDay(currentDayList) {
-
         let pre2Day = currentDayList[currentDayList.length - 3]
         let pre1Day = currentDayList[currentDayList.length - 2]
         let currentDay = currentDayList[currentDayList.length - 1]
@@ -808,32 +807,33 @@ async function downAllBack(nameCodes, backName) {
 
 (async () => {
 
-    let nameCodes = [
-        { name: "沪深300_xueqiu_day", code: "SH000300" },
-        { name: "上证指数_xueqiu_day", code: "SH000001" },
-        { name: "恒生指数_xueqiu_day", code: "HKHSI" },
-        //{ name: "Ａ股指数_xueqiu_day", code: "SH000002" },
+    try {
+        let nameCodes = [
+            { name: "沪深300_xueqiu_day", code: "SH000300" },
+            { name: "上证指数_xueqiu_day", code: "SH000001" },
+            { name: "恒生指数_xueqiu_day", code: "HKHSI" },
+            //{ name: "Ａ股指数_xueqiu_day", code: "SH000002" },
 
-    ]
-    await downAllBack(nameCodes, "大盘策略")
+        ]
+        await downAllBack(nameCodes, "大盘策略")
 
+        nameCodes = [
+            { name: "中信证券_xueqiu_day", code: "SH600030" },
+            { name: "光大证券_xueqiu_day", code: "SH601788" },
+            { name: "国泰君安_xueqiu_day", code: "SH601211" },
+            { name: "中信建投_xueqiu_day", code: "SH601066" },
+            { name: "招商证券_xueqiu_day", code: "SH600999" },
+            { name: "广发证券_xueqiu_day", code: "SZ000776" },
 
-    nameCodes = [
-        { name: "中信证券_xueqiu_day", code: "SH600030" },
-        { name: "光大证券_xueqiu_day", code: "SH601788" },
-        { name: "国泰君安_xueqiu_day", code: "SH601211" },
-        { name: "中信建投_xueqiu_day", code: "SH601066" },
-        { name: "招商证券_xueqiu_day", code: "SH600999" },
-        { name: "广发证券_xueqiu_day", code: "SZ000776" },
+            { name: "东方财富_xueqiu_day", code: "SZ300059" },
+            { name: "同花顺_xueqiu_day", code: "SZ300033" },
+            { name: "恒生电子_xueqiu_day", code: "SH600570" },
+        ]
+        await downAllBack(nameCodes, "证券策略")
 
-        { name: "东方财富_xueqiu_day", code: "SZ300059" },
-        { name: "同花顺_xueqiu_day", code: "SZ300033" },
-        { name: "恒生电子_xueqiu_day", code: "SH600570" },
-    ]
-    await downAllBack(nameCodes, "证券策略")
-
-
-    await mySendMail("everyDay backTestA股指数")
-    if(browser) browser.close()
+    } catch (error) {
+        await mySendMail("everyDay backTestA股指数error: " + error)
+    }
+    if (browser) browser.close()
 
 })()

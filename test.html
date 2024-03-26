@@ -7,100 +7,52 @@
     <meta name='viewport' content='width=device-width, initial-scale=1.0'>
     <title>资产增加单</title>
     <script type="text/javascript" src="./eco7/ajslib/my.js"></script>
+
+    <script type="text/javascript" src="./eco7/cn/data/同花顺策略GitHubAction/同花顺策略统计.js"></script>
 </head>
 
 <body>
 
 
 
-    <img id="captcha-verify-image" style="width:280px; height: 160.58823529411765px;" src="./getImg.png">
-    <img id="captcha-verify-image-bw" style="width:280px; height: 160.58823529411765px;">
 
-    <img id="captcha-verify-image1" style="width:280px; height: 160.58823529411765px;" src="./getImg1.png">
-    <img id="captcha-verify-image1-bw" style="width:280px; height: 160.58823529411765px;">
+    <script>
 
-    <img id="captcha-verify-image2" style="width:280px; height: 160.58823529411765px;" src="./getImg2.png">
-    <img id="captcha-verify-image2-bw" style="width:280px; height: 160.58823529411765px;">
-
-    <script type="text/javascript">
-
-
-        let image = document.getElementById('captcha-verify-image');
-        image.onload = getPos(image, document.getElementById('captcha-verify-image-bw'));
-
-        let image1 = document.getElementById('captcha-verify-image1');
-        image1.onload = getPos(image1, document.getElementById('captcha-verify-image1-bw'));
-
-        let image2 = document.getElementById('captcha-verify-image2');
-        image2.onload = getPos(image2, document.getElementById('captcha-verify-image2-bw'));
+        //指定时区的日期时间 前N天
+        function getDateTimeByZone(timezone = 8, preNDay = 0) {
+            // 本地时间距离（GMT时间）毫秒数
+            let nowDate = new Date().getTime() - preNDay * 24 * 60 * 60 * 1000
+            // 本地时间和格林威治时间差，单位分钟
+            let offset_GMT = new Date().getTimezoneOffset()
+            //  反推到格林尼治时间
+            let GMT = nowDate + offset_GMT * 60 * 1000
+            //  获取指定时区时间
+            let targetDate = new Date(GMT + timezone * 60 * 60 * 1000)
 
 
+            let Y = targetDate.getFullYear(),
+                M = targetDate.getMonth() + 1,
+                D = targetDate.getDate(),
 
-        function getPos(sourceImage, resImg) {
+                h = targetDate.getHours(), // 获取当前小时数(0-23)
+                m = targetDate.getMinutes(), // 获取当前分钟数(0-59)
+                s = targetDate.getSeconds();// 获取当前秒数(0-59)
 
-            let canvas = document.createElement('canvas');
-            canvas.width = sourceImage.width;
-            canvas.height = sourceImage.height;
-            let ctx = canvas.getContext('2d');
+            if (M < 10) M = '0' + M;
+            if (D < 10) D = '0' + D;
 
-            // 将验证码图片绘制到画布上
-            ctx.drawImage(sourceImage, 0, 0, sourceImage.width, sourceImage.height);
-            // 获取画布上的像素数据
-            let imageData = ctx.getImageData(0, 0, sourceImage.width, sourceImage.height);
+            if (h < 10) h = '0' + h;
+            if (m < 10) m = '0' + m;
+            if (s < 10) s = '0' + s;
 
-            for (let index = 0; index < imageData.data.length; index += 4) {
-                let r = imageData.data[index] * 0.2126;
-                let g = imageData.data[index + 1] * 0.7152;
-                let b = imageData.data[index + 2] * 0.0722;
-                if (r + g + b > 150) {
-                    imageData.data[index] = 255
-                    imageData.data[index + 1] = 255
-                    imageData.data[index + 2] = 255
-                } else {
-                    imageData.data[index] = 0
-                    imageData.data[index + 1] = 0
-                    imageData.data[index + 2] = 0
-                }
-            }
-            ctx.putImageData(imageData, 0, 0);
-            resImg.src = canvas.toDataURL();
-
-            //将像素数据转换为二维数组，处理灰度、二值化，将像素点转换为0（黑色）或1（白色）
-            image = sourceImage
-            let data = [];
-            for (let h = 0; h < image.height; h++) {
-                data.push([]);
-                for (let w = 0; w < image.width; w++) {
-                    const index = (h * image.width + w) * 4;
-                    const r = imageData.data[index] * 0.2126;
-                    const g = imageData.data[index + 1] * 0.7152;
-                    const b = imageData.data[index + 2] * 0.0722;
-                    if (r + g + b > 100) {
-                        data[h].push(1);
-                    } else {
-                        data[h].push(0);
-                    }
-                }
-            }
-            // 计算每一列黑白色像素点相邻的个数，找到最多的一列，大概率为缺口位置
-            let maxChangeCount = 0;
-            let coordinateShift = 0;
-            for (let w = image.width - 1; w > 40; w--) {
-                let changeCount = 0;
-                for (let h = 0; h < image.height; h++) {
-                    if (data[h][w] == 0 && data[h][w - 1] == 1) {
-                        changeCount++;
-                    }
-                }
-                if (changeCount > maxChangeCount) {
-                    maxChangeCount = changeCount;
-                    coordinateShift = w;
-                }
-            }
-
-            console.log(coordinateShift, image.src)
-            // return coordinateShift;
+            return Y + '-' + M + '-' + D + " " + h + ':' + m + ":" + s;
         }
+
+        console.log("北京8时区：", getDateTimeByZone(8))
+        console.log("北京8时区pre：", getDateTimeByZone(8,1))
+        console.log("北京8时区pre2：", getDateTimeByZone(8,2))
+
+        console.log("UTC0时区：", getDateTimeByZone(0))
 
     </script>
 </body>
