@@ -660,7 +660,7 @@ if (typeof module !== "undefined" && module.exports) {
                     html: msg, // html body
                 }, (err, info) => {
                     if (err) reject(err)
-                    else resolve(true)
+                    else resolve(info)
                 });
 
             } catch (error) {
