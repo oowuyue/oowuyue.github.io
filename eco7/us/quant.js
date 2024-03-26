@@ -377,7 +377,7 @@ async function down1Back1(nameCodes, backName) {
         }
         dayDatas = dayDatas.data.item.xueqiuData2Obj("day", os.platform)
         nameCodes[i].dayDatas = dayDatas
-        
+
         let triggerLogArr = [];
         let lastLogIndex = 70;
         [triggerLogArr, lastLogIndex] = getLastLogDateIndexFunc(dataName, dayDatas);
@@ -466,15 +466,20 @@ async function downAllBack(nameCodes, backName) {
 
 
 (async () => {
-    
-    let nameCodes = [
-        { name: "标普500_xueqiu_day", code: ".INX" },
-        { name: "纳指_xueqiu_day", code: ".IXIC" },
-        { name: "道琼斯_xueqiu_day", code: ".DJI" },
-    ]
-    await downAllBack(nameCodes, "美股指数策略")
 
-    await mySendMail("everyDay backTest美股指数策略")
-    if(browser) browser.close()
+    try {
+        let nameCodes = [
+            { name: "标普500_xueqiu_day", code: ".INX" },
+            { name: "纳指_xueqiu_day", code: ".IXIC" },
+            { name: "道琼斯_xueqiu_day", code: ".DJI" },
+        ]
+        await downAllBack(nameCodes, "美股指数策略")
+        console.log("everyDay backTest美股指数 OK")
+    } catch (error) {
+        console.log("everyDay backTest美股指数error: " + error.stack)
+        await mySendMail("everyDay backTest美股指数error: " + error.stack)
+    }
+
+    if (browser) browser.close()
 
 })()

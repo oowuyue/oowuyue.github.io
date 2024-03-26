@@ -813,7 +813,6 @@ async function downAllBack(nameCodes, backName) {
             { name: "上证指数_xueqiu_day", code: "SH000001" },
             { name: "恒生指数_xueqiu_day", code: "HKHSI" },
             //{ name: "Ａ股指数_xueqiu_day", code: "SH000002" },
-
         ]
         await downAllBack(nameCodes, "大盘策略")
 
@@ -831,8 +830,10 @@ async function downAllBack(nameCodes, backName) {
         ]
         await downAllBack(nameCodes, "证券策略")
 
+        console.log("everyDay backTestA股指数 OK")
     } catch (error) {
-        await mySendMail("everyDay backTestA股指数error: " + error)
+        console.log("everyDay backTestA股指数error: " + error.stack)
+        await mySendMail("everyDay backTestA股指数error: " + error.stack)
     }
     if (browser) browser.close()
 
