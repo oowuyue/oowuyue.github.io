@@ -237,7 +237,11 @@ async function run() {
 
     const [loginResult, loginOrIndexPage] = await loginThs()
     if (!loginResult) { browser.close; console.log("登陆同花顺失败"); throw new Error(currentDayYMD + "登陆同花顺失败"); }
-    else { loginOrIndexPage.close(); console.log("登陆同花顺OK"); }
+    else { 
+        await loginOrIndexPage.screenshot({ path: `${folder}loginOrIndexPage${getDateTimeByZone().replaceAll(":", "_")},${getDateTimeLocal().replaceAll(":", "_")}.png`, fullPage: true })
+        //loginOrIndexPage.close(); 
+        console.log("登陆同花顺OK"); 
+    }
 
     const folder = path.join(__dirname, "/data/同花顺策略GitHubAction/")//个股同花顺策略
     let 策略回测urlTemplate = "`https://backtest.10jqka.com.cn/backtest/app.html#/strategybacktest?query=${query}&daysForSaleStrategy=${daysForSaleStrategy}&startDate=${startDate}&endDate=${endDate}&stockHoldCount=${stockHoldCount}&dayBuyStockNum=${dayBuyStockNum}&upperIncome=${upperIncome}&lowerIncome=${lowerIncome}&fallIncome=${fallIncome}&engine=undefined&capital=100000`"
