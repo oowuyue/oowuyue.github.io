@@ -372,7 +372,7 @@ async function run() {
         console.log("策略选股:", 策略选股)
         if (策略选股 && 策略选股[0] && !策略选股[0].includes("今日无选股")) {
             let sentRes = await mySendMail(currentDayYMD + tacticName + "今日买入：" + 策略选股);
-            console.log("策略选股senMailRes:", sentRes)
+            console.log("策略选股senMailRes:", sentRes?.messageId)
         } else {
             console.log(currentDayYMD, "今日无选股")
         }
