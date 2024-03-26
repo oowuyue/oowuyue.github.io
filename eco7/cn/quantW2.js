@@ -68,7 +68,7 @@ function getDateTimeLocal(preNDay = 0) {
     return Y + '-' + M + '-' + D + " " + h + ':' + m + ":" + s;
 }
 
-const folder = path.join(__dirname, "/data/同花顺策略GitHubAction/")//个股同花顺策略
+const folder = path.join(__dirname, "/data/同花顺策略GitHubAction/")//个股同花顺策略./
 let browser
 async function run() {
     browser = await puppeteer.launch({
@@ -87,7 +87,7 @@ async function run() {
         })
         await page.goto('https://upass.10jqka.com.cn/login');
         await page.click('#to_account_login a.pointer')
-        await page.type('#account_pannel input#uname', 'mx_664226190'); //Mtsoftware12
+        await page.type('#account_pannel input#uname', 'Mtsoftware12'); //Mtsoftware12   mx_664226190
         await page.type('#account_pannel input#passwd', 'sogo54321');
         await wait(1000)
         await page.click('#account_pannel .submit_btn');
@@ -231,11 +231,9 @@ async function run() {
 
         } while (tryCount <= 5);
 
-        return [isLoginSuccess, page]
+        return [isLoginSuccess, page, tryCount]
     };
-
-
-    const [loginResult, loginOrIndexPage] = await loginThs()
+    const [loginResult, loginOrIndexPage, tryCount] = await loginThs()
     if (!loginResult) { browser.close; console.log("登陆同花顺失败", tryCount); throw new Error(currentDayYMD + "登陆同花顺失败"); }
     else {
         await loginOrIndexPage.screenshot({ path: `${folder}loginOrIndexPage${getDateTimeByZone().replaceAll(":", "_")},${getDateTimeLocal().replaceAll(":", "_")}.png`, fullPage: true })
