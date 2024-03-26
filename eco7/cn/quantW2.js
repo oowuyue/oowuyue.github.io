@@ -101,8 +101,11 @@ async function run() {
                 let image = document.getElementById('slicaptcha-img');
                 return image.src
             });
+            if (!imageSrc.substring(0, 4).includes("http")) imageSrc = "https:" + imageSrc
+            console.log(imageSrc)
 
             let pageimageSrc = await browser.newPage()
+            
             await pageimageSrc.goto(imageSrc)
             await wait(2300)
             let coordinateShift = await pageimageSrc.evaluate(async () => {
@@ -221,7 +224,7 @@ async function run() {
             let text = ""
             let slicaptchaTextNode = await page.$('#slicaptcha-text')
             if (slicaptchaTextNode) text = await page.evaluate(node => node.innerText, slicaptchaTextNode)
-            console.log("text:",text)
+            console.log("text:", text)
 
             if (!text.includes("向右拖动滑块填充拼图")) { isLoginSuccess = true; break; }
 
