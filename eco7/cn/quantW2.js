@@ -76,6 +76,7 @@ async function run() {
         defaultViewport: { width: 1366, height: 768 },
         devtools: false
     })
+
     async function loginThs() {
         let page = await browser.newPage()
         await page.setRequestInterception(true)
@@ -86,10 +87,11 @@ async function run() {
         })
         await page.goto('https://upass.10jqka.com.cn/login');
         await page.click('#to_account_login a.pointer')
-        await page.type('#account_pannel input#uname', 'MTSoftware12'); //mx_664226190 
+        await page.type('#account_pannel input#uname', 'mx_664226190');
         await page.type('#account_pannel input#passwd', 'sogo54321');
         await wait(1000)
         await page.click('#account_pannel .submit_btn');
+        await wait(3000) //等待第一次弹出验证滑框
 
         async function tryslide() {
             await page.waitForSelector('#slicaptcha-img');
@@ -210,28 +212,28 @@ async function run() {
             await page.mouse.up();
             return true
         }
-
         let isLoginSuccess = false
-        let text = ""
-        for (let index = 0; index < 5; index++) {
-            await wait(3000)
+        let tryCount = 0
+        do {
+            tryCount++
+            await tryslide() //尝试滑动
+            await wait(3000) //等待成功跳转 或 失败换图和#slicaptcha-text
+            let text = ""
             let slicaptchaTextNode = await page.$('#slicaptcha-text')
             if (slicaptchaTextNode) text = await page.evaluate(node => node.innerText, slicaptchaTextNode)
-            if (text.includes("向右拖动滑块填充拼图"))
-                await tryslide();
-            else {
-                isLoginSuccess = true
-                break
-            }
-        }
+            console.log("text:",text)
 
-        console.log("loginLast:" ,text , index ,isLoginSuccess)
-        await wait(1000)
+            if (!text.includes("向右拖动滑块填充拼图")) { isLoginSuccess = true; break; }
+
+        } while (tryCount <= 5);
+
         return [isLoginSuccess, page]
     };
+
+
     const [loginResult, loginOrIndexPage] = await loginThs()
-    if (!loginResult) { browser.close; throw new Error(currentDayYMD + "登陆同花顺失败"); }
-    else { loginOrIndexPage.close() }
+    if (!loginResult) { browser.close; console.log("登陆同花顺失败"); throw new Error(currentDayYMD + "登陆同花顺失败"); }
+    else { loginOrIndexPage.close(); console.log("登陆同花顺OK"); }
 
     const folder = path.join(__dirname, "/data/同花顺策略GitHubAction/")//个股同花顺策略
     let 策略回测urlTemplate = "`https://backtest.10jqka.com.cn/backtest/app.html#/strategybacktest?query=${query}&daysForSaleStrategy=${daysForSaleStrategy}&startDate=${startDate}&endDate=${endDate}&stockHoldCount=${stockHoldCount}&dayBuyStockNum=${dayBuyStockNum}&upperIncome=${upperIncome}&lowerIncome=${lowerIncome}&fallIncome=${fallIncome}&engine=undefined&capital=100000`"
