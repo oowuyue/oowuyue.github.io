@@ -68,7 +68,7 @@ function getDateTimeLocal(preNDay = 0) {
     return Y + '-' + M + '-' + D + " " + h + ':' + m + ":" + s;
 }
 
-
+const folder = path.join(__dirname, "/data/同花顺策略GitHubAction/")//个股同花顺策略
 let browser
 async function run() {
     browser = await puppeteer.launch({
@@ -87,7 +87,7 @@ async function run() {
         })
         await page.goto('https://upass.10jqka.com.cn/login');
         await page.click('#to_account_login a.pointer')
-        await page.type('#account_pannel input#uname', 'mx_664226190');
+        await page.type('#account_pannel input#uname', 'mx_664226190'); //Mtsoftware12
         await page.type('#account_pannel input#passwd', 'sogo54321');
         await wait(1000)
         await page.click('#account_pannel .submit_btn');
@@ -243,7 +243,6 @@ async function run() {
         console.log("登陆同花顺OK", tryCount);
     }
 
-    const folder = path.join(__dirname, "/data/同花顺策略GitHubAction/")//个股同花顺策略
     let 策略回测urlTemplate = "`https://backtest.10jqka.com.cn/backtest/app.html#/strategybacktest?query=${query}&daysForSaleStrategy=${daysForSaleStrategy}&startDate=${startDate}&endDate=${endDate}&stockHoldCount=${stockHoldCount}&dayBuyStockNum=${dayBuyStockNum}&upperIncome=${upperIncome}&lowerIncome=${lowerIncome}&fallIncome=${fallIncome}&engine=undefined&capital=100000`"
     let nameToArr = {}
     let tactics = [
