@@ -212,12 +212,11 @@ async function run() {
         }
 
         let isLoginSuccess = false
+        let text = ""
         for (let index = 0; index < 5; index++) {
             await wait(3000)
-            let text = ""
             let slicaptchaTextNode = await page.$('#slicaptcha-text')
             if (slicaptchaTextNode) text = await page.evaluate(node => node.innerText, slicaptchaTextNode)
-            //console.log(text)
             if (text.includes("向右拖动滑块填充拼图"))
                 await tryslide();
             else {
@@ -226,6 +225,7 @@ async function run() {
             }
         }
 
+        console.log("loginLast:" ,text , index ,isLoginSuccess)
         await wait(1000)
         return [isLoginSuccess, page]
     };
