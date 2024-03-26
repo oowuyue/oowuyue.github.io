@@ -107,7 +107,7 @@ async function run() {
             let pageimageSrc = await browser.newPage()
             
             await pageimageSrc.goto(imageSrc)
-            await wait(2300)
+            await wait(3000)
             let coordinateShift = await pageimageSrc.evaluate(async () => {
 
                 let image = document.getElementsByTagName('img')[0];
@@ -169,7 +169,7 @@ async function run() {
                 //30-35
                 return coordinateShift - 32;
             });
-            await pageimageSrc.waitForNavigation()
+           
             console.log("dd:", coordinateShift)
             pageimageSrc.close()
 
