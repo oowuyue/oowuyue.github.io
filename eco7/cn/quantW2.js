@@ -169,6 +169,7 @@ async function run() {
                 //30-35
                 return coordinateShift - 32;
             });
+            await pageimageSrc.waitForNavigation()
             console.log("dd:", coordinateShift)
             pageimageSrc.close()
 
