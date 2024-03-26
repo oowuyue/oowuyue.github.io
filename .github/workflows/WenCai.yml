@@ -13,7 +13,7 @@ jobs:
   # This workflow contains a single job called "build"
   build:
     # The type of runner that the job will run on
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -37,7 +37,7 @@ jobs:
         run: npm install
 
       # Runs a single command using the runners shell
-      - name: Run script cn
+      - name: Run script wencai
         run: node ./eco7/cn/quantW2.js
         
       - name: Push github

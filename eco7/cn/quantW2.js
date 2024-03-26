@@ -72,7 +72,7 @@ function getDateTimeLocal(preNDay = 0) {
 let browser
 async function run() {
     browser = await puppeteer.launch({
-        headless: true, //Missing X server or $DISPLAY
+        headless: false, //Missing X server or $DISPLAY
         defaultViewport: { width: 1366, height: 768 },
         devtools: false
     })
@@ -217,7 +217,7 @@ async function run() {
             let text = ""
             let slicaptchaTextNode = await page.$('#slicaptcha-text')
             if (slicaptchaTextNode) text = await page.evaluate(node => node.innerText, slicaptchaTextNode)
-            console.log(text)
+            //console.log(text)
             if (text.includes("向右拖动滑块填充拼图"))
                 await tryslide();
             else {
@@ -359,6 +359,7 @@ async function run() {
         }
         if (!is策略回测Success) { browser.close; throw new Error(currentDayYMD + tacticName + "策略回测失败"); return false; }
         await page.screenshot({ path: `${folder}${getDateTimeByZone().replaceAll(":", "_")},${getDateTimeLocal().replaceAll(":", "_")}.png`, fullPage: true })
+        await wait(1000)
 
         //策略选股
         let 策略选股 = await page.$$eval('.strategy_select table tbody tr', trs => {
@@ -366,9 +367,10 @@ async function run() {
             companysInfo = companysInfo.map(ele => { return ele[0].innerText + ele[1]?.innerText })
             return companysInfo   // ['今日无选股undefined']     ['002812恩捷股份', '603486科沃斯', '300347泰格医药']
         });
-        console.log("策略选股:" , 策略选股)
-        if (策略选股[0] && !策略选股[0].includes("今日无选股")) {
-            mySendMail(currentDayYMD + tacticName + "今日买入：" + 策略选股);
+        console.log("策略选股:", 策略选股)
+        if (策略选股 && 策略选股[0] && !策略选股[0].includes("今日无选股")) {
+            let sentRes = await mySendMail(currentDayYMD + tacticName + "今日买入：" + 策略选股);
+            if (sentRes !== true) console.log(sentRes)
         } else {
             console.log(currentDayYMD, "今日无选股")
         }
