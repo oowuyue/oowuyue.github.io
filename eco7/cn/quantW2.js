@@ -366,7 +366,8 @@ async function run() {
             companysInfo = companysInfo.map(ele => { return ele[0].innerText + ele[1]?.innerText })
             return companysInfo   // ['今日无选股undefined']     ['002812恩捷股份', '603486科沃斯', '300347泰格医药']
         });
-        if (策略选股 && !策略选股[0].includes("今日无选股")) {
+        console.log("策略选股:" , 策略选股)
+        if (策略选股[0] && !策略选股[0].includes("今日无选股")) {
             mySendMail(currentDayYMD + tacticName + "今日买入：" + 策略选股);
         } else {
             console.log(currentDayYMD, "今日无选股")
