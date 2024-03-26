@@ -105,7 +105,7 @@ async function run() {
             console.log(imageSrc)
 
             let pageimageSrc = await browser.newPage()
-            
+
             await pageimageSrc.goto(imageSrc)
             await wait(3000)
             let coordinateShift = await pageimageSrc.evaluate(async () => {
@@ -169,7 +169,7 @@ async function run() {
                 //30-35
                 return coordinateShift - 32;
             });
-           
+
             console.log("dd:", coordinateShift)
             pageimageSrc.close()
 
@@ -236,11 +236,11 @@ async function run() {
 
 
     const [loginResult, loginOrIndexPage] = await loginThs()
-    if (!loginResult) { browser.close; console.log("登陆同花顺失败"); throw new Error(currentDayYMD + "登陆同花顺失败"); }
-    else { 
+    if (!loginResult) { browser.close; console.log("登陆同花顺失败", tryCount); throw new Error(currentDayYMD + "登陆同花顺失败"); }
+    else {
         await loginOrIndexPage.screenshot({ path: `${folder}loginOrIndexPage${getDateTimeByZone().replaceAll(":", "_")},${getDateTimeLocal().replaceAll(":", "_")}.png`, fullPage: true })
         //loginOrIndexPage.close(); 
-        console.log("登陆同花顺OK"); 
+        console.log("登陆同花顺OK", tryCount);
     }
 
     const folder = path.join(__dirname, "/data/同花顺策略GitHubAction/")//个股同花顺策略
