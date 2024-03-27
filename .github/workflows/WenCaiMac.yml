@@ -44,4 +44,5 @@ jobs:
         run: |
           git config --global user.name 'oowuyue'
           git config --global user.email 'oowuyue@gmail.com'
+          git config --global pull.rebase false
           git diff --exit-code ./eco7/ || (git add ./eco7/ && git commit -am "gitActWenCaiMacCommit" && git pull && git push)

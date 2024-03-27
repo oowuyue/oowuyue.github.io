@@ -93,13 +93,12 @@ async function run() {
         if (os.platform() == "linux") uname = "mx_664226190"
         await page.type('#account_pannel input#uname', uname); //Mtsoftware12   mx_664226190
         await page.type('#account_pannel input#passwd', 'sogo54321');
-        await wait(1000)
+        await wait(500)
         await page.click('#account_pannel .submit_btn');
-        await wait(3000) //等待第一次弹出验证滑框
+        await page.waitForSelector('#slicaptcha-img') //等待第一次弹出验证滑框
+        await wait(3000)
 
         async function tryslide() {
-            await wait(1000)
-            await page.waitForSelector('#slicaptcha-img')
             let imageSrc = await page.evaluate(async () => {
                 let image = document.getElementById('slicaptcha-img');
                 return image.src
@@ -223,9 +222,16 @@ async function run() {
             tryCount++
             await tryslide() //尝试滑动
             await wait(3000) //等待成功跳转 或 失败换图和#slicaptcha-text
+            // let text = ""
+            // let slicaptchaTextNode = await page.$('#slicaptcha-text')
+            // if (slicaptchaTextNode) text = await page.evaluate(node => node.innerText, slicaptchaTextNode)
+
             let text = ""
-            let slicaptchaTextNode = await page.$('#slicaptcha-text')
-            if (slicaptchaTextNode) text = await page.evaluate(node => node.innerText, slicaptchaTextNode)
+            try {
+                text = await page.$eval('#slicaptcha-text', el => el.innerText)
+            } catch (error) {
+                text = "no find " + error
+            }
             console.log("text:", text)
 
             if (!text.includes("向右拖动滑块填充拼图")) {
@@ -385,7 +391,7 @@ async function run() {
         });
         console.log("策略选股:", 策略选股)
         if (策略选股 && 策略选股[0] && !策略选股[0].includes("今日无选股")) {
-            let sentRes = await mySendMail(currentDayYMD + tacticName + "今日买入：" + 策略选股);
+            let sentRes = await mySendMail(currentDayYMD + tacticName + "今日买入：" + 策略选股 + os.platform());
             console.log("策略选股senMailRes:", sentRes?.messageId)
         } else {
             console.log(currentDayYMD, "今日无选股")
