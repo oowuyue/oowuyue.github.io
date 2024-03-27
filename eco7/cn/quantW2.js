@@ -73,7 +73,7 @@ const folder = path.join(__dirname, "/data/同花顺策略GitHubAction/")//个�
 let browser
 async function run() {
     browser = await puppeteer.launch({
-        headless: false, //Missing X server or $DISPLAY
+        headless: 'new', //Missing X server or $DISPLAY  headless: 'new',   headless: false, 
         defaultViewport: { width: 1366, height: 768 },
         devtools: false
     })
