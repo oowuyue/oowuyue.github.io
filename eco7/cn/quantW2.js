@@ -72,7 +72,7 @@ const folder = path.join(__dirname, "/data/同花顺策略GitHubAction/")//个�
 let browser
 async function run() {
     browser = await puppeteer.launch({
-        headless: 'new', //Missing X server or $DISPLAY
+        headless: false, //Missing X server or $DISPLAY
         defaultViewport: { width: 1366, height: 768 },
         devtools: false
     })
@@ -226,17 +226,24 @@ async function run() {
             let slicaptchaTextNode = await page.$('#slicaptcha-text')
             if (slicaptchaTextNode) text = await page.evaluate(node => node.innerText, slicaptchaTextNode)
             console.log("text:", text)
-
-            if (!text.includes("向右拖动滑块填充拼图")) { isLoginSuccess = true; break; }
+        
+            if (!text.includes("向右拖动滑块填充拼图")) {
+                await page.waitForFunction(() => { return document.readyState === 'complete' });
+                isLoginSuccess = true; break;
+            }
 
         } while (tryCount <= 5);
 
         return [isLoginSuccess, page, tryCount]
     };
     const [loginResult, loginOrIndexPage, tryCount] = await loginThs()
-    if (!loginResult) { browser.close; console.log("登陆同花顺失败", tryCount); throw new Error(currentDayYMD + "登陆同花顺失败"); }
+    if (!loginResult) {
+        console.log("登陆同花顺失败", tryCount);
+        browser.close;
+        throw new Error(currentDayYMD + "登陆同花顺失败");
+    }
     else {
-        await loginOrIndexPage.screenshot({ path: `${folder}loginOrIndexPage${getDateTimeByZone().replaceAll(":", "_")},${getDateTimeLocal().replaceAll(":", "_")}.png`, fullPage: true })
+        await loginOrIndexPage.screenshot({ path: `${folder}loginOrIndexPage${getDateTimeByZone().replaceAll(":", "_")},${getDateTimeLocal().replaceAll(":", "_")}.png`, })
         //loginOrIndexPage.close(); 
         console.log("登陆同花顺OK", tryCount);
     }
