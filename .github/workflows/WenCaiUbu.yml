@@ -27,7 +27,7 @@ jobs:
           # 安装字体的环境
           sudo apt-get install ttf-mscorefonts-installer
           sudo apt-get install fontconfig
-          sudo apt-get install language-pack-zh*
+          sudo apt-get install language-pack-zh-han* 
           sudo apt-get install chinese*
           sudo mkfontscale
           sudo mkfontdir

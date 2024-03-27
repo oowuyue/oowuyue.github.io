@@ -86,11 +86,11 @@ async function run() {
             if (response.request().resourceType() === 'image')
                 originalImage = await response.buffer().catch(() => { })
         })
-        await page.goto('https://upass.10jqka.com.cn/login');
+        await page.goto('https://upass.10jqka.com.cn/login', { waitUntil: 'networkidle0' })
         await page.click('#to_account_login a.pointer');
         let uname = "Mtsoftware12"
-        console.log("os.platform ", os.platform)
-        if (os.platform == "linux") uname = "mx_664226190"
+        console.log("os.platform() ", os.platform())
+        if (os.platform() == "linux") uname = "mx_664226190"
         await page.type('#account_pannel input#uname', uname); //Mtsoftware12   mx_664226190
         await page.type('#account_pannel input#passwd', 'sogo54321');
         await wait(1000)
@@ -99,7 +99,7 @@ async function run() {
 
         async function tryslide() {
             await page.waitForSelector('#slicaptcha-img');
-            await wait(1300)
+            await wait(1000)
             const imageSrc = await page.evaluate(async () => {
                 //从这开始就是在浏览器中执行代码，已经可以看到我们用熟悉的 querySelector 查找标签
                 let image = document.getElementById('slicaptcha-img');
@@ -109,9 +109,7 @@ async function run() {
             console.log(imageSrc)
 
             let pageimageSrc = await browser.newPage()
-
-            await pageimageSrc.goto(imageSrc)
-            await wait(3000)
+            await pageimageSrc.goto(imageSrc, { waitUntil: 'networkidle0' })
             let coordinateShift = await pageimageSrc.evaluate(async () => {
 
                 let image = document.getElementsByTagName('img')[0];
@@ -173,7 +171,6 @@ async function run() {
                 //30-35
                 return coordinateShift - 32;
             });
-
             console.log("dd:", coordinateShift)
             pageimageSrc.close()
 
@@ -220,6 +217,7 @@ async function run() {
             await page.mouse.up();
             return true
         }
+
         let isLoginSuccess = false
         let tryCount = 0
         do {
@@ -233,7 +231,8 @@ async function run() {
 
             if (!text.includes("向右拖动滑块填充拼图")) {
                 await page.waitForFunction(() => { return document.readyState === 'complete' });
-                isLoginSuccess = true; break;
+                isLoginSuccess = true; 
+                break;
             }
 
         } while (tryCount <= 5);
