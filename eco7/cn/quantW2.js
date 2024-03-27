@@ -87,8 +87,11 @@ async function run() {
                 originalImage = await response.buffer().catch(() => { })
         })
         await page.goto('https://upass.10jqka.com.cn/login');
-        await page.click('#to_account_login a.pointer')
-        await page.type('#account_pannel input#uname', 'Mtsoftware12'); //Mtsoftware12   mx_664226190
+        await page.click('#to_account_login a.pointer');
+        let uname = "Mtsoftware12"
+        console.log("os.platform ", os.platform)
+        if (os.platform == "linux") uname = "mx_664226190"
+        await page.type('#account_pannel input#uname', uname); //Mtsoftware12   mx_664226190
         await page.type('#account_pannel input#passwd', 'sogo54321');
         await wait(1000)
         await page.click('#account_pannel .submit_btn');
@@ -227,7 +230,7 @@ async function run() {
             let slicaptchaTextNode = await page.$('#slicaptcha-text')
             if (slicaptchaTextNode) text = await page.evaluate(node => node.innerText, slicaptchaTextNode)
             console.log("text:", text)
-        
+
             if (!text.includes("向右拖动滑块填充拼图")) {
                 await page.waitForFunction(() => { return document.readyState === 'complete' });
                 isLoginSuccess = true; break;
