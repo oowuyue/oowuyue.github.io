@@ -57,4 +57,4 @@ jobs:
         run: |
           git config --global user.name 'oowuyue'
           git config --global user.email 'oowuyue@gmail.com'
-          git diff --exit-code ./eco7/ || (git add ./eco7/ && git commit -am "push new action" && git push)
+          git diff --exit-code ./eco7/ || (git add ./eco7/ && git commit -am "gitActWenCaiUbuCommit" && git pull && git push)
