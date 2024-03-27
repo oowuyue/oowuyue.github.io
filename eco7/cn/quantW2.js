@@ -97,12 +97,10 @@ async function run() {
         await page.click('#account_pannel .submit_btn');
         await wait(3000) //等待第一次弹出验证滑框
 
-        async function tryslide() { 
+        async function tryslide() {
             await wait(1000)
-            await page.waitForSelector('#slicaptcha-img');
-           
-            const imageSrc = await page.evaluate(async () => {
-                //从这开始就是在浏览器中执行代码，已经可以看到我们用熟悉的 querySelector 查找标签
+            await page.waitForSelector('#slicaptcha-img')
+            let imageSrc = await page.evaluate(async () => {
                 let image = document.getElementById('slicaptcha-img');
                 return image.src
             });
@@ -232,7 +230,7 @@ async function run() {
 
             if (!text.includes("向右拖动滑块填充拼图")) {
                 await page.waitForFunction(() => { return document.readyState === 'complete' });
-                isLoginSuccess = true; 
+                isLoginSuccess = true;
                 break;
             }
 
@@ -455,7 +453,7 @@ async function run() {
         console.log("everyDay Wencai OK")
     } catch (error) {
         console.log("everyDay backTestWeiCai error: " + error.stack)
-        await mySendMail("everyDay  Wencai error: " + error.stack)
+        await mySendMail(os.platform() + "everyDay  Wencai error: " + error.stack)
     }
     if (browser) browser.close()
     return

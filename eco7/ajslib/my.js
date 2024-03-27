@@ -596,15 +596,19 @@ if (typeof module !== "undefined" && module.exports) {
                     resolve(false)
                     return
                 }
-                if (forceNew) {//强制最新的当天的
-                    let stat = fs.statSync(`${folder}${dataName}.js`)
-                    let modifyDate = stat.mtime.toISOString().substring(0, 10)
-                    if (currentDayYMD !== modifyDate) {
-                        console.log(dataName, "文件数据不是最新的")
+                if (forceNew) {//完全强制   强制最新的当天的
+                    if (devTestEnv) {
+                        let stat = fs.statSync(`${folder}${dataName}.js`)
+                        let modifyDate = stat.mtime.toISOString().substring(0, 10)
+                        if (currentDayYMD !== modifyDate) {
+                            console.log(dataName, "文件数据不是当天的")
+                            resolve(false)
+                            return
+                        }
+                    } else {
                         resolve(false)
                         return
                     }
-
                 }
 
                 try {
