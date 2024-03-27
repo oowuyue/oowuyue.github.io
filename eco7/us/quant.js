@@ -33,7 +33,7 @@ async function getXueQiu() {
     var visitXqIndex = async () => {
         if (await wait(10) && browser && indexPage) return
 
-        if (os.platform == "win32") browser = await puppeteer.launch({ headless: false, defaultViewport: null, args: ['--start-maximized'] })
+        if (os.platform() == "win32") browser = await puppeteer.launch({ headless: false, defaultViewport: null, args: ['--start-maximized'] })
         else browser = await puppeteer.launch({ headless: true })
         browser.on('disconnected', () => { browser = undefined; indexPage = undefined; })
 
@@ -48,7 +48,7 @@ async function getXueQiu() {
     var getDataFromUrlFunc = async (dataName, dataCode) => {
         let startTime = 31813200000;
         getXueQiuNowTimestamp = new Date().getTime()
-        if (os.platform != "win32") getXueQiuNowTimestamp = getXueQiuNowTimestamp + 8 * 60 * 60 * 1000 //github Action utc
+        if (os.platform() != "win32") getXueQiuNowTimestamp = getXueQiuNowTimestamp + 8 * 60 * 60 * 1000 //github Action utc
         let pageUrl = `https://stock.xueqiu.com/v5/stock/chart/kline.json?symbol=${dataCode}&begin=${startTime}&end=${getXueQiuNowTimestamp}&period=day&type=before&indicator=kline`
         await visitXqIndex()
         const page = await browser.newPage();
@@ -312,7 +312,7 @@ async function backTest美股指数(dataName, dayDatas, currentDayIndex, trigger
             if (!isSendMail(logProfileN.trigDate)) {
                 console.log(logProfileN.trigDate, "new")
             } else {
-                let mailMsg = dataName + "@new" + logProfileN.trigDate + ":From:" + os.platform + ":" + getXueQiuNowTimestamp
+                let mailMsg = dataName + "@new" + logProfileN.trigDate + ":From:" + os.platform() + ":" + getXueQiuNowTimestamp
                 let mailRes = await mySendMail(mailMsg).catch(console.error);
                 console.log(`${logProfileN.trigDate} new,${sendMailDate}:${mailRes?.response?.substring(0, 8)}`)
             }
@@ -375,7 +375,7 @@ async function down1Back1(nameCodes, backName) {
             console.log(`${dataName} getDataFromUrl`)
             await writeDataToFile(dataName, dayDatas, folder)
         }
-        dayDatas = dayDatas.data.item.xueqiuData2Obj("day", os.platform)
+        dayDatas = dayDatas.data.item.xueqiuData2Obj("day", os.platform())
         nameCodes[i].dayDatas = dayDatas
 
         let triggerLogArr = [];
@@ -387,7 +387,7 @@ async function down1Back1(nameCodes, backName) {
             else {
                 if (!isSendMail(ele.trigDate)) console.log(ele.trigDate, "inlog=>lastLogIndex:" + lastLogIndex)
                 else {
-                    let mailMsg = dataName + "@inlog" + ele.trigDate + ":From:" + os.platform + ":" + getXueQiuNowTimestamp
+                    let mailMsg = dataName + "@inlog" + ele.trigDate + ":From:" + os.platform() + ":" + getXueQiuNowTimestamp
                     let mailRes = await mySendMail(mailMsg).catch(console.error);
                     console.log(`${ele.trigDate} inlog=>lastLogIndex: ${lastLogIndex},${sendMailDate}:${mailRes?.response?.substring(0, 8)}`)
                 }
@@ -421,7 +421,7 @@ async function downAllBack(nameCodes, backName) {
             dayDatas = await getDataFromUrlFunc(dataName, dataCode)
             await writeDataToFile(dataName, dayDatas, folder)
         }
-        dayDatas = dayDatas.data.item.xueqiuData2Obj("day", os.platform)
+        dayDatas = dayDatas.data.item.xueqiuData2Obj("day", os.platform())
         nameCodes[i].dayDatas = dayDatas
     }
 
@@ -440,7 +440,7 @@ async function downAllBack(nameCodes, backName) {
             else {
                 if (!isSendMail(ele.trigDate)) console.log(ele.trigDate, "inlog=>lastLogIndex:" + lastLogIndex)
                 else {
-                    let mailMsg = dataName + "@inlog" + ele.trigDate + ":From:" + os.platform + ":" + getXueQiuNowTimestamp
+                    let mailMsg = dataName + "@inlog" + ele.trigDate + ":From:" + os.platform() + ":" + getXueQiuNowTimestamp
                     let mailRes = await mySendMail(mailMsg).catch(console.error);
                     console.log(`${ele.trigDate} inlog=>lastLogIndex: ${lastLogIndex},${sendMailDate}:${mailRes?.response?.substring(0, 8)}`)
                 }
