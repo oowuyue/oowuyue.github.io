@@ -97,9 +97,10 @@ async function run() {
         await page.click('#account_pannel .submit_btn');
         await wait(3000) //等待第一次弹出验证滑框
 
-        async function tryslide() {
-            await page.waitForSelector('#slicaptcha-img');
+        async function tryslide() { 
             await wait(1000)
+            await page.waitForSelector('#slicaptcha-img');
+           
             const imageSrc = await page.evaluate(async () => {
                 //从这开始就是在浏览器中执行代码，已经可以看到我们用熟悉的 querySelector 查找标签
                 let image = document.getElementById('slicaptcha-img');
