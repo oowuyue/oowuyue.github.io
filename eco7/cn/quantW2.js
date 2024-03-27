@@ -446,9 +446,9 @@ async function run() {
 
     let fileStr = `var 策略回测每日日志${currentDayYMD.replaceAll("-", "_")} = ` + JSON.stringify(nameToArr, null, 0) + "\r\n"
     fileStr += `var 北京8区="${getDateTimeByZone()}"\r\nvar 本机时区="${getDateTimeLocal()}"\r\n`
-    fs.appendFileSync(`${folder}测试时间日志.js`, fileStr);
+    fs.appendFileSync(`${folder}测试时间日志${os.platform()}.js`, fileStr);
     return true
-    //网页提示的是到2024-03-18昨天收盘的数据               //网页提示的是到2024-03-20昨天收盘的数据
+    //网页提示的是到2024-03-18昨天收盘的数据    win32           //网页提示的是到2024-03-20昨天收盘的数据
     // 2024-03-19晚上1-2点触发  2024-03-19天亮九点开盘买入    2024-03-21晚上1-2点触发2024-03-21天亮九点开盘卖出
 }
 
