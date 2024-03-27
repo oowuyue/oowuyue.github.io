@@ -4,6 +4,7 @@ puppeteer.use(StealthPlugin())
 const http = require('http')
 const fs = require('fs')
 const path = require('path')
+const os = require('os')
 const {
     getDateInWeekDay,
     wait,
@@ -243,7 +244,7 @@ async function run() {
         throw new Error(currentDayYMD + "登陆同花顺失败");
     }
     else {
-        await loginOrIndexPage.screenshot({ path: `${folder}loginOrIndexPage${getDateTimeByZone().replaceAll(":", "_")},${getDateTimeLocal().replaceAll(":", "_")}.png`, })
+        await loginOrIndexPage.screenshot({ path: `${folder}${os.platform}loginOrIndexPage${getDateTimeByZone().replaceAll(":", "_")},${getDateTimeLocal().replaceAll(":", "_")}.png`, })
         //loginOrIndexPage.close(); 
         console.log("登陆同花顺OK", tryCount);
     }
