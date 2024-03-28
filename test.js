@@ -39,7 +39,7 @@ async function xqTest(msg) {
             await indexPage.setRequestInterception(true)
             indexPage.on('request', (request) => { request.continue() })
             indexPage.on('load', () => { })
-            await indexPage.goto("https://xueqiu.com/", { waitUntil: 'networkidle2' })
+            await indexPage.goto("https://xueqiu21212.com/", { waitUntil: 'networkidle2' })
         }
         await visitXqIndex()
 
