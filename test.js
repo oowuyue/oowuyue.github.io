@@ -130,155 +130,157 @@ async function thsLoginTest() {
         await page.waitForSelector('#slicaptcha-img') //等待第一次弹出验证滑框
         await wait(3000)
 
-        async function tryslide() {
-            let imageSrc = await page.evaluate(async () => {
-                let image = document.getElementById('slicaptcha-img');
-                return image.src
-            });
-            if (!imageSrc.substring(0, 4).includes("http")) imageSrc = "https:" + imageSrc
-            console.log(imageSrc)
+        // async function tryslide() {
+        //     let imageSrc = await page.evaluate(async () => {
+        //         let image = document.getElementById('slicaptcha-img');
+        //         return image.src
+        //     });
+        //     if (!imageSrc.substring(0, 4).includes("http")) imageSrc = "https:" + imageSrc
+        //     console.log(imageSrc)
 
-            let pageimageSrc = await browser.newPage()
-            await pageimageSrc.goto(imageSrc, { waitUntil: 'networkidle0' })
-            let coordinateShift = await pageimageSrc.evaluate(async () => {
+        //     let pageimageSrc = await browser.newPage()
+        //     await pageimageSrc.goto(imageSrc, { waitUntil: 'networkidle0' })
+        //     let coordinateShift = await pageimageSrc.evaluate(async () => {
 
-                let image = document.getElementsByTagName('img')[0];
-                //https://upass.10jqka.com.cn/login  309 177
-                image.width = 309
-                image.height = 177
+        //         let image = document.getElementsByTagName('img')[0];
+        //         //https://upass.10jqka.com.cn/login  309 177
+        //         image.width = 309
+        //         image.height = 177
 
-                const canvas = document.createElement('canvas');
-                canvas.width = image.width;
-                canvas.height = image.height;
-                const ctx = canvas.getContext('2d');
-                // 将验证码图片绘制到画布上
-                ctx.drawImage(image, 0, 0, image.width, image.height);
-                // 获取画布上的像素数据
-                const imageData = ctx.getImageData(0, 0, image.width, image.height);
-                // 将像素数据转换为二维数组，处理灰度、二值化，将像素点转换为0（黑色）或1（白色）
-                const data = [];
+        //         const canvas = document.createElement('canvas');
+        //         canvas.width = image.width;
+        //         canvas.height = image.height;
+        //         const ctx = canvas.getContext('2d');
+        //         // 将验证码图片绘制到画布上
+        //         ctx.drawImage(image, 0, 0, image.width, image.height);
+        //         // 获取画布上的像素数据
+        //         const imageData = ctx.getImageData(0, 0, image.width, image.height);
+        //         // 将像素数据转换为二维数组，处理灰度、二值化，将像素点转换为0（黑色）或1（白色）
+        //         const data = [];
 
-                for (let h = 0; h < image.height; h++) {
-                    data.push([]);
-                    for (let w = 0; w < image.width; w++) {
-                        const index = (h * image.width + w) * 4;
-                        const r = imageData.data[index] * 0.2126;
-                        const g = imageData.data[index + 1] * 0.7152;
-                        const b = imageData.data[index + 2] * 0.0722;
-                        if (r + g + b > 140) {
-                            data[h].push(1);
-                        } else {
-                            data[h].push(0);
-                        }
-                    }
-                }
-                // 计算每一列黑白色像素点相邻的个数，找到最多的一列，大概率为缺口位置
-                let pre = 0
-                let maxChangeCount = 0;
-                let coordinateShift = 0;
-                for (let w = image.width - 1; w > 40; w--) {
-                    let changeCount = 0;
-                    for (let h = 0; h < image.height; h++) {
-                        if (data[h][w] == 0 && data[h][w - 1] == 1) {
-                            changeCount++;
-                        }
-                    }
-                    console.log(w, changeCount)
+        //         for (let h = 0; h < image.height; h++) {
+        //             data.push([]);
+        //             for (let w = 0; w < image.width; w++) {
+        //                 const index = (h * image.width + w) * 4;
+        //                 const r = imageData.data[index] * 0.2126;
+        //                 const g = imageData.data[index + 1] * 0.7152;
+        //                 const b = imageData.data[index + 2] * 0.0722;
+        //                 if (r + g + b > 140) {
+        //                     data[h].push(1);
+        //                 } else {
+        //                     data[h].push(0);
+        //                 }
+        //             }
+        //         }
+        //         // 计算每一列黑白色像素点相邻的个数，找到最多的一列，大概率为缺口位置
+        //         let pre = 0
+        //         let maxChangeCount = 0;
+        //         let coordinateShift = 0;
+        //         for (let w = image.width - 1; w > 40; w--) {
+        //             let changeCount = 0;
+        //             for (let h = 0; h < image.height; h++) {
+        //                 if (data[h][w] == 0 && data[h][w - 1] == 1) {
+        //                     changeCount++;
+        //                 }
+        //             }
+        //             console.log(w, changeCount)
 
-                    if (false
-                        || (changeCount >= 11 && (changeCount / pre) >= 2)
-                    ) {
-                        coordinateShift = w;
-                        break
-                    }
-                    pre = changeCount
-                    // if (changeCount > maxChangeCount) {
-                    //     maxChangeCount = changeCount;
-                    //     coordinateShift = w;
-                    // }
-                }
+        //             if (false
+        //                 || (changeCount >= 11 && (changeCount / pre) >= 2)
+        //             ) {
+        //                 coordinateShift = w;
+        //                 break
+        //             }
+        //             pre = changeCount
+        //             // if (changeCount > maxChangeCount) {
+        //             //     maxChangeCount = changeCount;
+        //             //     coordinateShift = w;
+        //             // }
+        //         }
 
-                //30-35
-                return coordinateShift - 32;
-            });
-            console.log("dd:", coordinateShift)
-            pageimageSrc.close()
+        //         //30-35
+        //         return coordinateShift - 32;
+        //     });
+        //     console.log("dd:", coordinateShift)
+        //     pageimageSrc.close()
 
 
-            page.bringToFront()
-            function easeOutBounce(t, b, c, d) {
-                if ((t /= d) < 1 / 2.75) {
-                    return c * (7.5625 * t * t) + b;
-                } else if (t < 2 / 2.75) {
-                    return c * (7.5625 * (t -= 1.5 / 2.75) * t + 0.75) + b;
-                } else if (t < 2.5 / 2.75) {
-                    return c * (7.5625 * (t -= 2.25 / 2.75) * t + 0.9375) + b;
-                } else {
-                    return c * (7.5625 * (t -= 2.625 / 2.75) * t + 0.984375) + b;
-                }
-            }
-            const drag = await page.$('#slider');
-            const dragBox = await drag.boundingBox();
-            const dragX = dragBox.x + dragBox.width / 2 + 2;
-            const dragY = dragBox.y + dragBox.height / 2 + 2;
+        //     page.bringToFront()
+        //     function easeOutBounce(t, b, c, d) {
+        //         if ((t /= d) < 1 / 2.75) {
+        //             return c * (7.5625 * t * t) + b;
+        //         } else if (t < 2 / 2.75) {
+        //             return c * (7.5625 * (t -= 1.5 / 2.75) * t + 0.75) + b;
+        //         } else if (t < 2.5 / 2.75) {
+        //             return c * (7.5625 * (t -= 2.25 / 2.75) * t + 0.9375) + b;
+        //         } else {
+        //             return c * (7.5625 * (t -= 2.625 / 2.75) * t + 0.984375) + b;
+        //         }
+        //     }
+        //     const drag = await page.$('#slider');
+        //     const dragBox = await drag.boundingBox();
+        //     const dragX = dragBox.x + dragBox.width / 2 + 2;
+        //     const dragY = dragBox.y + dragBox.height / 2 + 2;
 
-            await page.mouse.move(dragX, dragY);
-            await page.mouse.down();
-            await wait(300)
+        //     await page.mouse.move(dragX, dragY);
+        //     await page.mouse.down();
+        //     await wait(300)
 
-            // 定义每个步骤的时间和总时间
-            const totalSteps = 100;
-            const stepTime = 5;
+        //     // 定义每个步骤的时间和总时间
+        //     const totalSteps = 100;
+        //     const stepTime = 5;
 
-            for (let i = 0; i <= totalSteps; i++) {
-                // 当前步骤占总时间的比例
-                const t = i / totalSteps;
-                // 使用easeOutBounce函数计算当前位置占总距离的比例
-                const easeT = easeOutBounce(t, 0, 1, 1);
+        //     for (let i = 0; i <= totalSteps; i++) {
+        //         // 当前步骤占总时间的比例
+        //         const t = i / totalSteps;
+        //         // 使用easeOutBounce函数计算当前位置占总距离的比例
+        //         const easeT = easeOutBounce(t, 0, 1, 1);
 
-                const newX = dragX + coordinateShift * easeT - 5;
-                const newY = dragY + Math.random() * 10;
+        //         const newX = dragX + coordinateShift * easeT - 5;
+        //         const newY = dragY + Math.random() * 10;
 
-                await page.mouse.move(newX, newY, { steps: 1 });
-                await wait(stepTime);
-            }
-            // 松手前最好还是等待一下，这也很符合真实操作
-            await wait(500)
-            await page.mouse.up();
-            return true
-        }
+        //         await page.mouse.move(newX, newY, { steps: 1 });
+        //         await wait(stepTime);
+        //     }
+        //     // 松手前最好还是等待一下，这也很符合真实操作
+        //     await wait(500)
+        //     await page.mouse.up();
+        //     return true
+        // }
 
-        let isLoginSuccess = false
-        let tryCount = 0
-        do {
-            tryCount++
-            await tryslide() //尝试滑动
-            await wait(3000) //等待成功跳转 或 失败换图和#slicaptcha-text
-            let text = ""
-            let slicaptchaTextNode = await page.$('#slicaptcha-text')
-            if (slicaptchaTextNode) text = await page.evaluate(node => node.innerText, slicaptchaTextNode)
-            console.log("text:", text)
+        // let isLoginSuccess = false
+        // let tryCount = 0
+        // do {
+        //     tryCount++
+        //     await tryslide() //尝试滑动
+        //     await wait(3000) //等待成功跳转 或 失败换图和#slicaptcha-text
+        //     let text = ""
+        //     let slicaptchaTextNode = await page.$('#slicaptcha-text')
+        //     if (slicaptchaTextNode) text = await page.evaluate(node => node.innerText, slicaptchaTextNode)
+        //     console.log("text:", text)
 
-            if (!text.includes("向右拖动滑块填充拼图")) {
-                await page.waitForFunction(() => { return document.readyState === 'complete' });
-                isLoginSuccess = true;
-                break;
-            }
+        //     if (!text.includes("向右拖动滑块填充拼图")) {
+        //         await page.waitForFunction(() => { return document.readyState === 'complete' });
+        //         isLoginSuccess = true;
+        //         break;
+        //     }
 
-        } while (tryCount <= 5);
+        // } while (tryCount <= 5);
 
-        return [isLoginSuccess, page, tryCount]
+        return [false, page, 1]
     };
     const [loginResult, loginOrIndexPage, tryCount] = await loginThs()
     if (!loginResult) {
         console.log("登陆同花顺失败", tryCount);
         browser.close;
-        throw new Error(currentDayYMD + "登陆同花顺失败");
+        throw new Error("登陆同花顺失败");
     }
     else {
         //await loginOrIndexPage.screenshot({ path: `${folder}${os.platform}loginOrIndexPage${getDateTimeByZone().replaceAll(":", "_")},${getDateTimeLocal().replaceAll(":", "_")}.png`, })
         //loginOrIndexPage.close(); 
         console.log("登陆同花顺OK", tryCount);
+        throw new Error("登陆同花顺okTEST");
+
     }
 }
 
