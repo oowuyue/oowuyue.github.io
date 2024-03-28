@@ -276,14 +276,14 @@ async function thsLoginTest() {
         throw new Error(currentDayYMD + "登陆同花顺失败");
     }
     else {
-        await loginOrIndexPage.screenshot({ path: `${folder}${os.platform}loginOrIndexPage${getDateTimeByZone().replaceAll(":", "_")},${getDateTimeLocal().replaceAll(":", "_")}.png`, })
+        //await loginOrIndexPage.screenshot({ path: `${folder}${os.platform}loginOrIndexPage${getDateTimeByZone().replaceAll(":", "_")},${getDateTimeLocal().replaceAll(":", "_")}.png`, })
         //loginOrIndexPage.close(); 
         console.log("登陆同花顺OK", tryCount);
     }
 }
 
 (async () => {
-    let mailRes = await loginThs()
+    let mailRes = await thsLoginTest()
 })()
 
 
