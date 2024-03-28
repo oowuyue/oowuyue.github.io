@@ -15,17 +15,63 @@ const nodemailer = require("nodemailer");
 
 /*
 时间戳定义为从格林威治时间1970年01月01日00时00分00秒起至现在的总秒数。
-
 因此，严格来说，不管你处在地球上的哪个地方，任意时间点的时间戳都是相同的。这点有利于线上和客户端分布式应用统一追踪时间信息。
-
 但是不同的时区，当前时间戳对应的当前时间是不同的。
 */
 console.log("时间戳：", new Date().getTime())
+console.error("fdfddf") //githubAction 不通知
 
 
 
 
-async function mySendMail111(msg) {
+async function xqTest(msg) {
+
+    async function getXueQiu() {
+        var browser
+        var visitXqIndex = async () => {
+            if (await wait(10) && browser && indexPage) return
+
+            if (os.platform() == "win32") browser = await puppeteer.launch({ headless: false, defaultViewport: null, args: ['--start-maximized'] })
+            else browser = await puppeteer.launch({ headless: true })
+            browser.on('disconnected', () => { browser = undefined; indexPage = undefined; })
+
+            indexPage = await browser.newPage();
+            await indexPage.setRequestInterception(true)
+            indexPage.on('request', (request) => { request.continue() })
+            indexPage.on('load', () => { })
+            await indexPage.goto("https://xueqiu.com/", { waitUntil: 'networkidle2' })
+        }
+        await visitXqIndex()
+
+        var getDataFromUrlFunc = async (dataName, dataCode) => {
+            let startTime = 31813200000
+            getXueQiuNowTimestamp = new Date().getTime()
+            if (os.platform() != "win32") getXueQiuNowTimestamp = getXueQiuNowTimestamp + 8 * 60 * 60 * 1000 //github Action utc
+            let pageUrl = `https://stock.xueqiu.com/v5/stock/chart/kline.json?symbol=${dataCode}&begin=${startTime}&end=${getXueQiuNowTimestamp}&period=day&type=before&indicator=kline`
+            await visitXqIndex()
+            const page = await browser.newPage();
+            await page.setRequestInterception(true)
+            page.on('request', (request) => { request.continue() })
+            const promise1 = new Promise((resolve, reject) => {
+                page.on('response', async (response) => {
+                    if (response.url().includes(pageUrl)) {
+                        resdata = await response.json()
+                        resolve(resdata)
+                    }
+                })
+            })//promise1
+            await page.goto(pageUrl, { waitUntil: 'networkidle2' })
+            page.close()
+            return promise1
+        }
+        return getDataFromUrlFunc
+    }
+    var getDataFromUrlFunc = getDataFromUrlFunc ?? await getXueQiu()
+    dayDatas = await getDataFromUrlFunc("沪深300_xueqiu_day", "SH000300")
+    return dayDatas[0].date
+}
+
+async function mailTest(msg) {
     let promise = new Promise(async (resolve, reject) => {
         try {
             const transporter = nodemailer.createTransport({
@@ -58,7 +104,7 @@ async function mySendMail111(msg) {
 }
 
 (async () => {
-    let mailRes = await mySendMail111("test")
+    let mailRes = await xqTest()
 })()
 
 
