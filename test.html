@@ -17,49 +17,26 @@
 
 
     <script>
-
-        //指定时区的日期时间 前N天
-        function getDateTimeByZone(timezone = 8, preNDay = 0) {
-            // 本地时间距离（GMT时间）毫秒数
-            let nowDate = new Date().getTime() - preNDay * 24 * 60 * 60 * 1000
-            // 本地时间和格林威治时间差，单位分钟
-            let offset_GMT = new Date().getTimezoneOffset()
-            //  反推到格林尼治时间
-            let GMT = nowDate + offset_GMT * 60 * 1000
-            //  获取指定时区时间
-            let targetDate = new Date(GMT + timezone * 60 * 60 * 1000)
-
-
-            let Y = targetDate.getFullYear(),
-                M = targetDate.getMonth() + 1,
-                D = targetDate.getDate(),
-
-                h = targetDate.getHours(), // 获取当前小时数(0-23)
-                m = targetDate.getMinutes(), // 获取当前分钟数(0-59)
-                s = targetDate.getSeconds();// 获取当前秒数(0-59)
-
-            if (M < 10) M = '0' + M;
-            if (D < 10) D = '0' + D;
-
-            if (h < 10) h = '0' + h;
-            if (m < 10) m = '0' + m;
-            if (s < 10) s = '0' + s;
-
-            return Y + '-' + M + '-' + D + " " + h + ':' + m + ":" + s;
+        console.log(策略历史明细)
+        console.log(技术指标统计)
+        function getDateInWeekDay(dateStr, weekDay = 5) {
+            let day = new Date(dateStr).getDay() || 7
+            let date = new Date(dateStr)
+            let restlDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() + weekDay - day)
+            return stampToDate(restlDate.getTime())
         }
 
-        console.log("北京8时区：", getDateTimeByZone(8))
-        console.log("北京8时区pre：", getDateTimeByZone(8,1))
-        console.log("北京8时区pre2：", getDateTimeByZone(8,2))
+        console.log(getDateInWeekDay("2024-03-25", 7) == getDateInWeekDay("2024-03-27", 7))
 
-        console.log("UTC0时区：", getDateTimeByZone(0))
+        console.log(getDateInWeekDay("2024-3-26", 7) == getDateInWeekDay("2024-03-28", 7))
 
 
+        console.log(getDateInWeekDay("2024-1-26", 7) == getDateInWeekDay("2024-03-28", 7))
 
-        setTimeout(() => {
-            console.log( document.readyState)
-        }, 5000);
-       
+
+        console.log(getDateInWeekDay("2024-02-26", 7) == getDateInWeekDay("2024-03-28", 7))
+
+
     </script>
 </body>
 

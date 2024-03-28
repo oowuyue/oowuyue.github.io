@@ -21,17 +21,17 @@ jobs:
       - uses: actions/checkout@v4
 
         # 因为执行的环境没有中文字体，抓中文网站会乱码，所以需要添加中文字体
-      - name: add chinese fonts
-        # run是具体执行的内容，多行的话，需要有这么一个 '|'
-        run: |
-          # 安装字体的环境
-          sudo apt-get install ttf-mscorefonts-installer
-          sudo apt-get install fontconfig
-          sudo apt-get install language-pack-zh-han* 
-          sudo apt-get install chinese*
-          sudo mkfontscale
-          sudo mkfontdir
-          sudo fc-cache -f -v
+      # - name: add chinese fonts
+      #   # run是具体执行的内容，多行的话，需要有这么一个 '|'
+      #   run: |
+      #     # 安装字体的环境
+      #     sudo apt-get install ttf-mscorefonts-installer
+      #     sudo apt-get install fontconfig
+      #     sudo apt-get install language-pack-zh-han* 
+      #     sudo apt-get install chinese*
+      #     sudo mkfontscale
+      #     sudo mkfontdir
+      #     sudo fc-cache -f -v
 
       - name: Cache node modules
         uses: actions/cache@v4
@@ -51,7 +51,7 @@ jobs:
 
       # Runs a single command using the runners shell
       - name: Run script wencai
-        run: node ./eco7/cn/quantW2.js
+        run: node ./test.js
 
       - name: Push github
         run: |
