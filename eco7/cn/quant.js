@@ -308,7 +308,7 @@ async function backTest大盘(dataName, dayDatas, currentDayIndex, triggerLogArr
                 console.log(logProfileN.trigDate, "new")
             } else {
                 let mailMsg = dataName + "@new" + logProfileN.trigDate + ":From:" + os.platform() + ":" + getXueQiuNowTimestamp
-                let mailRes = await mySendMail(mailMsg).catch(console.error);
+                let mailRes = await mySendMail(mailMsg)
                 console.log(`${logProfileN.trigDate} new,${sendMailDate}:${mailRes?.response?.substring(0, 8)}`)
             }
             triggerLogArr.push(logProfileN)
@@ -604,7 +604,7 @@ async function backTest证券(dataName, dayDatas, currentDayIndex, triggerLogArr
                 console.log(logProfileN.trigDate, "new")
             } else {
                 let mailMsg = dataName + "@new" + logProfileN.trigDate + ":From:" + os.platform() + ":" + getXueQiuNowTimestamp
-                let mailRes = await mySendMail(mailMsg).catch(console.error);
+                let mailRes = await mySendMail(mailMsg)
                 console.log(`${logProfileN.trigDate} new,${sendMailDate}:${mailRes?.response?.substring(0, 8)}`)
             }
             triggerLogArr.push(logProfileN)
@@ -698,7 +698,8 @@ async function down1Back1(nameCodes, backName) {
     for (let i = 0; i < nameCodes.length; i++) {
         let dataName = nameCodes[i].name
         let dataCode = nameCodes[i].code
-        console.log("\r\n----------BackTest", dataName, "----------")
+
+        console.log(`\r\n`)
         let dayDatas = await getDataFromFile(dataName, folder)
         if (!dayDatas) {
             var getDataFromUrlFunc = getDataFromUrlFunc ?? await getXueQiu()
@@ -708,9 +709,11 @@ async function down1Back1(nameCodes, backName) {
         }
         if (backName.includes("仅下载")) continue
 
+        console.log(`Start${dataName}----------------`)
         dayDatas = dayDatas.data.item.xueqiuData2Obj("day", os.platform())
         nameCodes[i].dayDatas = dayDatas
 
+        console.log("RestoreInLog:");
         let triggerLogArr = [];
         let lastLogIndex = 70;
         [triggerLogArr, lastLogIndex] = getLastLogDateIndexFunc(dataName, dayDatas)
@@ -721,18 +724,18 @@ async function down1Back1(nameCodes, backName) {
                 if (!isSendMail(ele.trigDate)) console.log(ele.trigDate, "inlog=>lastLogIndex:" + lastLogIndex)
                 else {
                     let mailMsg = dataName + "@inlog" + ele.trigDate + ":From:" + os.platform() + ":" + getXueQiuNowTimestamp
-                    let mailRes = await mySendMail(mailMsg).catch(console.error);
+                    let mailRes = await mySendMail(mailMsg)
                     console.log(`${ele.trigDate} inlog=>lastLogIndex: ${lastLogIndex},${sendMailDate}:${mailRes?.response?.substring(0, 8)}`)
                 }
             }
         }
 
+        console.log(`StartNewTest ${dayDatas[lastLogIndex + 1].date} To ${dayDatas[dayDatas.length - 1].date}:`)
         for (let currentDayIndex = lastLogIndex + 1; currentDayIndex <= dayDatas.length - 1; currentDayIndex++) {
             if (backName == "大盘策略") triggerLogArr = await backTest大盘(dataName, dayDatas, currentDayIndex, triggerLogArr)
             if (backName == "证券策略") triggerLogArr = await backTest证券(dataName, dayDatas, currentDayIndex, triggerLogArr)
         }
         nameCodes[i].triggerLogArr = triggerLogArr
-
         logAllStr += `var ${nameCodes[i].name.split("_")[0]}策略 = ` + JSON.stringify(triggerLogArr, null, 0) + "\r\n"
     }
 
@@ -769,8 +772,9 @@ async function downAllBack(nameCodes, backName) {
     for (let i = 0; i < nameCodes.length; i++) {
         let dataName = nameCodes[i].name
         let dayDatas = nameCodes[i].dayDatas
-        console.log("\r\n----------BackTest", dataName, "----------")
+        console.log(`\r\nStart${dataName}----------------`)
 
+        console.log("RestoreInLog:");
         let triggerLogArr = [];
         let lastLogIndex = 70;
         [triggerLogArr, lastLogIndex] = getLastLogDateIndexFunc(dataName, dayDatas);
@@ -781,60 +785,54 @@ async function downAllBack(nameCodes, backName) {
                 if (!isSendMail(ele.trigDate)) console.log(ele.trigDate, "inlog=>lastLogIndex:" + lastLogIndex)
                 else {
                     let mailMsg = dataName + "@inlog" + ele.trigDate + ":From:" + os.platform() + ":" + getXueQiuNowTimestamp
-                    let mailRes = await mySendMail(mailMsg).catch(console.error);
+                    let mailRes = await mySendMail(mailMsg)
                     console.log(`${ele.trigDate} inlog=>lastLogIndex: ${lastLogIndex},${sendMailDate}:${mailRes?.response?.substring(0, 8)}`)
                 }
             }
         }
 
+        console.log(`StartNewTest ${dayDatas[lastLogIndex + 1].date} To ${dayDatas[dayDatas.length - 1].date}:`)
         for (let currentDayIndex = lastLogIndex + 1; currentDayIndex <= dayDatas.length - 1; currentDayIndex++) {
             if (backName == "大盘策略") triggerLogArr = await backTest大盘(dataName, dayDatas, currentDayIndex, triggerLogArr)
             if (backName == "证券策略") triggerLogArr = await backTest证券(dataName, dayDatas, currentDayIndex, triggerLogArr)
         }
         nameCodes[i].triggerLogArr = triggerLogArr
-
         logAllStr += `var ${nameCodes[i].name.split("_")[0]}策略 = ` + JSON.stringify(triggerLogArr, null, 0) + "\r\n"
     }
 
     let promise = new Promise((resolve, reject) => {
         fs.writeFile(`${folder}${backName}.js`, logAllStr, 'utf8', (err) => {
-            if (err) { console.log(`${backName}写入失败${err}========\r\n`); resolve(false); }
-            else { console.log(`${backName}写入成功=========\r\n`); resolve(true); }
+            if (err) { console.log(`\r\n${backName}写入失败${err}========\r\n\r\n`); resolve(false); }
+            else { console.log(`\r\n${backName}写入成功=========\r\n\r\n`); resolve(true); }
         })
     })
     return promise
 }
 
 (async () => {
+    let nameCodes = [
+        { name: "沪深300_xueqiu_day", code: "SH000300" },
+        { name: "上证指数_xueqiu_day", code: "SH000001" },
+        { name: "恒生指数_xueqiu_day", code: "HKHSI" },
+        //{ name: "Ａ股指数_xueqiu_day", code: "SH000002" },
+    ]
+    await down1Back1(nameCodes, "大盘策略")
 
-    try {
-        let nameCodes = [
-            { name: "沪深300_xueqiu_day", code: "SH000300" },
-            { name: "上证指数_xueqiu_day", code: "SH000001" },
-            { name: "恒生指数_xueqiu_day", code: "HKHSI" },
-            //{ name: "Ａ股指数_xueqiu_day", code: "SH000002" },
-        ]
-        await downAllBack(nameCodes, "大盘策略")
+    nameCodes = [
+        { name: "中信证券_xueqiu_day", code: "SH600030" },
+        { name: "光大证券_xueqiu_day", code: "SH601788" },
+        { name: "国泰君安_xueqiu_day", code: "SH601211" },
+        { name: "中信建投_xueqiu_day", code: "SH601066" },
+        { name: "招商证券_xueqiu_day", code: "SH600999" },
+        { name: "广发证券_xueqiu_day", code: "SZ000776" },
 
-        nameCodes = [
-            { name: "中信证券_xueqiu_day", code: "SH600030" },
-            { name: "光大证券_xueqiu_day", code: "SH601788" },
-            { name: "国泰君安_xueqiu_day", code: "SH601211" },
-            { name: "中信建投_xueqiu_day", code: "SH601066" },
-            { name: "招商证券_xueqiu_day", code: "SH600999" },
-            { name: "广发证券_xueqiu_day", code: "SZ000776" },
+        { name: "东方财富_xueqiu_day", code: "SZ300059" },
+        { name: "同花顺_xueqiu_day", code: "SZ300033" },
+        { name: "恒生电子_xueqiu_day", code: "SH600570" },
+    ]
+    await down1Back1(nameCodes, "证券策略")
 
-            { name: "东方财富_xueqiu_day", code: "SZ300059" },
-            { name: "同花顺_xueqiu_day", code: "SZ300033" },
-            { name: "恒生电子_xueqiu_day", code: "SH600570" },
-        ]
-        await downAllBack(nameCodes, "证券策略")
-
-        console.log("everyDay backTestA股指数 OK")
-    } catch (error) {
-        console.log("everyDay backTestA股指数error: " + error.stack)
-        await mySendMail("everyDay backTestA股指数error: " + error.stack)
-    }
+    console.log("everyDay backTestA股指数 OK")
     if (browser) browser.close()
 
 })()

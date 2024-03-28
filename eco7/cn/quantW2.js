@@ -454,13 +454,7 @@ async function run() {
 
 
 (async () => {
-    try {
-        await run()
-        console.log("everyDay Wencai OK")
-    } catch (error) {
-        console.log("everyDay backTestWeiCai error: " + error.stack)
-        await mySendMail(os.platform() + "everyDay  Wencai error: " + error.stack)
-    }
+    await run()
+    console.log("everyDay Wencai OK")
     if (browser) browser.close()
-    return
 })()

@@ -398,6 +398,7 @@ async function down1Back1(nameCodes, backName) {
             triggerLogArr = await backTest美股指数(dataName, dayDatas, currentDayIndex, triggerLogArr)
         }
         nameCodes[i].triggerLogArr = triggerLogArr
+        console.log("\r\n----------End BackTest", dataName, dayDatas[dayDatas.length - 1].date, "----------")
 
         logAllStr += `var ${nameCodes[i].name.split("_")[0]}策略 = ` + JSON.stringify(triggerLogArr, null, 0) + "\r\n"
     }
@@ -451,6 +452,7 @@ async function downAllBack(nameCodes, backName) {
             triggerLogArr = await backTest美股指数(dataName, dayDatas, currentDayIndex, triggerLogArr)
         }
         nameCodes[i].triggerLogArr = triggerLogArr
+        console.log("\r\n----------End BackTest", dataName, dayDatas[dayDatas.length - 1].date, "----------")
 
         logAllStr += `var ${nameCodes[i].name.split("_")[0]}策略 = ` + JSON.stringify(triggerLogArr, null, 0) + "\r\n"
     }
@@ -467,19 +469,13 @@ async function downAllBack(nameCodes, backName) {
 
 (async () => {
 
-    try {
-        let nameCodes = [
-            { name: "标普500_xueqiu_day", code: ".INX" },
-            { name: "纳指_xueqiu_day", code: ".IXIC" },
-            { name: "道琼斯_xueqiu_day", code: ".DJI" },
-        ]
-        await downAllBack(nameCodes, "美股指数策略")
-        console.log("everyDay backTest美股指数 OK")
-    } catch (error) {
-        console.log("everyDay backTest美股指数error: " + error.stack)
-        await mySendMail("everyDay backTest美股指数error: " + error.stack)
-    }
+    let nameCodes = [
+        { name: "标普500_xueqiu_day", code: ".INX" },
+        { name: "纳指_xueqiu_day", code: ".IXIC" },
+        { name: "道琼斯_xueqiu_day", code: ".DJI" },
+    ]
+    await downAllBack(nameCodes, "美股指数策略")
+    console.log("everyDay backTest美股指数 OK")
 
     if (browser) browser.close()
-
 })()

@@ -572,7 +572,7 @@ function PtPAmp(prePeriodItem, currentPeriodItem) {
 if (typeof module !== "undefined" && module.exports) {
     const fs = require('fs');
     const nodemailer = require("nodemailer");
-    const devTestEnv = false
+    const devTestEnv = true
 
     function writeDataToFile(dataName, dayDatas, folder = "./data/") {
         let promise = new Promise((resolve, reject) => {
