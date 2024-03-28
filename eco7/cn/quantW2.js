@@ -354,7 +354,7 @@ async function run() {
     };
 
     let startDate = "2024-03-10"
-    let endDate = getDateTimeByZone(8, -1).substring(0, 10)//北京时间凌晨一点的昨天 
+    let endDate = getDateTimeByZone(8, 0).substring(0, 10)//当天收盘后 收盘后可以设置当天？？？？
     for (let i = 0; i < tactics.length; i++) {
         let tacticName = tactics[i].name
         let query = encodeURIComponent(tactics[i].query.trim().replace(/[\r\n]/g, '').replace(/[ ]/g, ''))
