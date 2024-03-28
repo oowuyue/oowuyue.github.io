@@ -1,38 +1,25 @@
 # This is a basic workflow to help you get started with Actions
 
-name: WenCaiUbu
+name: WenCai2
 
 # Controls when the workflow will run
 on:
-  push:
+  # push:
   schedule:
-    - cron: "0 17 * * *"
+    - cron: '0 17 * * *'
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
   build:
     # The type of runner that the job will run on
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v4
-
-        # 因为执行的环境没有中文字体，抓中文网站会乱码，所以需要添加中文字体
-      # - name: add chinese fonts
-      #   # run是具体执行的内容，多行的话，需要有这么一个 '|'
-      #   run: |
-      #     # 安装字体的环境
-      #     sudo apt-get install ttf-mscorefonts-installer
-      #     sudo apt-get install fontconfig
-      #     sudo apt-get install language-pack-zh-han* 
-      #     sudo apt-get install chinese*
-      #     sudo mkfontscale
-      #     sudo mkfontdir
-      #     sudo fc-cache -f -v
-
+      
       - name: Cache node modules
         uses: actions/cache@v4
         env:
@@ -51,11 +38,11 @@ jobs:
 
       # Runs a single command using the runners shell
       - name: Run script wencai
-        run: node ./test.js
-
+        run: node ./eco7/cn/quantW2.js
+        
       - name: Push github
         run: |
           git config --global user.name 'oowuyue'
           git config --global user.email 'oowuyue@gmail.com'
           git config --global pull.rebase false
-          git diff --exit-code ./eco7/ || (git add ./eco7/ && git commit -am "gitActWenCaiUbuCommit" && git pull && git push)
+          git diff --exit-code ./eco7/ || (git add ./eco7/ && git commit -am "gitActWenCaiMacCommit" && git pull && git push)

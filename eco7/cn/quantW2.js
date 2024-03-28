@@ -6,15 +6,41 @@ const fs = require('fs')
 const path = require('path')
 const os = require('os')
 const {
-    getDateInWeekDay,
     wait,
-    writeDataToFile,
-    getDataFromFile,
     mySendMail,
-    isSendMail,
+    devTestEnv
 } = require("../ajslib/my.js")
 
 
+/*
+         网页提示的是到2024-03-18昨天收盘的数据              网页提示的是到2024-03-20昨天收盘的数据
+2024-03-19晚上1-2点触发 2024-03-19天亮九点开盘买入    2024-03-21晚上1-2点触发 2024-03-21天亮九点开盘卖出
+
+时间戳定义为从格林威治时间1970年01月01日00时00分00秒起至现在的总秒数。
+因此，严格来说，不管你处在地球上的哪个地方，任意时间点的时间戳都是相同的。这点有利于线上和客户端分布式应用统一追踪时间信息。
+但是不同的时区，当前时间戳对应的当前时间是不同的。
+*/
+//本机的日期时间
+function getDateTimeLocal(preNDay = 0) {
+    let stamp = new Date().getTime() + preNDay * 24 * 60 * 60 * 1000;
+    let localDate = new Date(stamp);
+    let Y = localDate.getFullYear(),
+        M = localDate.getMonth() + 1,
+        D = localDate.getDate(),
+
+        h = localDate.getHours(), // 获取当前小时数(0-23)
+        m = localDate.getMinutes(), // 获取当前分钟数(0-59)
+        s = localDate.getSeconds();// 获取当前秒数(0-59)
+
+    if (M < 10) M = '0' + M;
+    if (D < 10) D = '0' + D;
+
+    if (h < 10) h = '0' + h;
+    if (m < 10) m = '0' + m;
+    if (s < 10) s = '0' + s;
+
+    return Y + '-' + M + '-' + D + " " + h + ':' + m + ":" + s;
+}
 //指定时区的日期时间 前N天 默认北京
 function getDateTimeByZone(timezone = 8, preNDay = 0) {
     // 本地时间距离（GMT时间）毫秒数
@@ -46,34 +72,11 @@ function getDateTimeByZone(timezone = 8, preNDay = 0) {
 }
 let currentDayYMD = getDateTimeByZone().substring(0, 10)
 
-
-//本机的日期时间
-function getDateTimeLocal(preNDay = 0) {
-    let stamp = new Date().getTime() + preNDay * 24 * 60 * 60 * 1000;
-    let localDate = new Date(stamp);
-    let Y = localDate.getFullYear(),
-        M = localDate.getMonth() + 1,
-        D = localDate.getDate(),
-
-        h = localDate.getHours(), // 获取当前小时数(0-23)
-        m = localDate.getMinutes(), // 获取当前分钟数(0-59)
-        s = localDate.getSeconds();// 获取当前秒数(0-59)
-
-    if (M < 10) M = '0' + M;
-    if (D < 10) D = '0' + D;
-
-    if (h < 10) h = '0' + h;
-    if (m < 10) m = '0' + m;
-    if (s < 10) s = '0' + s;
-
-    return Y + '-' + M + '-' + D + " " + h + ':' + m + ":" + s;
-}
-
 const folder = path.join(__dirname, "/data/同花顺策略GitHubAction/")//个股同花顺策略./
 let browser
 async function run() {
     browser = await puppeteer.launch({
-        headless: 'new', //Missing X server or $DISPLAY  headless: 'new',   headless: false, 
+        headless: devTestEnv ? false : "new", //Missing X server or $DISPLAY 'new', false,
         defaultViewport: { width: 1366, height: 768 },
         devtools: false
     })
@@ -251,95 +254,16 @@ async function run() {
         throw new Error(currentDayYMD + "登陆同花顺失败");
     }
     else {
-        await loginOrIndexPage.screenshot({ path: `${folder}${os.platform}loginOrIndexPage${getDateTimeByZone().replaceAll(":", "_")},${getDateTimeLocal().replaceAll(":", "_")}.png`, })
+        //await loginOrIndexPage.screenshot({ path: `${folder}${os.platform}loginOrIndexPage${getDateTimeByZone().replaceAll(":", "_")},${getDateTimeLocal().replaceAll(":", "_")}.png`, })
         //loginOrIndexPage.close(); 
         console.log("登陆同花顺OK", tryCount);
     }
 
+    let 回测一下urlTemplate = "`https://backtest.10jqka.com.cn/backtest/app.html#/backtest?query=${query}&daysForSaleStrategy=${daysForSaleStrategy}&startDate=${startDate}&endDate=${endDate}&benchmark=399300%20沪深300`"
     let 策略回测urlTemplate = "`https://backtest.10jqka.com.cn/backtest/app.html#/strategybacktest?query=${query}&daysForSaleStrategy=${daysForSaleStrategy}&startDate=${startDate}&endDate=${endDate}&stockHoldCount=${stockHoldCount}&dayBuyStockNum=${dayBuyStockNum}&upperIncome=${upperIncome}&lowerIncome=${lowerIncome}&fallIncome=${fallIncome}&engine=undefined&capital=100000`"
     let nameToArr = {}
+    let htmlStr = ""
     let tactics = [
-        // {
-        //     name: "月周日",
-        //     query: `最近5天月线周期kdj金叉；周线周期kdj底背离；周线周期kdj金叉；周线周期kdjj值小于25；日线周期kdj金叉且d值小于35；pe<=120；pb>0；排除st`,
-        //     daysForSaleStrategy: "20",
-        //     stockHoldCount: 10,
-        //     dayBuyStockNum: 3,
-        //     upperIncome: 23,
-        //     fallIncome: 3.5,
-        //     lowerIncome: 5.5,
-        //     stats: "策略回测"
-        // },
-        // {
-        //     name: "左侧月周日",
-        //     query: `
-        //             kdj金叉d值小于37，当日涨幅大于0.5，最近5日涨跌幅小于-5，最近5日有≥2次的涨跌幅小于0，
-        //             周macd上移，周kdjj值小于60，月kdj上移，实际换手率大于1.7, 
-        //             最近10日收盘获利小于5%的天数>0, 最近2日主力资金流入大于-250万，pe<=120，pb>0，排除st
-        //     `,
-        //     daysForSaleStrategy: "20",
-        //     stockHoldCount: 10,
-        //     dayBuyStockNum: 3,
-        //     upperIncome: 30,
-        //     fallIncome: 7,
-        //     lowerIncome: 7,
-        //     stats: "策略回测"
-        // },
-
-
-        // {
-        //     name: "周日",
-        //     query: `
-        //           周kdj金叉且j值小于59；最近10日日kdj金叉出现>=1次；日kdjd值小于39；BIAS买入信号；实际换手率大于2.9；股价大于5日均线；
-        //           最近3日收盘获利小于5%的天数>0；最近3日主力资金流入大于-250万；振幅小于12；放量；pe<=120；roe>0；排除st；roe从大到小
-        //     `,
-        //     daysForSaleStrategy: "20",
-        //     stockHoldCount: 10,
-        //     dayBuyStockNum: 3,
-        //     upperIncome: 33,
-        //     fallIncome: 10,
-        //     lowerIncome: 8.5,
-        //     stats: "策略回测"
-        // },
-        // {
-        //     name: "周日2",
-        //     query: `周kdj底背离且金叉且j值小于25；kdj金叉且d值小于35；BIAS买入信号；振幅小于12；实际换手率大于2.9；上市天数大于30；roe>0；排除st；roe从大到小`,
-        //     daysForSaleStrategy: "20",
-        //     stockHoldCount: 10,
-        //     dayBuyStockNum: 3,
-        //     upperIncome: 33,
-        //     fallIncome: 10,
-        //     lowerIncome: 8.5,
-        //     stats: "策略回测"
-        // },
-
-        // {
-        //     name: "日信号",
-        //     query: `
-        //           kdj买入信号，bias买入信号，wr信号买入，rsi买入信号，周kdj金叉，振幅小于12，cci大于-130小于97，
-        //           过去30个交易日涨跌幅大于-25%，最近3日主力资金流入大于-250万，实际换手率大于1，roe大于0，排除st，换手率从大到小
-        //     `,
-        //     daysForSaleStrategy: "20",
-        //     stockHoldCount: 10,
-        //     dayBuyStockNum: 3,
-        //     upperIncome: 25,
-        //     fallIncome: 10,
-        //     lowerIncome: 12,
-        //     stats: "策略回测"
-        // },
-        // {
-        //     name: "日信号2",
-        //     query: `kdj买入信号，bias买入信号，wr信号买入，macd买入信号，cci大于-120小于0，振幅小于12，股价低于压力位，实际换手率大于2.9，排除st，排除退市`,
-        //     daysForSaleStrategy: "20",
-        //     stockHoldCount: 10,
-        //     dayBuyStockNum: 3,
-        //     upperIncome: 20,
-        //     fallIncome: 5.5,
-        //     lowerIncome: 10.5,
-        //     stats: "策略回测"
-        // },
-
-
         {
             name: "测试六日均线",
             query: `行情收盘价>6日的均线，收盘价>昨日的最高价，当日阳线，昨日的macd增长值<0，当日的macd增长值>0，最近7日放量，量比大于1，前7日的区间主力资金流向>0，17>pb>0`,
@@ -354,6 +278,33 @@ async function run() {
     ];
     let taskFileDownloadThsBack = async (tacticName, pageUrl) => {
         const page = await browser.newPage()
+        let get历史明细 = async () => {
+            let 历史明细 = await page.$$eval('.history_detail_main table tbody tr', trs => {
+                let companysInfo = trs.map(ele => { return Array.from(ele.querySelectorAll("td")) })
+                companysInfo = companysInfo.map(companyTds => {
+                    let companyArr = []
+                    for (let index = 0; index < companyTds.length; index++) {
+                        if (index == 2) {
+                            let startDate = companyTds[index].innerText
+                            startDate = startDate.substring(0, 4) + "-" + startDate.substring(4, 6) + "-" + startDate.substring(6)
+                            companyArr.push(startDate)
+                            continue
+                        }
+                        if (index == 3) {
+                            let endDate = companyTds[index].innerText
+                            if (endDate.includes("持仓")) endDate = "持仓"
+                            else endDate = endDate.substring(0, 4) + "-" + endDate.substring(4, 6) + "-" + endDate.substring(6)
+                            companyArr.push(endDate)
+                            continue
+                        }
+                        companyArr.push(companyTds[index]?.innerText)
+                    }
+                    return companyArr
+                });
+                return companysInfo
+            });
+            return 历史明细
+        }
 
         //点击回测
         let is策略回测Success = false
@@ -361,7 +312,8 @@ async function run() {
         await wait(Math.random() * 2000 + Math.random() * 3000 + Math.random() * 5010)
         let errorLoaction = ".order-successful-execution-order.error"
         let errorTip = await page.$(errorLoaction)
-        if (errorTip) {
+        let 历史明细 = await get历史明细()
+        if (errorTip || !历史明细.length) {
             let i = 0;
             do {
                 await page.evaluate((errorLoaction) => {
@@ -398,36 +350,11 @@ async function run() {
         }
 
         //历史明细查询
-        let 历史明细 = await page.$$eval('.history_detail_main table tbody tr', trs => {
-            let companysInfo = trs.map(ele => { return Array.from(ele.querySelectorAll("td")) })
-            companysInfo = companysInfo.map(companyTds => {
-                let companyArr = []
-                for (let index = 0; index < companyTds.length; index++) {
-                    if (index == 2) {
-                        let startDate = companyTds[index].innerText
-                        startDate = startDate.substring(0, 4) + "-" + startDate.substring(4, 6) + "-" + startDate.substring(6)
-                        companyArr.push(startDate)
-                        continue
-                    }
-                    if (index == 3) {
-                        let endDate = companyTds[index].innerText
-                        if (endDate.includes("持仓")) endDate = "持仓"
-                        else endDate = endDate.substring(0, 4) + "-" + endDate.substring(4, 6) + "-" + endDate.substring(6)
-                        companyArr.push(endDate)
-                        continue
-                    }
-                    companyArr.push(companyTds[index]?.innerText)
-                }
-                return companyArr
-            });
-            return companysInfo
-        });
-        //console.log(历史明细) //or空数组
-        return 历史明细
+        return await get历史明细()//or空数组
     };
 
     let startDate = "2024-03-10"
-    let endDate = getDateTimeByZone(8, -1).substring(0, 10)
+    let endDate = getDateTimeByZone(8, -1).substring(0, 10)//北京时间凌晨一点的昨天 
     for (let i = 0; i < tactics.length; i++) {
         let tacticName = tactics[i].name
         let query = encodeURIComponent(tactics[i].query.trim().replace(/[\r\n]/g, '').replace(/[ ]/g, ''))
@@ -438,18 +365,20 @@ async function run() {
         let fallIncome = tactics[i].fallIncome ?? 10
         let lowerIncome = tactics[i].lowerIncome ?? 10
 
+        eval("回测一下url = " + 回测一下urlTemplate)
         eval("策略回测url = " + 策略回测urlTemplate)
+        htmlStr += `<tr> <td><a href="${回测一下url}" target="_blank">${tacticName}</a></td> <td><a href="${策略回测url}" target="_blank">${tacticName}</a></td> </tr>`
 
         let 历史明细 = await taskFileDownloadThsBack(tacticName, 策略回测url) //访问回测
         nameToArr[tacticName] = 历史明细
     }
 
+    fs.writeFileSync(`${folder}quantW2策略链接.html`, `<table><tr><td>回测一下</td><td>策略回测</td></tr>${htmlStr}</table>`)
+
     let fileStr = `var 策略回测每日日志${currentDayYMD.replaceAll("-", "_")} = ` + JSON.stringify(nameToArr, null, 0) + "\r\n"
     fileStr += `var 北京8区="${getDateTimeByZone()}"\r\nvar 本机时区="${getDateTimeLocal()}"\r\n`
-    fs.appendFileSync(`${folder}测试时间日志${os.platform()}.js`, fileStr);
+    fs.appendFileSync(`${folder}quantW2测试日志${os.platform()}.js`, fileStr);
     return true
-    //网页提示的是到2024-03-18昨天收盘的数据    win32           //网页提示的是到2024-03-20昨天收盘的数据
-    // 2024-03-19晚上1-2点触发  2024-03-19天亮九点开盘买入    2024-03-21晚上1-2点触发2024-03-21天亮九点开盘卖出
 }
 
 
@@ -458,3 +387,4 @@ async function run() {
     console.log("everyDay Wencai OK")
     if (browser) browser.close()
 })()
+
